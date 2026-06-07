@@ -1,0 +1,53 @@
+---
+import Button from "../../components/basic/Button.astro";
+import WelcomeHeader from "../../components/basic/WelcomeHeader.astro";
+import MyRecipesCard from "../../components/myRecipes/MyRecipesCard.astro";
+import MyRecipesContainer from "../../components/myRecipes/MyRecipesContainer.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { RecipesService } from "../../service/recipesService";
+import { getEntries } from "astro:content";
+
+const userRecipeIds = await RecipesService.getUserRecipes();
+const recipes = await getEntries(
+  userRecipeIds.map((id) => ({ collection: "recipe", id })),
+);
+---
+
+<BaseLayout>
+  <div class="myRecipes-wrapper">
+    <div class="header">
+      <WelcomeHeader title="myRecipes" />
+      <Button
+        text="Add new recipe"
+        link="/myRecipes/addRecipe"
+        iconName="lucide:plus"
+      />
+    </div>
+    <MyRecipesContainer>
+      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
+      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
+      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
+      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
+      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
+      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
+      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
+      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
+      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
+      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
+      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
+      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
+      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
+      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
+      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
+      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
+    </MyRecipesContainer>
+  </div>
+</BaseLayout>
+<style>
+  .header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+</style>

@@ -1,0 +1,28 @@
+---
+export const prerender = false;
+type Props = {
+  title: string;
+};
+
+const { title }: Props = Astro.props;
+---
+
+<div class="welcome-header">
+  <p class="text-gray">Welcom user</p>
+  <h2>{title}</h2>
+  <p class="text-gray">bread/crums/</p>
+</div>
+
+<style>
+  .welcome-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 2rem 0;
+  }
+
+  .welcome-header h2,
+  .welcome-header p {
+    margin: 0;
+  }
+</style>

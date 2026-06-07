@@ -1,0 +1,65 @@
+---
+import { Image } from "astro:assets";
+import defaultImg from "../../assets/recipes-img/default-img.png";
+import type { RecipeDateType } from "../../types";
+
+type Props = {
+  data: RecipeDateType;
+};
+
+const { data }: Props = Astro.props;
+---
+
+<a href={`/recipes/${data.slug}`} class="card-link">
+  <div class="card-container">
+    <div class="img-container">
+      <Image
+        class="img"
+        src={defaultImg}
+        width={100}
+        height={100}
+        alt="Default recipes img"
+      />
+    </div>
+    <div class="content">
+      <h3>{data.title}</h3>
+      <p>{data.description}</p>
+    </div>
+  </div>
+</a>
+
+<style>
+  .card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .card-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden;
+
+    width: 15rem;
+
+    border: 2px solid rgb(61, 56, 56);
+    background-color: white;
+    border-radius: 0.5rem;
+  }
+
+  .img-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 10rem;
+    overflow: hidden;
+  }
+
+  .img {
+    width: 100%;
+    height: auto;
+  }
+</style>

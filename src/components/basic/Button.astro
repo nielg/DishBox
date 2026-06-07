@@ -1,0 +1,40 @@
+---
+import { Icon } from "astro-icon/components";
+type Props = {
+  text: string;
+  link: string;
+  iconName: string;
+};
+
+const { text, link, iconName }: Props = Astro.props;
+---
+
+<a href={link}>
+  <button>
+    <p class="bold">{text}</p>
+    <Icon class="icon" name={iconName} />
+  </button>
+</a>
+
+<style>
+  button {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+
+    color: white;
+    background-color: var(--red-accent);
+
+    padding: 0.5rem 1.5rem;
+    border-radius: 0.5rem;
+    border: none;
+
+    cursor: pointer;
+  }
+
+  .icon {
+    font-size: 1.5rem;
+  }
+</style>
