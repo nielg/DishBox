@@ -1,6 +1,7 @@
 # build output
 dist/
-# generated types
+
+# generated types and Astro cache
 .astro/
 
 # dependencies
@@ -12,16 +13,21 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-
 # environment variables
 .env
 .env.production
+.env.local
+.env.*.local
+*.env
 
-# macOS-specific files
+# OS-specific files
 .DS_Store
+Thumbs.db
 
-# jetbrains setting folder
+# IDEs and editors
 .idea/
-
-# vscode setting folder
 .vscode/
+
+# Tooling caches
+.eslintcache
+*.tsbuildinfo
