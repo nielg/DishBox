@@ -1,0 +1,44 @@
+---
+import { Icon } from "astro-icon/components";
+---
+
+<header class="text-white">
+  <h2>Recipies</h2>
+  <div class="right-header">
+    <p>Home</p>
+    <a href="/myRecipes" class="text-white"><p>myRecipes</p></a>
+    <Icon class="icon" name="lucide:user-circle" />
+  </div>
+</header>
+
+<style>
+  header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0.5rem 2rem;
+
+    font-size: 1.5rem;
+
+    background-color: var(--primary);
+    border-top: none;
+    border-radius: 0 0 2rem 2rem;
+
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+  }
+
+  h2,
+  .icon {
+    font-size: 1.8rem;
+  }
+
+  .right-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 3rem;
+  }
+</style>

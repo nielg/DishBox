@@ -1,0 +1,21 @@
+---
+import Header from "../components/Header.astro";
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout>
+  <Header />
+  <main>
+    <slot />
+  </main>
+  <footer></footer>
+</Layout>
+
+<style>
+  main {
+    background-color: white;
+    margin: 0 3%;
+    padding: 2rem;
+    min-height: 100vh;
+  }
+</style>

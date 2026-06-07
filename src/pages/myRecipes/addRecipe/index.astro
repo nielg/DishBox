@@ -1,0 +1,19 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import AddRecipeForm from "../../../components/myRecipes/AddRecipeForm.astro";
+import WelcomeHeader from "../../../components/basic/WelcomeHeader.astro";
+---
+
+<BaseLayout>
+  <div class="page-wrapper">
+    <WelcomeHeader title="Add a new Recipe" />
+    <AddRecipeForm />
+  </div>
+</BaseLayout>
+
+<style>
+  .page-wrapper {
+    margin: 2rem;
+    margin: auto;
+  }
+</style>

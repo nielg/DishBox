@@ -1,0 +1,45 @@
+:root {
+  --primary: #f85e00;
+  --red-accent: #a41623;
+  --light-bg: #f4e0b0;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+  background-color: rgb(250, 246, 246);
+  font-family: "sans-serif";
+  font-style: normal;
+  scroll-behavior: smooth;
+}
+
+a {
+  text-decoration: none;
+  color: black;
+}
+
+.text-center {
+  text-align: center;
+}
+
+/* Font colors */
+
+.text-gray {
+  color: gray;
+}
+.text-white {
+  color: white;
+}
+
+/* Font sizes */
+h2 {
+  font-size: 2rem;
+}
+
+/* Font style */
+
+.bold {
+  font-weight: 700;
+}

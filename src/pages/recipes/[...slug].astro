@@ -1,0 +1,42 @@
+﻿---
+import { getEntry, render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+export const prerender = false;
+
+const { slug } = Astro.params;
+
+if (!slug) {
+  return Astro.redirect("/404");
+}
+
+const post = await getEntry("recipe", slug);
+
+if (!post) {
+  return Astro.redirect("/404");
+}
+
+const { Content } = await render(post);
+---
+
+<BaseLayout>
+  <div class="content-container">
+    <div class="content-wrapper">
+      <Content />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .content-container {
+    min-height: 100vh;
+    width: 80vw;
+    background-color: whitesmoke;
+    margin: auto;
+    padding: 2rem;
+  }
+
+  .content-wrapper {
+    width: fit-content;
+    margin: auto;
+  }
+</style>

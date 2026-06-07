@@ -1,0 +1,13 @@
+<div class="container">
+  <slot />
+</div>
+
+<style>
+  .container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 15rem);
+    justify-content: space-between;
+    gap: 20px;
+    width: 100%;
+  }
+</style>
