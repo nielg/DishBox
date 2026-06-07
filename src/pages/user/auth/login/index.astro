@@ -1,6 +1,8 @@
 ---
 import "../../../../styles/auth.css";
 import EmptyLayout from "../../../../layouts/EmptyLayout.astro";
+import InputPassword from "@/components/input/InputPassword.astro";
+import InputEmail from "@/components/input/InputEmail.astro";
 ---
 
 <EmptyLayout>
@@ -8,27 +10,9 @@ import EmptyLayout from "../../../../layouts/EmptyLayout.astro";
     <div class="container">
       <h2 class="text-center">Login</h2>
       <form action="submit">
-        <div class="input-container">
-          <label for="email">Email:</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="email@email.com"
-            required
-          />
-        </div>
-        <div class="input-container">
-          <label for="password">Password:</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            placeholder="Password"
-            required
-          />
-        </div>
-        <button type="submit"> Login </button>
+        <InputEmail />
+        <InputPassword client:load />
+        <button class="submit-btn" type="submit"> Login </button>
       </form>
       <a class="text-center" href="/user/auth/register"
         >Don't have a account yet?<span class="border-bottom">Register</span></a

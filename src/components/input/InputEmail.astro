@@ -1,0 +1,173 @@
+---
+import { AlertCircle, CheckCircle, Mail01 } from "@untitledui/icons";
+---
+
+<div class="text-field">
+  <label for="email-input" class="label">
+    Email address <span class="required" aria-hidden="true">*</span>
+  </label>
+
+  <div class="input-wrapper">
+    <div class="input-icon-left" aria-hidden="true">
+      <Mail01 />
+    </div>
+
+    <input
+      id="email-input"
+      type="email"
+      name="email"
+      required
+      autocomplete="email"
+      placeholder="you@example.com"
+      class="input-base"
+    />
+  </div>
+
+  <div class="hint-text">
+    <span class="icon-success" aria-hidden="true">
+      <CheckCircle />
+    </span>
+    <span class="icon-error" aria-hidden="true">
+      <AlertCircle />
+    </span>
+    <span class="hint-message">Please enter a valid email address.</span>
+  </div>
+</div>
+
+<script>
+  const emailInput = document.getElementById("email-input") as HTMLInputElement;
+  const textField = document.querySelector(".text-field");
+
+  if (emailInput && textField) {
+    // Dynamic structural validation while typing
+    emailInput.addEventListener("input", () => {
+      // checkValidity applies native browser RFC 5322 regex checks on type="email"
+      if (emailInput.checkValidity()) {
+        textField.classList.add("is-valid");
+        textField.classList.remove("is-invalid");
+      } else {
+        textField.classList.remove("is-valid");
+
+        // Only trigger error states while typing if they previously had a semi-complete entry
+        if (emailInput.value.includes("@") && !emailInput.validity.valid) {
+          textField.classList.add("is-invalid");
+        }
+      }
+    });
+
+    // Explicit validation on blur
+    emailInput.addEventListener("blur", () => {
+      if (!emailInput.validity.valid && emailInput.value.length > 0) {
+        textField.classList.add("is-invalid");
+        textField.classList.remove("is-valid");
+      } else if (emailInput.validity.valid && emailInput.value.length > 0) {
+        textField.classList.remove("is-invalid");
+        textField.classList.add("is-valid");
+      } else {
+        textField.classList.remove("is-invalid", "is-valid");
+      }
+    });
+  }
+</script>
+
+<style>
+  .text-field {
+    --fg-quaternary: #98a2b3;
+    --fg-success-primary: #079455;
+    --fg-error-secondary: #d92d20;
+    --border-primary: #d0d5dd;
+    --text-primary: #101828;
+
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-family:
+      system-ui,
+      -apple-system,
+      sans-serif;
+  }
+
+  .label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .required {
+    color: var(--fg-error-secondary);
+  }
+
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .input-base {
+    width: 100%;
+    padding: 10px 14px 10px 40px; /* Aligned with left icon spacing */
+    font-size: 16px;
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+
+  .input-base:focus {
+    border-color: #7f56d9;
+    box-shadow: 0 0 0 4px rgba(158, 119, 237, 0.24);
+  }
+
+  .input-icon-left {
+    position: absolute;
+    left: 14px;
+    display: flex;
+    align-items: center;
+    color: var(--fg-quaternary);
+    pointer-events: none;
+  }
+
+  /* Universal scaling for nested UntitledUI SVGs */
+  .input-icon-left :global(svg),
+  .hint-text :global(svg) {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2.25px;
+  }
+
+  .hint-text {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+    color: #475467;
+  }
+
+  .icon-success {
+    display: inline-flex;
+    color: var(--fg-quaternary);
+    transition: color 0.1s linear;
+  }
+
+  .icon-error {
+    display: none;
+    color: var(--fg-error-secondary);
+  }
+
+  /* Structural Dynamic Modifiers */
+  .text-field.is-valid .icon-success {
+    color: var(--fg-success-primary);
+  }
+
+  .text-field.is-invalid .icon-success {
+    display: none;
+  }
+
+  .text-field.is-invalid .icon-error {
+    display: inline-flex;
+  }
+
+  .text-field.is-invalid .hint-message {
+    color: var(--fg-error-secondary);
+  }
+</style>
