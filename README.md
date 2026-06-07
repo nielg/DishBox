@@ -1,9 +1,3 @@
-# MyRecipies
+# DishBox
 
-## Content Collection
-
-Recipies are stored in `.md` files in src/recipies
-
-## Adapter
-
-node
+DishBox is a web applicaiton in development where user can store there own recipes. Self hosted
