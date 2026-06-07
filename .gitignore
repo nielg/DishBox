@@ -31,3 +31,6 @@ Thumbs.db
 # Tooling caches
 .eslintcache
 *.tsbuildinfo
+
+# Data files
+2 src/data/recipes/*.md
