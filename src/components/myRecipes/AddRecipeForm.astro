@@ -1,5 +1,5 @@
 ---
-
+import InputTag from "../input/InputTag.astro";
 ---
 
 <div class="form-container">
@@ -49,6 +49,8 @@
         required></textarea>
       <small>Tip: Use numbers (1., 2., etc.) for steps.</small>
     </div>
+
+    <InputTag name="tags" label="Tags" />
 
     <p>
       Make sure everything is correct and nothing is missing. Tip use markdown
