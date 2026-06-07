@@ -33,4 +33,4 @@ Thumbs.db
 *.tsbuildinfo
 
 # Data files
-2 src/data/recipes/*.md
+src/data/recipes/*.md
