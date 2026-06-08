@@ -1,0 +1,117 @@
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #444;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  border-radius: 0.25rem;
+  margin-bottom: 1.5rem;
+  background-color: #fff;
+  min-height: 2.5rem;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+  width: 100%;
+}
+
+.container.textarea,
+.container.instructions {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.content-container {
+  flex: 1;
+  padding: 0.25rem 0.75rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.container .content,
+.container input,
+.container textarea {
+  width: 100%;
+  font-family: inherit;
+  border: none;
+  background: transparent;
+  padding: 0.5rem 0;
+  margin: 0;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.container input,
+.container textarea {
+  border: 1px solid var(--border-primary);
+  border-radius: 0.25rem;
+  padding: 0.75rem;
+}
+
+.container.h1 .content {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.container.textarea .content {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.container .ingredientsInput,
+.container .ingredientPreview {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.container input:focus,
+.container textarea:focus {
+  outline: none;
+}
+
+.container textarea:focus .container p {
+  cursor: text;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.container p.empty {
+  color: #999;
+  font-style: italic;
+}
+
+.icons {
+  display: flex;
+  gap: 0.75rem;
+  margin-left: 0.5rem;
+  color: #666;
+}
+
+.container.textarea .icons,
+.container.instructions .icons {
+  margin: 0.5rem 0;
+  margin-left: auto;
+}
+
+.icon {
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    transform 0.1s;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.icon:hover {
+  color: var(--red-accent);
+}
+
+.icon:active {
+  transform: scale(0.9);
+}

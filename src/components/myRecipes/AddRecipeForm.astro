@@ -1,54 +1,45 @@
 ---
+import InputPreview from "../input/InputPreview";
 import InputTag from "../input/InputTag.astro";
 ---
 
 <div class="form-container">
-  <h2>Add New Recipe</h2>
   <form id="add-recipe-form">
-    <div class="form-group">
-      <label for="title">Title</label>
-      <input
-        type="text"
-        id="title"
-        name="title"
-        placeholder="e.g., Spaghetti Bolognese"
-        required
-      />
-    </div>
+    <InputPreview
+      client:load
+      name="title"
+      placeHolder="Recipe Title"
+      type="h1"
+    />
 
-    <div class="form-group">
-      <label for="description">Description</label>
-      <textarea
-        id="description"
-        name="description"
-        placeholder="A description of your dish"
-        required></textarea>
-    </div>
+    <InputPreview
+      client:load
+      name="description"
+      placeHolder="Detailed description of the recipe"
+      type="textarea"
+    />
 
     <div class="form-group">
       <div class="ingredients-header">
         <label for="ingredients">Ingredients for people</label>
         <input type="number" min="1" value="4" id="p_count" name="p_count" />
       </div>
-      <textarea
-        id="ingredients"
-        name="ingredients"
-        placeholder="List ingredients (one per line)"
-        rows="5"
-        required></textarea>
-      <small>Tip: Use a dash (-) for list items.</small>
     </div>
+    <InputPreview
+      client:load
+      name="ingredients"
+      placeHolder="Apple"
+      type="ingredients"
+    />
 
-    <div class="form-group">
-      <label for="instructions">Instructions</label>
-      <textarea
-        id="instructions"
-        name="instructions"
-        placeholder="Step-by-step instructions"
-        rows="8"
-        required></textarea>
-      <small>Tip: Use numbers (1., 2., etc.) for steps.</small>
-    </div>
+    <h3>Instuctions</h3>
+    <InputPreview
+      client:load
+      name="description"
+      placeHolder="Cut the apple in small pieces"
+      type="instructions"
+      number={1}
+    />
 
     <InputTag name="tags" label="Tags" />
 
