@@ -17,9 +17,9 @@
     "@iconify-json/lucide": "^1.2.111",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "@untitledui/icons": "^0.0.22",
     "astro": "^6.4.3",
     "astro-icon": "^1.1.5",
+    "lucide-react": "^1.17.0",
     "marked": "^18.0.4",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"

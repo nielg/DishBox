@@ -1,0 +1,377 @@
+---
+import { ChevronDown, ChevronUp, Minus, Plus } from "@untitledui/icons";
+
+interface Props {
+  size?: "sm" | "md" | "lg";
+  orientation?: "horizontal" | "vertical";
+  placeholder?: string;
+  label?: string;
+  hint?: string;
+  name?: string;
+  id?: string;
+  defaultValue?: number;
+  min?: number;
+  max?: number;
+  step?: number;
+  required?: boolean;
+  disabled?: boolean;
+  invalid?: boolean;
+  hideRequiredIndicator?: boolean;
+  className?: string;
+  inputClassName?: string;
+  wrapperClassName?: string;
+}
+
+const {
+  size = "md",
+  orientation = "vertical",
+  placeholder,
+  label,
+  hint,
+  name,
+  id = name || `num-input-${Math.random().toString(36).substr(2, 9)}`,
+  defaultValue,
+  min,
+  max,
+  step = 1,
+  required = false,
+  disabled = false,
+  invalid = false,
+  hideRequiredIndicator = false,
+  className = "",
+  inputClassName = "",
+  wrapperClassName = "",
+} = Astro.props;
+---
+
+<div
+  class:list={["number-field-root", className]}
+  data-size={size}
+  data-orientation={orientation}
+  data-invalid={invalid ? "true" : undefined}
+  data-disabled={disabled ? "true" : undefined}
+>
+  {
+    label && (
+      <label for={id} class="number-field-label">
+        {label}
+        {required && !hideRequiredIndicator && (
+          <span class="required-indicator">*</span>
+        )}
+      </label>
+    )
+  }
+
+  <div
+    class:list={["input-group-wrapper", wrapperClassName]}
+    data-input-container
+  >
+    {
+      orientation === "horizontal" && (
+        <button
+          type="button"
+          data-action="decrement"
+          disabled={disabled}
+          class="stepper-btn horizontal-btn"
+        >
+          <Minus class="icon-svg" />
+        </button>
+      )
+    }
+
+    <input
+      type="number"
+      id={id}
+      name={name}
+      placeholder={placeholder}
+      value={defaultValue}
+      min={min}
+      max={max}
+      step={step}
+      required={required}
+      disabled={disabled}
+      aria-invalid={invalid ? "true" : undefined}
+      class:list={["native-number-input", inputClassName]}
+    />
+
+    {
+      orientation === "horizontal" && (
+        <button
+          type="button"
+          data-action="increment"
+          disabled={disabled}
+          class="stepper-btn horizontal-btn"
+        >
+          <Plus class="icon-svg" />
+        </button>
+      )
+    }
+
+    {
+      orientation === "vertical" && (
+        <div class="vertical-stepper-container">
+          <button
+            type="button"
+            data-action="increment"
+            disabled={disabled}
+            aria-label="Increment value"
+            class="stepper-btn vertical-btn btn-up"
+          >
+            <ChevronUp class="icon-svg-chevron" />
+          </button>
+          <button
+            type="button"
+            data-action="decrement"
+            disabled={disabled}
+            aria-label="Decrement value"
+            class="stepper-btn vertical-btn btn-down"
+          >
+            <ChevronDown class="icon-svg-chevron" />
+          </button>
+        </div>
+      )
+    }
+  </div>
+
+  {hint && <p class="hint-text">{hint}</p>}
+</div>
+
+<script>
+  function setupNumberFields() {
+    const containers = document.querySelectorAll("[data-input-container]");
+
+    containers.forEach((container) => {
+      const input = container.querySelector(
+        'input[type="number"]',
+      ) as HTMLInputElement;
+      const incBtn = container.querySelector(
+        '[data-action="increment"]',
+      ) as HTMLButtonElement;
+      const decBtn = container.querySelector(
+        '[data-action="decrement"]',
+      ) as HTMLButtonElement;
+
+      if (!input) return;
+
+      const step = parseFloat(input.step) || 1;
+      const min = input.min !== "" ? parseFloat(input.min) : -Infinity;
+      const max = input.max !== "" ? parseFloat(input.max) : Infinity;
+
+      const changeValue = (direction: "up" | "down") => {
+        if (input.disabled) return;
+
+        let currentValue = parseFloat(input.value);
+        if (isNaN(currentValue)) {
+          currentValue = input.min !== "" ? min : 0;
+        }
+
+        let newValue =
+          direction === "up" ? currentValue + step : currentValue - step;
+        newValue = Math.max(min, Math.min(max, newValue));
+
+        const precision = (step.toString().split(".")[1] || "").length;
+        input.value = precision
+          ? newValue.toFixed(precision)
+          : newValue.toString();
+
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      };
+
+      incBtn?.addEventListener("click", () => changeValue("up"));
+      decBtn?.addEventListener("click", () => changeValue("down"));
+    });
+  }
+
+  setupNumberFields();
+  document.addEventListener("astro:after-swap", setupNumberFields);
+</script>
+
+<style>
+  /* Root Containers & Hierarchy */
+  .number-field-root {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 6px;
+    width: 100%;
+    height: max-content;
+  }
+
+  .number-field-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .required-indicator {
+    color: var(--error-color);
+    margin-left: 2px;
+  }
+
+  /* The Input Box Wrapper Frame */
+  .input-group-wrapper {
+    position: relative;
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    items-stretch: stretch;
+    border-radius: 8px;
+    background-color: white;
+
+    /* Replaces the ring/outline styling from Tailwind */
+    outline: 1px solid var(--border-primary);
+    outline-offset: -1px;
+    transition: all 100ms linear;
+  }
+
+  /* Focus within matching your outline-brand setup */
+  .input-group-wrapper:has(.native-number-input:focus) {
+    outline: 2px solid var(--primary);
+    box-shadow: 0 0 0 4px var(--primary-shadow);
+    outline-offset: -2px;
+  }
+
+  /* Base Native Number Styling */
+  .native-number-input {
+    margin: 0;
+    width: 100%;
+    background-color: transparent;
+    color: var(--text-primary);
+    border: none;
+    outline: none;
+    font-family: inherit;
+  }
+
+  .native-number-input::placeholder {
+    color: var(--quaternary);
+  }
+
+  /* Strips native browser spin buttons */
+  .native-number-input[type="number"] {
+    -moz-appearance: textfield;
+  }
+  .native-number-input::-webkit-outer-spin-button,
+  .native-number-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Dynamic Padding Configurations (Size Maps) */
+  [data-size="sm"] .native-number-input,
+  [data-size="sm"] .horizontal-btn {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+  [data-size="md"] .native-number-input,
+  [data-size="md"] .horizontal-btn {
+    padding: 10px 14px;
+    font-size: 16px;
+  }
+  [data-size="lg"] .native-number-input,
+  [data-size="lg"] .horizontal-btn {
+    padding: 12px 16px;
+    font-size: 16px;
+  }
+
+  /* Stepper Buttons Base Styles */
+  .stepper-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--quaternary);
+    transition: all 100ms linear;
+  }
+
+  .stepper-btn:not(:disabled):hover {
+    background-color: #f9fafb;
+    color: var(--text-primary);
+  }
+
+  /* Horizontal Layout Variant Styles */
+  [data-orientation="horizontal"] .stepper-btn {
+    height: 100%;
+    border: 1px solid var(--border-primary);
+  }
+  [data-orientation="horizontal"] [data-action="decrement"] {
+    border-radius: 8px 0 0 8px;
+    border-right: none;
+  }
+  [data-orientation="horizontal"] [data-action="increment"] {
+    border-radius: 0 8px 8px 0;
+    border-left: none;
+  }
+
+  /* Vertical Layout Variant Styles */
+  .vertical-stepper-container {
+    display: flex;
+    flex-direction: column;
+    width: 28px; /* w-7 */
+    flex-shrink: 0;
+    border-left: 1px solid var(--border-primary);
+  }
+  [data-size="lg"] .vertical-stepper-container {
+    width: 30px; /* w-7.5 */
+  }
+
+  .vertical-btn {
+    flex: 1;
+    width: 100%;
+  }
+  .btn-down {
+    border-top: 1px solid var(--border-primary);
+  }
+
+  /* Svg Sizing Layouts */
+  .icon-svg {
+    width: 16px;
+    height: 16px;
+  }
+  .icon-svg-chevron {
+    width: 12px;
+    height: 12px;
+    stroke-width: 3px;
+  }
+  [data-size="lg"] .icon-svg-chevron {
+    width: 14px;
+    height: 14px;
+    stroke-width: 2.57px;
+  }
+
+  /* Hint Text Rules */
+  .hint-text {
+    font-size: 14px;
+    color: var(--quaternary);
+    margin: 0;
+  }
+  [data-size="sm"] .hint-text {
+    font-size: 12px;
+  }
+
+  /* Global Invalid & Disabled States Overrides */
+  [data-invalid="true"] .number-field-label,
+  [data-invalid="true"] .hint-text {
+    color: var(--error-color);
+  }
+  [data-invalid="true"] .input-group-wrapper {
+    outline: 1px solid var(--error-color);
+  }
+  [data-invalid="true"] .input-group-wrapper:has(.native-number-input:focus) {
+    outline: 2px solid var(--error-color);
+    box-shadow: 0 0 0 4px var(--primary-shadow); /* Optional: maybe an error shadow? */
+  }
+
+  [data-disabled="true"] .input-group-wrapper {
+    cursor: not-allowed;
+    background-color: #f9fafb;
+  }
+  [data-disabled="true"] .native-number-input,
+  [data-disabled="true"] .stepper-btn {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+</style>

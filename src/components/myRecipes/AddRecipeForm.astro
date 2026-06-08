@@ -1,54 +1,49 @@
 ---
-
+import InputPreview from "../input/InputPreview";
+import InputTag from "../input/InputTag.astro";
+import DynamicInputList from "../input/DynamicInputList";
 ---
 
 <div class="form-container">
-  <h2>Add New Recipe</h2>
   <form id="add-recipe-form">
-    <div class="form-group">
-      <label for="title">Title</label>
-      <input
-        type="text"
-        id="title"
-        name="title"
-        placeholder="e.g., Spaghetti Bolognese"
-        required
-      />
-    </div>
+    <InputPreview
+      client:load
+      name="title"
+      placeHolder="Recipe Title"
+      type="h1"
+    />
 
-    <div class="form-group">
-      <label for="description">Description</label>
-      <textarea
-        id="description"
-        name="description"
-        placeholder="A description of your dish"
-        required></textarea>
-    </div>
+    <InputPreview
+      client:load
+      name="description"
+      placeHolder="Detailed description of the recipe"
+      type="textarea"
+    />
 
     <div class="form-group">
       <div class="ingredients-header">
         <label for="ingredients">Ingredients for people</label>
         <input type="number" min="1" value="4" id="p_count" name="p_count" />
       </div>
-      <textarea
-        id="ingredients"
+      <DynamicInputList
+        client:load
         name="ingredients"
-        placeholder="List ingredients (one per line)"
-        rows="5"
-        required></textarea>
-      <small>Tip: Use a dash (-) for list items.</small>
+        type="ingredients"
+        placeHolder="Apple"
+      />
     </div>
 
     <div class="form-group">
-      <label for="instructions">Instructions</label>
-      <textarea
-        id="instructions"
+      <label>Instructions</label>
+      <DynamicInputList
+        client:load
         name="instructions"
-        placeholder="Step-by-step instructions"
-        rows="8"
-        required></textarea>
-      <small>Tip: Use numbers (1., 2., etc.) for steps.</small>
+        type="instructions"
+        placeHolder="Cut the apple in small pieces"
+      />
     </div>
+
+    <InputTag name="tags" label="Tags" />
 
     <p>
       Make sure everything is correct and nothing is missing. Tip use markdown
@@ -61,19 +56,13 @@
 
 <style>
   .form-container {
-    max-width: 600px;
+    max-width: 700px;
     margin: 2rem auto;
     padding: 2rem;
     background-color: #fff;
     border: 2px solid rgb(61, 56, 56);
     border-radius: 0.5rem;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-
-  h2 {
-    margin-bottom: 1.5rem;
-    text-align: center;
-    color: #333;
   }
 
   .form-group {
@@ -87,35 +76,13 @@
     color: #444;
   }
 
-  input,
-  textarea {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #ccc;
-    border-radius: 0.25rem;
-    font-family: inherit;
-    font-size: 1rem;
-    box-sizing: border-box;
-  }
-
-  input:focus,
-  textarea:focus {
-    outline: none;
-    border-color: rgb(61, 56, 56);
-    box-shadow: 0 0 0 2px rgba(61, 56, 56, 0.1);
-  }
-
   input[type="number"] {
     width: 5rem;
     height: 2rem;
     margin: 0.5rem;
-  }
-
-  small {
-    display: block;
-    margin-top: 0.25rem;
-    color: #666;
-    font-style: italic;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 0.25rem;
   }
 
   .ingredients-header {
@@ -143,8 +110,7 @@
     background-color: rgb(40, 36, 36);
   }
 </style>
-<!-- TODO
-Add validation in title for path traversel (../) -->
+
 <script>
   const form = document.getElementById("add-recipe-form") as HTMLFormElement;
 
@@ -162,6 +128,7 @@ Add validation in title for path traversel (../) -->
         ingredients: String(rawData.ingredients),
         instructions: String(rawData.instructions),
       };
+      console.table(recipeRequest);
 
       try {
         const response = await fetch("/api/recipesController", {

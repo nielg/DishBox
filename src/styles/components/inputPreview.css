@@ -1,0 +1,172 @@
+.input-preview {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.input-preview__label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #444;
+}
+
+.input-preview__container {
+  display: flex;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 0.25rem;
+  min-height: 3rem;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+/* Modifiers for variant types */
+.input-preview--textarea .input-preview__container,
+.input-preview--instructions .input-preview__container {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.input-preview__content-wrapper {
+  flex: 1;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input-preview__display {
+  padding: 0.5rem 0.75rem;
+}
+
+.input-preview__text {
+  margin: 0;
+  color: #333;
+  word-break: break-word;
+}
+
+/* Variant-specific text styles */
+.input-preview--h1 .input-preview__text {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.input-preview--textarea .input-preview__text,
+.input-preview--ingredients .input-preview__text,
+.input-preview--instructions .input-preview__text {
+  white-space: pre-wrap;
+  min-height: 1.5rem;
+}
+
+.input-preview__text.is-empty {
+  color: #999;
+  font-style: italic;
+}
+
+.input-preview__edit-group {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Form fields */
+.input-preview__field {
+  flex: 1;
+  padding: 0.75rem;
+  font-family: inherit;
+  font-size: 1rem;
+  color: #333;
+  border: 1px solid var(--border-primary);
+  border-radius: 0.25rem;
+  background-color: #fff;
+  box-sizing: border-box;
+  display: block;
+  field-sizing: content;
+  resize: none;
+}
+
+.input-preview__field--qty {
+  flex: 0 0 4rem;
+  text-align: center;
+}
+
+.input-preview--h1 .input-preview__field {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.input-preview__field:focus {
+  outline: none;
+  border-color: rgb(61, 56, 56);
+  box-shadow: 0 0 0 2px rgba(61, 56, 56, 0.1);
+}
+
+/* Actions section */
+.input-preview__actions {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0 0.75rem;
+  color: #666;
+  align-items: center;
+}
+
+.input-preview--textarea .input-preview__actions,
+.input-preview--ingredients .input-preview__actions,
+.input-preview--instructions .input-preview__actions {
+  justify-content: flex-end;
+  padding: 0.5rem 0.75rem;
+}
+
+.input-preview__btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  transition: color 0.2s;
+}
+
+.input-preview__btn:hover {
+  color: var(--red-accent);
+}
+
+.input-preview__btn--danger:hover {
+  color: #e53e3e; /* A brighter red for delete */
+}
+
+.input-preview__icon {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+/* Styling for the Add Button (matching existing aesthetic) */
+.addBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: 1px dashed var(--border-primary);
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  color: #666;
+  font-weight: 500;
+  transition: all 0.2s;
+  width: fit-content;
+  margin: auto;
+  margin-top: 0.5rem;
+}
+
+.addBtn:hover {
+  background-color: #f9f9f9;
+  border-color: #666;
+  color: #333;
+}
+
+.addBtn .icon {
+  width: 1rem;
+  height: 1rem;
+}

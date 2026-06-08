@@ -1,7 +1,9 @@
 :root {
   --primary: #f85e00;
+  --text-primary: black;
   --red-accent: #a41623;
   --light-bg: #f4e0b0;
+  --border-primary: rgb(189, 186, 186);
 }
 
 html,

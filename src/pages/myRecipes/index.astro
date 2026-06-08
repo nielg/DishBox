@@ -5,12 +5,18 @@ import MyRecipesCard from "../../components/myRecipes/MyRecipesCard.astro";
 import MyRecipesContainer from "../../components/myRecipes/MyRecipesContainer.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { RecipesService } from "../../service/recipesService";
-import { getEntries } from "astro:content";
+import { getCollection } from "astro:content";
 
 const userRecipeIds = await RecipesService.getUserRecipes();
-const recipes = await getEntries(
-  userRecipeIds.map((id) => ({ collection: "recipe", id })),
+const allRecipes = await getCollection("recipe");
+
+console.log("Found in file system:", userRecipeIds);
+console.log(
+  "Found in Astro collection:",
+  allRecipes.map((r) => r.id),
 );
+
+const recipes = allRecipes.filter((r) => userRecipeIds.includes(r.id));
 ---
 
 <BaseLayout>
