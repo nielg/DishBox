@@ -1,127 +1,96 @@
 "use client";
+
 import { useState } from "react";
-import { Pencil, Check, Info, Minus } from "lucide-react";
+import { Pencil, Check } from "lucide-react";
 import "@/styles/components/inputPreview.css";
 
 type Props = {
   name?: string;
   placeHolder?: string;
   info?: string;
-  number?: number;
-  type: "h1" | "textarea" | "ingredients" | "instructions";
+  type: "h1" | "textarea";
 };
 
 export default function InputPreview({
   name,
-  placeHolder,
+  placeHolder = "",
   info,
-  number,
   type,
 }: Props) {
-  const [preview, setPreview] = useState<boolean>(true);
-  const [input, setInput] = useState<string>("");
-  const [quantity, setQuantity] = useState<string>("1");
+  const [isEditing, setIsEditing] = useState(false);
+  const [value, setValue] = useState("");
 
-  const handleEditClicked = () => {
-    setPreview(false);
-  };
+  const handleToggle = () => setIsEditing((prev) => !prev);
 
-  const handleSubmitClicked = () => {
-    setPreview(true);
-  };
+  const isEmpty = !value.trim();
+  const displayValue = value || placeHolder;
 
   return (
-    <div className={`container ${type}`}>
-      {preview && (
-        <div className="content-container">
-          {type == "h1" && (
-            <h1 className={`content ${!input ? "empty" : ""}`}>
-              {input || placeHolder}
-            </h1>
-          )}
-          {type == "textarea" && (
-            <p className={`content ${!input ? "empty" : ""}`}>
-              {input || placeHolder}
-            </p>
-          )}
-          {type == "ingredients" && (
-            <div className="ingredientPreview">
-              <Minus className="icon" />
-              <p className={`content ${!input ? "empty" : ""}`}>
-                {input || placeHolder}
-              </p>
-              <p className={`content ${!input ? "empty" : ""}`}>{quantity}</p>
-            </div>
-          )}
-          {type == "instructions" && (
-            <p className={`content ${!input ? "empty" : ""}`}>
-              {number + "."} {input || placeHolder}
-            </p>
-          )}
-        </div>
-      )}
-      {!preview && (
-        <div className="input-container">
-          {type == "textarea" && (
-            <textarea
-              id={name}
-              name={name}
-              value={input}
-              autoFocus={!preview}
-              onChange={(e) => setInput(e.target.value)}
-            />
-          )}
-          {type == "h1" && (
-            <input
-              id={name}
-              type={preview ? "hidden" : "text"}
-              name={name}
-              placeholder={placeHolder}
-              value={input}
-              autoFocus={!preview}
-              onChange={(e) => setInput(e.target.value)}
-            />
-          )}
-          {type == "ingredients" && (
-            <div className="ingredientsInput">
-              <Minus className="list-icon" />
+    <div className={`input-preview input-preview--${type}`}>
+      <div className="input-preview__container">
+        <div className="input-preview__content-wrapper">
+          {isEditing ? (
+            type === "textarea" ? (
+              <textarea
+                id={name}
+                name={name}
+                className="input-preview__field"
+                value={value}
+                placeholder={placeHolder}
+                rows={5}
+                autoFocus
+                onChange={(e) => setValue(e.target.value)}
+              />
+            ) : (
               <input
                 id={name}
-                type="text"
                 name={name}
+                type="text"
+                className="input-preview__field"
+                value={value}
                 placeholder={placeHolder}
-                value={input}
-                autoFocus={!preview}
-                onChange={(e) => setInput(e.target.value)}
+                autoFocus
+                onChange={(e) => setValue(e.target.value)}
               />
-              <input
-                type="number"
-                value={quantity}
-                min={0}
-                onChange={(e) => setQuantity(e.target.value)}
-              />
+            )
+          ) : (
+            <div className="input-preview__display">
+              {type === "h1" ? (
+                <h1
+                  className={`input-preview__text ${isEmpty ? "is-empty" : ""}`}
+                >
+                  {displayValue}
+                </h1>
+              ) : (
+                <p
+                  className={`input-preview__text ${isEmpty ? "is-empty" : ""}`}
+                >
+                  {displayValue}
+                </p>
+              )}
+              {/* Ensure value is still submitted when not in edit mode */}
+              <input type="hidden" name={name} value={value} />
             </div>
           )}
-          {type == "instructions" && (
-            <textarea
-              id={name}
-              name={name}
-              value={input}
-              autoFocus={!preview}
-              onChange={(e) => setInput(e.target.value)}
-            />
-          )}
         </div>
-      )}
 
-      <div className="icons">
-        {preview ? (
-          <Pencil className="icon" onClick={() => handleEditClicked()} />
-        ) : (
-          <Check className="icon" onClick={() => handleSubmitClicked()} />
-        )}
-        <Info className="icon" />
+        <div className="input-preview__actions">
+          <button
+            type="button"
+            className="input-preview__btn"
+            onClick={handleToggle}
+            title={isEditing ? "Save" : "Edit"}
+          >
+            {isEditing ? (
+              <Check className="input-preview__icon" />
+            ) : (
+              <Pencil className="input-preview__icon" />
+            )}
+          </button>
+        </div>
       </div>
+      {/* Hidden input for form submission */}
+      <input type="hidden" name={name} value={value} />
     </div>
   );
 }
