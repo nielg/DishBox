@@ -23,7 +23,7 @@ import DynamicInputList from "../input/DynamicInputList";
     <div class="form-group">
       <div class="ingredients-header">
         <label for="ingredients">Ingredients for people</label>
-        <input type="number" min="1" value="4" id="p_count" name="p_count" />
+        <input type="number" min="1" value="4" id="portions" name="portions" />
       </div>
       <DynamicInputList
         client:load
@@ -124,14 +124,14 @@ import DynamicInputList from "../input/DynamicInputList";
       const recipeRequest = {
         title: String(rawData.title),
         description: String(rawData.description),
-        p_count: Number(rawData.p_count),
+        portions: Number(rawData.portions),
         ingredients: String(rawData.ingredients),
         instructions: String(rawData.instructions),
       };
       console.table(recipeRequest);
 
       try {
-        const response = await fetch("/api/recipesController", {
+        const response = await fetch("/api/recipe/addRecipe", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -140,11 +140,13 @@ import DynamicInputList from "../input/DynamicInputList";
         });
 
         if (response.ok) {
-          alert("Recipe created successfully!");
+          console.log("Recipe created successfully!");
           window.location.href = `/myRecipes`;
         } else {
           const errorData = await response.json();
-          alert(`Error: ${errorData.error || "Failed to create recipe"}`);
+          console.error(
+            `Error: ${errorData.error || "Failed to create recipe"}`,
+          );
         }
       } catch (error) {
         console.error("Submission error:", error);

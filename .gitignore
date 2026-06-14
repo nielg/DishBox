@@ -34,3 +34,5 @@ Thumbs.db
 
 # Data files
 src/data/recipes/*.md
+
+/src/generated/prisma

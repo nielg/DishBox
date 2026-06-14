@@ -1,10 +1,10 @@
 ---
 import { Image } from "astro:assets";
 import defaultImg from "../../assets/recipes-img/default-img.png";
-import type { RecipeDateType } from "../../types";
+import type { InferEntrySchema } from "astro:content";
 
 type Props = {
-  data: RecipeDateType;
+  data: InferEntrySchema<"recipe">;
 };
 
 const { data }: Props = Astro.props;

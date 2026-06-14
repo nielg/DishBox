@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { RecipesService } from "../../service/recipesService";
+import { RecipesService } from "../../../service/recipesService";
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -15,9 +15,9 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
-    const result = await RecipesService.createRecipe(body);
+    const createdDataRecipe = await RecipesService.createRecipe(body);
 
-    return new Response(JSON.stringify(result), {
+    return new Response(JSON.stringify({ success: true, createdDataRecipe }), {
       status: 201,
       headers: { "Content-Type": "application/json" },
     });

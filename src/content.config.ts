@@ -11,9 +11,6 @@ const recipe = defineCollection({
     title: z.string(),
     description: z.string(),
     slug: z.string(),
-    p_count: z.number().optional(),
-    ingredients: z.string().optional(),
-    instructions: z.string().optional(),
   }),
 });
 
