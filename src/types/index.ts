@@ -1,15 +1,32 @@
-import { number } from "astro:schema";
+export type ApiResponse = {
+  success: boolean;
+  error: any;
+  message: string;
+  data: any;
+};
 
-export type RecipeDateType = {
+export type RecipeDateTypeRequest = {
   title: string;
   description: string;
+  portions: number;
   slug: string;
+  images: string[];
+};
+
+export type RecipeDateTypeResponse = {
+  id: number;
+  title: string;
+  description: string;
+  portions: number;
+  slug: string;
+  // images: string[];
 };
 
 export type RecipeRequest = {
   title: string;
   description: string;
-  p_count: number;
+  portions: number;
   ingredients: string;
   instructions: string;
+  images?: string[];
 };

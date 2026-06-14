@@ -4,13 +4,11 @@ import WelcomeHeader from "../../components/basic/WelcomeHeader.astro";
 import MyRecipesCard from "../../components/myRecipes/MyRecipesCard.astro";
 import MyRecipesContainer from "../../components/myRecipes/MyRecipesContainer.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { RecipesService } from "../../service/recipesService";
-import { getEntries } from "astro:content";
+import { getCollection } from "astro:content";
 
-const userRecipeIds = await RecipesService.getUserRecipes();
-const recipes = await getEntries(
-  userRecipeIds.map((id) => ({ collection: "recipe", id })),
-);
+export const prerender = true;
+
+const allRecipesFiles = await getCollection("recipe");
 ---
 
 <BaseLayout>
@@ -24,22 +22,7 @@ const recipes = await getEntries(
       />
     </div>
     <MyRecipesContainer>
-      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
-      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
-      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
-      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
-      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
-      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
-      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
-      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
-      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
-      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
-      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
-      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
-      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
-      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
-      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
-      {recipes.map((recipe) => <MyRecipesCard data={recipe.data} />)}
+      {allRecipesFiles.map((recipe) => <MyRecipesCard data={recipe.data} />)}
     </MyRecipesContainer>
   </div>
 </BaseLayout>

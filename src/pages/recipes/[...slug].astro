@@ -1,7 +1,9 @@
 ﻿---
+export const prerender = false;
+
 import { getEntry, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-export const prerender = false;
+import DeleteRecipeBtn from "@/components/myRecipes/DeleteRecipeBtn.astro";
 
 const { slug } = Astro.params;
 
@@ -16,11 +18,23 @@ if (!post) {
 }
 
 const { Content } = await render(post);
+
+const apiUrl = new URL(
+  `/api/recipe/getRecipeBySlug?slug=${slug}`,
+  Astro.url.origin,
+);
+const response = await fetch(apiUrl);
+
+if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+const { data: recipe } = await response.json();
+console.log(recipe);
 ---
 
 <BaseLayout>
   <div class="content-container">
     <div class="content-wrapper">
+      <DeleteRecipeBtn recipeId={recipe.id} />
       <Content />
     </div>
   </div>

@@ -1,0 +1,39 @@
+---
+interface Props {
+  recipeId: number;
+}
+
+const { recipeId } = Astro.props;
+---
+
+<button id="delete-recipe-btn" data-recipe-id={recipeId}>
+  Delete Recipe
+</button>
+
+<script>
+  const deleteBtn = document.getElementById("delete-recipe-btn");
+
+  deleteBtn?.addEventListener("click", async () => {
+    const recipeId = deleteBtn.dataset.recipeId;
+
+    if (!recipeId) return;
+
+    if (confirm("Are you sure you want to delete this recipe?")) {
+      try {
+        const response = await fetch(`/api/recipe/deleteRecipe`, {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: recipeId }),
+        });
+
+        if (response.ok) {
+          window.location.href = "/myRecipes";
+        } else {
+          console.error("Failed to delete recipe.");
+        }
+      } catch (error) {
+        console.error("Error deleting recipe:", error);
+      }
+    }
+  });
+</script>

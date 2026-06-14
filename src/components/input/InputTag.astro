@@ -1,0 +1,276 @@
+---
+interface Props {
+  label?: string;
+  name: string;
+  id?: string;
+  placeholder?: string;
+  required?: boolean;
+  disabled?: boolean;
+  maxTags?: number;
+  defaultValue?: string[];
+  className?: string;
+}
+
+const {
+  label,
+  name,
+  id = name,
+  placeholder = "Type and press Enter...",
+  required = false,
+  disabled = false,
+  maxTags,
+  defaultValue = [],
+  className = "",
+} = Astro.props;
+
+import { Icon } from "astro-icon/components";
+---
+
+<div
+  class:list={["tags-field-container", className]}
+  data-max-tags={maxTags}
+  data-disabled={disabled ? "true" : "false"}
+>
+  {
+    label && (
+      <label for={id} class="label">
+        {label}{" "}
+        {required && (
+          <span class="required" aria-hidden="true">
+            *
+          </span>
+        )}
+      </label>
+    )
+  }
+
+  <div class="input-wrapper">
+    <input
+      id={id}
+      type="text"
+      placeholder={placeholder}
+      disabled={disabled}
+      class="input-base"
+    />
+  </div>
+
+  {
+    !disabled && (
+      <div id="icon-template-source" style="display: none;" aria-hidden="true">
+        <Icon class="icon" name="lucide:x" />
+      </div>
+    )
+  }
+
+  <div class="tag-group-list" role="list" aria-label="Selected tags">
+    {
+      defaultValue.map((tag) => (
+        <div class="tag-item" data-value={tag} role="listitem">
+          <span class="tag-label">{tag}</span>
+          {!disabled && (
+            <button
+              type="button"
+              class="tag-remove-btn"
+              aria-label={`Remove ${tag}`}
+            >
+              <Icon class="icon" name="lucide:x" />
+            </button>
+          )}
+        </div>
+      ))
+    }
+  </div>
+
+  <input
+    type="hidden"
+    name={name}
+    id={`${id}-hidden`}
+    value={defaultValue.join(",")}
+    required={required && defaultValue.length === 0}
+  />
+</div>
+
+<script>
+  const containers = document.querySelectorAll(".tags-field-container");
+
+  containers.forEach((container) => {
+    const input = container.querySelector(".input-base") as HTMLInputElement;
+    const hiddenInput = container.querySelector(
+      'input[type="hidden"]',
+    ) as HTMLInputElement;
+    const tagListContainer = container.querySelector(
+      ".tag-group-list",
+    ) as HTMLDivElement;
+    const templateSource = container.querySelector("#icon-template-source");
+
+    if (!input || !hiddenInput || !tagListContainer) return;
+
+    const maxTagsAttr = container.getAttribute("data-max-tags");
+    const maxTags = maxTagsAttr ? parseInt(maxTagsAttr, 10) : null;
+    const isDisabled = container.getAttribute("data-disabled") === "true";
+
+    let tagsList: string[] = hiddenInput.value
+      ? hiddenInput.value.split(",")
+      : [];
+
+    function updateHiddenInput() {
+      hiddenInput.value = tagsList.join(",");
+      if (hiddenInput.hasAttribute("required")) {
+        if (tagsList.length > 0) {
+          hiddenInput.setCustomValidity("");
+        } else {
+          hiddenInput.setCustomValidity("Please fill out this field.");
+        }
+      }
+    }
+
+    function createTagDOM(value: string) {
+      const tagDiv = document.createElement("div");
+      tagDiv.classList.add("tag-item");
+      tagDiv.setAttribute("data-value", value);
+      tagDiv.setAttribute("role", "listitem");
+
+      const labelSpan = document.createElement("span");
+      labelSpan.classList.add("tag-label");
+      labelSpan.textContent = value;
+      tagDiv.appendChild(labelSpan);
+
+      if (!isDisabled) {
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.classList.add("tag-remove-btn");
+        removeBtn.setAttribute("aria-label", `Remove ${value}`);
+
+        // Grab the rendered SVG from the template source and clone it cleanly
+        if (templateSource) {
+          const svgIcon = templateSource.querySelector("svg");
+          if (svgIcon) {
+            removeBtn.appendChild(svgIcon.cloneNode(true));
+          }
+        }
+
+        removeBtn.addEventListener("click", () => removeTag(value, tagDiv));
+        tagDiv.appendChild(removeBtn);
+      }
+
+      return tagDiv;
+    }
+
+    function addTag(value: string) {
+      const trimmed = value.trim();
+      if (!trimmed || tagsList.includes(trimmed)) return;
+      if (maxTags && tagsList.length >= maxTags) return;
+
+      tagsList.push(trimmed);
+      const tagElement = createTagDOM(trimmed);
+      tagListContainer.appendChild(tagElement);
+
+      updateHiddenInput();
+    }
+
+    function removeTag(value: string, element: HTMLElement) {
+      tagsList = tagsList.filter((t) => t !== value);
+      element.remove();
+      updateHiddenInput();
+    }
+
+    input.addEventListener("keydown", (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        if (input.value.trim()) {
+          addTag(input.value);
+          input.value = "";
+        }
+      }
+    });
+
+    tagListContainer.querySelectorAll(".tag-item").forEach((tagItem) => {
+      const value = tagItem.getAttribute("data-value");
+      const button = tagItem.querySelector(".tag-remove-btn");
+      if (value && button) {
+        button.addEventListener("click", () =>
+          removeTag(value, tagItem as HTMLElement),
+        );
+      }
+    });
+  });
+</script>
+
+<style>
+  .tags-field-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .required {
+    color: var(--error-color);
+  }
+
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .input-base {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 16px;
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+    outline: none;
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .input-base:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px var(--primary-shadow);
+  }
+
+  .tag-group-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  /* 1. Wrap the dynamic tag classes in :global() to apply styling */
+  :global(.tag-item) {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background-color: #f9fafb;
+    color: var(--text-primary);
+    border: 1px solid var(--border-primary);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+
+  :global(.tag-item) :global(.tag-remove-btn) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: var(--primary);
+    border-radius: 4px;
+    transition: color 0.1s ease;
+  }
+
+  :global(.tag-item) :global(.tag-remove-btn:hover) {
+    color: var(--red-accent);
+  }
+</style>

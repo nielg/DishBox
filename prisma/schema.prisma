@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model recipe {
+  id          Int          @id @default(autoincrement())
+  title       String
+  description String
+  portions     Int 
+  slug        String       @unique
+  images      recipe_img[] 
+}
+
+model recipe_img {
+  id        Int    @id @default(autoincrement()) 
+  recipe_id Int
+  path      String
+  recipe    recipe @relation(fields: [recipe_id], references: [id], onDelete: Cascade)
+}
