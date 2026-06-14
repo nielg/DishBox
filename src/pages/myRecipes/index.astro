@@ -6,12 +6,9 @@ import MyRecipesContainer from "../../components/myRecipes/MyRecipesContainer.as
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
 
-const allRecipesFiles = await getCollection("recipe");
+export const prerender = true;
 
-console.log(
-  "Found in Astro collection:",
-  allRecipesFiles.map((r) => r.id),
-);
+const allRecipesFiles = await getCollection("recipe");
 ---
 
 <BaseLayout>

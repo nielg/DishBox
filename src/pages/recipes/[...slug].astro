@@ -1,8 +1,9 @@
 ﻿---
+export const prerender = false;
+
 import { getEntry, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import DeleteRecipeBtn from "@/components/myRecipes/DeleteRecipeBtn.astro";
-import type { ApiResponse, RecipeDateTypeResponse } from "@/types";
 
 const { slug } = Astro.params;
 

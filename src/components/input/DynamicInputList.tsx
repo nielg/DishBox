@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, Check, Info, Plus, Trash2 } from "lucide-react";
+import { Pencil, Check, Plus, Trash2 } from "lucide-react";
 import "@/styles/components/inputPreview.css";
 
 type Item = {
