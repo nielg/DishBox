@@ -2,14 +2,14 @@
 export const prerender = true;
 
 import BaseLayout from "../../../layouts/BaseLayout.astro";
-import AddRecipeForm from "../../../components/myRecipes/AddRecipeForm.astro";
+import AddRecipeForm from "../../../components/myRecipes/addRecipe/AddRecipeForm.tsx";
 import WelcomeHeader from "../../../components/basic/WelcomeHeader.astro";
 ---
 
 <BaseLayout>
   <div class="page-wrapper">
     <WelcomeHeader title="Add a new Recipe" />
-    <AddRecipeForm />
+    <AddRecipeForm client:load />
   </div>
 </BaseLayout>
 

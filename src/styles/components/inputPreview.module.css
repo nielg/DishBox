@@ -16,45 +16,78 @@
   background-color: #fff;
   border-radius: 0.25rem;
   min-height: 3rem;
+  width: 100%;
   transition:
     border-color 0.2s,
     box-shadow 0.2s;
 }
 
-/* Modifiers for variant types */
-.input-preview--textarea .input-preview__container,
-.input-preview--instructions .input-preview__container {
-  flex-direction: column;
-  align-items: stretch;
+/* Modifiers for variant types combined with nested classes */
+.input-preview--textarea,
+.input-preview--instructions {
+  & .input-preview__container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  & .input-preview__text {
+    white-space: pre-wrap;
+    min-height: 1.5rem;
+  }
+
+  & .input-preview__actions {
+    justify-content: flex-end;
+    padding: 0.5rem 0.75rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  & .input-preview__field {
+    min-height: 120px;
+  }
+}
+
+.input-preview--ingredients {
+  & .input-preview__text {
+    white-space: pre-wrap;
+    min-height: 1.5rem;
+  }
+  & .input-preview__actions {
+    justify-content: flex-end;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+.input-preview--h1 {
+  & .input-preview__text {
+    font-size: 2rem;
+    font-weight: bold;
+  }
+
+  & .input-preview__field {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
 }
 
 .input-preview__content-wrapper {
   flex: 1;
   width: 100%;
+  min-width: 0;
   box-sizing: border-box;
 }
 
 .input-preview__display {
   padding: 0.5rem 0.75rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .input-preview__text {
   margin: 0;
   color: #333;
   word-break: break-word;
-}
-
-/* Variant-specific text styles */
-.input-preview--h1 .input-preview__text {
-  font-size: 2rem;
-  font-weight: bold;
-}
-
-.input-preview--textarea .input-preview__text,
-.input-preview--ingredients .input-preview__text,
-.input-preview--instructions .input-preview__text {
-  white-space: pre-wrap;
-  min-height: 1.5rem;
+  width: 100%;
 }
 
 .input-preview__text.is-empty {
@@ -72,6 +105,7 @@
 /* Form fields */
 .input-preview__field {
   flex: 1;
+  width: 100%;
   padding: 0.75rem;
   font-family: inherit;
   font-size: 1rem;
@@ -90,11 +124,6 @@
   text-align: center;
 }
 
-.input-preview--h1 .input-preview__field {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
 .input-preview__field:focus {
   outline: none;
   border-color: rgb(61, 56, 56);
@@ -108,13 +137,6 @@
   padding: 0 0.75rem;
   color: #666;
   align-items: center;
-}
-
-.input-preview--textarea .input-preview__actions,
-.input-preview--ingredients .input-preview__actions,
-.input-preview--instructions .input-preview__actions {
-  justify-content: flex-end;
-  padding: 0.5rem 0.75rem;
 }
 
 .input-preview__btn {
@@ -134,7 +156,7 @@
 }
 
 .input-preview__btn--danger:hover {
-  color: #e53e3e; /* A brighter red for delete */
+  color: #e53e3e;
 }
 
 .input-preview__icon {
@@ -142,7 +164,6 @@
   height: 1.1rem;
 }
 
-/* Styling for the Add Button (matching existing aesthetic) */
 .addBtn {
   display: flex;
   align-items: center;

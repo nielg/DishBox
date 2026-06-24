@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Pencil, Check, Plus, Trash2 } from "lucide-react";
-import "@/styles/components/inputPreview.css";
+import styles from "@/styles/components/inputPreview.module.css";
+import type { DynamicInputListItem } from "@/types/AddRecipe";
 
 type Item = {
   id: string;
@@ -14,16 +15,17 @@ type Props = {
   name: string;
   type: "ingredients" | "instructions";
   placeHolder?: string;
+  items: DynamicInputListItem[];
+  setItems: React.Dispatch<React.SetStateAction<DynamicInputListItem[]>>;
 };
 
 export default function DynamicInputList({
   name,
   type,
   placeHolder = "Add item...",
+  items,
+  setItems,
 }: Props) {
-  const [items, setItems] = useState<Item[]>([
-    { id: crypto.randomUUID(), value: "", qty: 1 },
-  ]);
   const [editingId, setEditingId] = useState<string | null>(items[0].id);
 
   const addItem = () => {
@@ -47,36 +49,32 @@ export default function DynamicInputList({
   const toggleEdit = (id: string) => {
     setEditingId(editingId === id ? null : id);
   };
-
-  // Combine values for hidden input
-  const combinedValue = items
-    .filter((item) => item.value.trim())
-    .map((item) =>
-      type === "ingredients" ? `- ${item.qty} ${item.value}` : item.value,
-    )
-    .join("\n");
-
   return (
-    <div className={`dynamic-list dynamic-list--${type}`}>
-      <div className="dynamic-list__items">
+    <div
+      className={`${styles["dynamic-list"]} ${styles[`dynamic-list--${type}`] || ""}`}
+    >
+      <div className={styles["dynamic-list__items"]}>
         {items.map((item, index) => {
           const isEditing = editingId === item.id;
           const isEmpty = !item.value.trim();
           const displayValue = item.value || placeHolder;
 
+          // Dynamically compute the variant modifier class safely from the module
+          const variantClass = styles[`input-preview--${type}`] || "";
+
           return (
             <div
               key={item.id}
-              className={`input-preview input-preview--${type}`}
+              className={`${styles["input-preview"]} ${variantClass}`}
             >
-              <div className="input-preview__container">
-                <div className="input-preview__content-wrapper">
+              <div className={styles["input-preview__container"]}>
+                <div className={styles["input-preview__content-wrapper"]}>
                   {isEditing ? (
-                    <div className="input-preview__edit-group">
+                    <div className={styles["input-preview__edit-group"]}>
                       {type === "ingredients" && (
                         <input
                           type="number"
-                          className="input-preview__field input-preview__field--qty"
+                          className={`${styles["input-preview__field"]} ${styles["input-preview__field--qty"]}`}
                           value={item.qty}
                           min="1"
                           onChange={(e) =>
@@ -90,7 +88,7 @@ export default function DynamicInputList({
                       )}
                       {type === "instructions" ? (
                         <textarea
-                          className="input-preview__field"
+                          className={styles["input-preview__field"]}
                           value={item.value}
                           placeholder={placeHolder}
                           autoFocus
@@ -101,7 +99,7 @@ export default function DynamicInputList({
                       ) : (
                         <input
                           type="text"
-                          className="input-preview__field"
+                          className={styles["input-preview__field"]}
                           value={item.value}
                           placeholder={placeHolder}
                           autoFocus
@@ -112,16 +110,16 @@ export default function DynamicInputList({
                       )}
                     </div>
                   ) : (
-                    <div className="input-preview__display">
+                    <div className={styles["input-preview__display"]}>
                       {type === "ingredients" ? (
                         <p
-                          className={`input-preview__text ${isEmpty ? "is-empty" : ""}`}
+                          className={`${styles["input-preview__text"]} ${isEmpty ? styles["is-empty"] : ""}`}
                         >
                           - {item.qty} {displayValue}
                         </p>
                       ) : (
                         <p
-                          className={`input-preview__text ${isEmpty ? "is-empty" : ""}`}
+                          className={`${styles["input-preview__text"]} ${isEmpty ? styles["is-empty"] : ""}`}
                         >
                           {index + 1}. {displayValue}
                         </p>
@@ -130,27 +128,27 @@ export default function DynamicInputList({
                   )}
                 </div>
 
-                <div className="input-preview__actions">
+                <div className={styles["input-preview__actions"]}>
                   <button
                     type="button"
-                    className="input-preview__btn"
+                    className={styles["input-preview__btn"]}
                     onClick={() => toggleEdit(item.id)}
                     title={isEditing ? "Save" : "Edit"}
                   >
                     {isEditing ? (
-                      <Check className="input-preview__icon" />
+                      <Check className={styles["input-preview__icon"]} />
                     ) : (
-                      <Pencil className="input-preview__icon" />
+                      <Pencil className={styles["input-preview__icon"]} />
                     )}
                   </button>
                   {items.length > 1 && (
                     <button
                       type="button"
-                      className="input-preview__btn input-preview__btn--danger"
+                      className={`${styles["input-preview__btn"]} ${styles["input-preview__btn--danger"]}`}
                       onClick={() => deleteItem(item.id)}
                       title="Delete"
                     >
-                      <Trash2 className="input-preview__icon" />
+                      <Trash2 className={styles["input-preview__icon"]} />
                     </button>
                   )}
                 </div>
@@ -160,13 +158,10 @@ export default function DynamicInputList({
         })}
       </div>
 
-      <button type="button" className="addBtn" onClick={addItem}>
-        <Plus className="icon" />
+      <button type="button" className={styles.addBtn} onClick={addItem}>
+        <Plus className={styles.icon} />
         Add {type === "ingredients" ? "Ingredient" : "Instruction"}
       </button>
-
-      {/* Hidden input for form submission */}
-      <input type="hidden" name={name} value={combinedValue} />
     </div>
   );
 }

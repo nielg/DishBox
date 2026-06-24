@@ -22,7 +22,7 @@ a {
   color: black;
 }
 
-.text-center {
+.text-align-center {
   text-align: center;
 }
 
@@ -44,4 +44,15 @@ h2 {
 
 .bold {
   font-weight: 700;
+}
+
+button {
+  color: white;
+  background-color: var(--red-accent);
+
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+
+  cursor: pointer;
 }

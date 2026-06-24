@@ -1,0 +1,10 @@
+.inputPreviewContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 2rem;
+}
+
+.recipePreviewContainer {
+  border: 1px solid black;
+  padding: 3rem;
+}
