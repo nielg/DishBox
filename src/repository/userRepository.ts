@@ -1,23 +1,47 @@
+import bcrypt from "bcryptjs";
 import sql from "@/lib/db";
 import type { dbResponse } from "@/types";
 import type { UserLoginResponse } from "@/types/user";
+
+type UserWithPassword = UserLoginResponse & {
+  password: string;
+};
 
 const dbLogin = async (
   username: string,
   password: string,
 ): Promise<dbResponse<UserLoginResponse | null>> => {
   try {
-    const rows = await sql<UserLoginResponse[]>`
-      SELECT id, username
+    const rows = await sql<UserWithPassword[]>`
+      SELECT id, user_name, email, password
       FROM "user"
-      WHERE username = ${username} AND password = ${password}
+      WHERE user_name = ${username}
       LIMIT 1
     `;
 
-    const user = rows[0] ?? null;
+    const userRecord = rows[0] ?? null;
+
+    if (!userRecord) {
+      return {
+        success: false,
+        result: null,
+      };
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, userRecord.password);
+
+    if (!isPasswordValid) {
+      return {
+        success: false,
+        result: null,
+      };
+    }
+
+    // Exclude password hash before returning the user result
+    const { password: _, ...user } = userRecord;
 
     return {
-      success: !!user,
+      success: true,
       result: user,
     };
   } catch (error) {
@@ -27,13 +51,13 @@ const dbLogin = async (
 };
 
 const createUser = async ({
-  userName,
+  username,
   firstName,
   lastName,
   email,
   password,
 }: {
-  userName: string;
+  username: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -42,12 +66,12 @@ const createUser = async ({
   try {
     await sql`
       INSERT INTO "user" (user_name, first_name, last_name, email, password)
-      VALUES (${userName}, ${firstName}, ${lastName}, ${email}, ${password})
+      VALUES (${username}, ${firstName}, ${lastName}, ${email}, ${password})
     `;
 
     return { success: true };
   } catch (error) {
-    console.error(`DB: Failed to create user ${userName}`, error);
+    console.error(`DB: Failed to create user ${username}`, error);
     return { success: false };
   }
 };

@@ -17,7 +17,7 @@ type RegisterResponse = {
 
 // Simple regex helpers
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const USERNAME_REGEX = /^[a-zA-Z0-9_]{3,30}$/; // 3-30 chars, alphanumeric + underscores
+const username_REGEX = /^[a-zA-Z0-9_]{3,30}$/; // 3-30 chars, alphanumeric + underscores
 
 export default async function registerUser({
   username,
@@ -27,14 +27,14 @@ export default async function registerUser({
   password,
 }: RegisterInput): Promise<RegisterResponse> {
   // Sanitize Inputs (trim whitespace)
-  const cleanUsername = username.trim();
+  const cleanusername = username.trim();
   const cleanFirstName = firstName.trim();
   const cleanLastName = lastName.trim();
   const cleanEmail = email.trim().toLowerCase();
 
   // Validate Required Fields
   if (
-    !cleanUsername ||
+    !cleanusername ||
     !cleanFirstName ||
     !cleanLastName ||
     !cleanEmail ||
@@ -48,12 +48,12 @@ export default async function registerUser({
     return { success: false, message: "Invalid email format." };
   }
 
-  // Validate Username Format
-  if (!USERNAME_REGEX.test(cleanUsername)) {
+  // Validate username Format
+  if (!username_REGEX.test(cleanusername)) {
     return {
       success: false,
       message:
-        "Username must be 3-30 characters long and contain only letters, numbers, or underscores.",
+        "username must be 3-30 characters long and contain only letters, numbers, or underscores.",
     };
   }
 
@@ -70,7 +70,7 @@ export default async function registerUser({
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
     const dbResult = await userRepository.createUser({
-      userName: cleanUsername,
+      username: cleanusername,
       firstName: cleanFirstName,
       lastName: cleanLastName,
       email: cleanEmail,
@@ -87,7 +87,7 @@ export default async function registerUser({
     if (error?.code === "23505") {
       return {
         success: false,
-        message: "Username or email is already taken.",
+        message: "username or email is already taken.",
       };
     }
 

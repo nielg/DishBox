@@ -15,10 +15,14 @@ export const POST: APIRoute = async ({
   cookies,
   request,
 }): Promise<Response> => {
-  const data = Object.fromEntries(new URLSearchParams(await request.text()));
+  const formData = await request.formData();
+
+  const username = formData.get("username")?.toString() ?? "";
+  const password = formData.get("password")?.toString() ?? "";
+
   const result = await loginSave({
-    email: data.email,
-    password: data.password,
+    username,
+    password,
     maxAge: Number(MAX_AGE || 604800),
     secret: COOKIE_SECRET || "secret",
   });
