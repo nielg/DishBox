@@ -19,6 +19,7 @@
     "@types/react-dom": "^19.2.3",
     "astro": "^7.2.2",
     "astro-icon": "^1.1.5",
+    "bcryptjs": "^3.0.3",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^1.17.0",
     "marked": "^18.0.4",
@@ -28,6 +29,7 @@
     "react-dom": "^19.2.7"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.9.1",
     "@types/pg": "^8.20.0",
