@@ -1,8 +1,9 @@
-export type ApiResponse = {
+export type ApiResponse<T = any> = {
   success: boolean;
   error?: string | null;
   message: string;
-  data?: any;
+  data?: T;
+  redirectUrl?: string;
 };
 
 export type dbResponse<T = any> = {

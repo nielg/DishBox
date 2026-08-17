@@ -1,7 +1,7 @@
 import registerUser from "@/service/userService/register";
 import type { APIRoute } from "astro";
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request }): Promise<Response> => {
   const formData = await request.formData();
 
   const username = formData.get("username")?.toString() ?? "";
