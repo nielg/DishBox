@@ -25,5 +25,5 @@ export const POST: APIRoute = async ({ request }) => {
     });
   }
 
-  return Response.redirect(new URL("/login", request.url), 303);
+  return Response.redirect(new URL("user/login", request.url), 303);
 };

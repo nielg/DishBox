@@ -1,4 +1,8 @@
-<form action="/api/user/register" accept-charset="UTF-8" method="POST">
+---
+
+---
+
+<form id="register-form">
   <div>
     <label for="username">Username:</label>
     <br />
@@ -25,5 +29,37 @@
     <input type="password" id="password" name="password" required />
   </div>
   <br />
-  <button type="submit">Register</button>
+  <button type="submit" id="submit-btn">Register</button>
+  <p id="error-message" style="color: red;"></p>
 </form>
+
+<script>
+  const form = document.getElementById("register-form") as HTMLFormElement;
+  const errorMsg = document.getElementById(
+    "error-message",
+  ) as HTMLParagraphElement;
+
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    errorMsg.textContent = "";
+
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch("/api/user/register", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        errorMsg.textContent = data.message || "Registration failed";
+        return;
+      }
+      window.location.href = "user/login";
+    } catch (err) {
+      errorMsg.textContent = "An unexpected network error occurred.";
+    }
+  });
+</script>
