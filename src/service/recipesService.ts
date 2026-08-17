@@ -1,196 +1,92 @@
-import fs from "node:fs/promises";
-import path from "node:path";
+import sql from "@/lib/db";
 import type {
-  ApiResponse,
-  RecipeDateTypeRequest,
-  RecipeDateTypeResponse,
+  RecipeMetaDataResponse,
   RecipeRequest,
-} from "../types";
-import { prisma } from "../../lib/prisma";
+  RecipeResponse,
+} from "@/types/recipe";
 
-const getRecipes = async (): Promise<ApiResponse> => {
-  let recipesData: RecipeDateTypeResponse[];
-  let recipeFiles: any[];
-
-  try {
-    recipesData = await prisma.recipe.findMany();
-  } catch (error) {
-    return {
-      success: false,
-      error,
-      message: "Failed to fetch recipes data",
-      data: null,
-    };
-  }
+async function createRecipe(recipe: RecipeRequest): Promise<RecipeResponse> {
+  let insertedRows: RecipeResponse[] | null = null;
 
   try {
-    recipeFiles = await getRecipesFiles();
+    insertedRows = (await sql`
+      INSERT INTO recipes (title, description, portions, ingredients, instructions)
+      VALUES (
+        ${recipe.title},
+        ${recipe.description},
+        ${recipe.portions},
+        ${sql.json(recipe.ingredients)},
+        ${sql.json(recipe.instructions)}
+      )
+      RETURNING id, title, description, portions, ingredients, instructions
+    `) as RecipeResponse[];
   } catch (error) {
-    return {
-      success: false,
-      error,
-      message: "failed to fetch recipes files",
-      data: null,
-    };
+    console.error("DB: Failed to create recipe:", error);
+    throw new Error("Database insertion failed");
   }
 
-  return {
-    success: true,
-    error: null,
-    message: "Succesfully fetch recipes",
-    data: { recipesData, recipeFiles },
-  };
-};
-
-const getRecipesBySlug = async (slug: string): Promise<ApiResponse> => {
-  try {
-    const recipeData: RecipeDateTypeResponse | null =
-      await prisma.recipe.findFirst({
-        where: {
-          slug: slug,
-        },
-      });
-    return { success: true, error: null, data: recipeData, message: "" };
-  } catch (error) {
-    return {
-      success: false,
-      error,
-      message: `Failed to fetch recipe with slug: ${slug}`,
-      data: null,
-    };
+  if (!insertedRows || insertedRows.length === 0) {
+    throw new Error("No recipe data returned from the database");
   }
-};
 
-const getRecipesFiles = async () => {
-  try {
-    const dirPath = path.join(process.cwd(), "src/data/recipes");
-    const files = await fs.readdir(dirPath);
-    // Filter for markdown files and remove the extension to get the slug
-    return files
-      .filter((file) => file.endsWith(".md") || file.endsWith(".mdx"))
-      .map((file) => file.replace(/\.(md|mdx)$/, ""));
-  } catch (error) {
-    console.error("Error reading recipes directory:", error);
-    return [];
-  }
-};
+  return insertedRows[0];
+}
 
-const createRecipe = async (recipe: RecipeRequest): Promise<ApiResponse> => {
-  let slug: string;
-  let createdDataRecipe: RecipeDateTypeResponse;
+async function getRecipeMetaData(): Promise<RecipeMetaDataResponse[]> {
+  let resultRows: RecipeMetaDataResponse[] | null = null;
 
   try {
-    slug = await createMDFile(
-      recipe.title,
-      recipe.description,
-      recipe.portions,
-      recipe.ingredients,
-      recipe.instructions,
-    );
+    resultRows = (await sql`
+      SELECT * FROM recipes
+      `) as RecipeResponse[];
   } catch (error) {
-    return {
-      success: false,
-      message: "Failed to create md file",
-      data: recipe,
-      error,
-    };
+    console.error("DB: Failed to fetch recipeMetaData:", error);
+    throw new Error("Database fetch failed");
   }
+
+  return resultRows;
+}
+
+async function getRecipeById(id: number): Promise<RecipeResponse> {
+  let resultRows: RecipeResponse[] | null = null;
 
   try {
-    const recipeData: RecipeDateTypeRequest = {
-      title: recipe.title,
-      description: recipe.description,
-      portions: recipe.portions,
-      slug: slug,
-      images: recipe.images || [],
-    };
-
-    createdDataRecipe = await prisma.recipe.create({
-      data: {
-        title: recipeData.title,
-        description: recipeData.description,
-        portions: recipeData.portions,
-        slug: recipeData.slug,
-
-        images: {
-          create: recipeData.images.map((imagePath) => ({
-            path: imagePath,
-          })),
-        },
-      },
-    });
+    resultRows = (await sql`
+      SELECT id, title, description, portions, ingredients, instructions
+      FROM recipes
+      WHERE id = ${id}
+      `) as RecipeResponse[];
   } catch (error) {
-    return {
-      success: false,
-      message: "Failed to post recipeData",
-      error,
-      data: recipe,
-    };
+    console.error("DB: Failed to fetch recipe:", error);
+    throw new Error("Database fetch failed");
   }
 
-  return { success: true, message: "", error: null, data: createdDataRecipe };
-};
+  if (!resultRows || resultRows.length === 0) {
+    throw new Error(`No recipe found with id: ${id}`);
+  }
 
-const createMDFile = async (
-  title: string,
-  description: string,
-  portions: number,
-  ingredients: string,
-  instructions: string,
-): Promise<string> => {
-  const slug = title.toLowerCase().trim().replace(/\s+/g, "-");
-  const fileName = `${slug}.md`;
-  const filePath = path.join(process.cwd(), "src/data/recipes", fileName);
+  return resultRows[0];
+}
 
-  const fileContent = `---
-title: "${title}"
-description: "${description}"
-slug:  "${slug}"
----
-# ${title}
-
-${description}
-
-## Ingredients for ${portions} portions
-${ingredients}
-
-## Instuctions
-${instructions}
-`;
-
+async function deleteRecipeById(id: number): Promise<string> {
   try {
-    await fs.writeFile(filePath, fileContent, "utf-8");
-    return slug;
+    await sql`
+      DELETE
+      FROM recipes
+      WHERE id = ${id}
+      `;
   } catch (error) {
-    console.error("Error writing recipe file:", error);
-    throw new Error("Failed to save recipe file");
-  }
-};
-
-const deleteRecipe = async (id: number) => {
-  const deletedRecipe = await prisma.recipe.delete({
-    where: {
-      id: Number(id),
-    },
-  });
-
-  const filePath = path.join(
-    process.cwd(),
-    "src/data/recipes",
-    `${deletedRecipe.slug}.md`,
-  );
-  try {
-    await fs.unlink(filePath);
-  } catch (error) {
-    console.error("Error deleting recipe file:", error);
+    console.error("DB: Failed to delete recipe:", error);
+    throw new Error("Database delete failed");
   }
 
-  return deletedRecipe;
-};
-
-export const RecipesService = {
-  getRecipes,
+  return `Succesfully delete recipe ${id}`;
+}
+const RecipesService = {
   createRecipe,
-  deleteRecipe,
-  getRecipesBySlug,
+  getRecipeMetaData,
+  getRecipeById,
+  deleteRecipeById,
 };
+
+export default RecipesService;

@@ -1,0 +1,88 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import type { RecipeResponse } from "@/types/recipe";
+import RecipesService from "@/service/recipesService";
+import DeleteRecipeBtn from "@/components/buttons/DeleteRecipeBtn.astro";
+import GoBackBtn from "@/components/buttons/GoBackBtn.astro";
+
+const { slug } = Astro.params;
+
+let recipe: RecipeResponse | null = null;
+
+if (slug) {
+  const id = parseInt(slug, 10);
+
+  if (!isNaN(id)) {
+    try {
+      recipe = await RecipesService.getRecipeById(id);
+    } catch (error) {
+      console.error(`Failed to fetch recipe with ID ${id}:`, error);
+    }
+  }
+}
+
+if (!recipe) {
+  Astro.response.status = 404;
+  Astro.response.statusText = "Not Found";
+}
+---
+
+<BaseLayout title={recipe ? recipe.title : "Recipe Not Found"}>
+  {
+    recipe ? (
+      <>
+        <div class="header center">
+          <div class="goBackBtnWrapper">
+            <GoBackBtn href="/myRecipes" />
+          </div>
+          <h1>{recipe.title}</h1>
+        </div>
+
+        <div class="body">
+          <p>{recipe.description}</p>
+          <p>Portions: {recipe.portions}</p>
+
+          <h2>Ingredients</h2>
+          <ul>
+            {recipe.ingredients.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+
+          <h2>Instructions</h2>
+          <ol>
+            {recipe.instructions.map((step) => (
+              <li>{step}</li>
+            ))}
+          </ol>
+        </div>
+
+        <DeleteRecipeBtn recipeId={recipe.id} />
+      </>
+    ) : (
+      <>
+        <h1>404 - Recipe Not Found</h1>
+        <p>Sorry, the recipe you are looking for doesn't exist.</p>
+      </>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .header,
+  .body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+  }
+
+  .body {
+    flex-direction: column;
+  }
+
+  .goBackBtnWrapper {
+    position: absolute;
+    left: 5rem;
+  }
+</style>

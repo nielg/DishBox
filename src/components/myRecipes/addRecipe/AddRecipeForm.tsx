@@ -6,31 +6,33 @@ import AddRecipeInstructions from "./AddRecipeInstructions";
 import AddRecipeReview from "./AddRecipeReview";
 import AddRecipeProgressBtn from "./AddRecipeProgressBtn";
 import type {
-  DynamicInputListItem,
+  DynamicInputIngredientsListItem,
+  DynamicInputInstructionsListItem,
   RecipeIntroData,
   RecipeProgress,
-} from "@/types/AddRecipe";
+} from "@/types/recipe";
 import RecipePreview from "./RecipePreview";
 import s from "@/styles/components/addRecipe.module.css";
 
 export default function AddRecipeForm() {
   const [progress, setProgress] = useState<RecipeProgress>("intro");
+  const [portions, setPortions] = useState<number>(4);
   const [introData, setIntroData] = useState<RecipeIntroData>({
     title: "",
     description: "",
   });
 
   const [ingredientsData, setIngredientsData] = useState<
-    DynamicInputListItem[]
-  >([{ id: crypto.randomUUID(), value: "", qty: 1 }]);
+    DynamicInputIngredientsListItem[]
+  >([{ id: crypto.randomUUID(), value: "" }]);
 
   const [instructionsData, setInstructionsData] = useState<
-    DynamicInputListItem[]
-  >([{ id: crypto.randomUUID(), value: "", qty: 1 }]);
+    DynamicInputInstructionsListItem[]
+  >([{ id: crypto.randomUUID(), value: "", step: 0, duration: "10min" }]);
 
   const combinedIngredientsData = ingredientsData
     .filter((item) => item.value.trim())
-    .map((item) => `- ${item.qty} ${item.value}`);
+    .map((item) => `${item.value}`);
 
   const combinedInstructionsData = instructionsData
     .filter((item) => item.value.trim())
@@ -40,7 +42,7 @@ export default function AddRecipeForm() {
     const recipeRequest = {
       title: introData.title,
       description: introData.description,
-      portions: 4,
+      portions,
       ingredients: combinedIngredientsData,
       instructions: combinedInstructionsData,
     };
@@ -80,6 +82,8 @@ export default function AddRecipeForm() {
             <AddRecipeIngredients
               items={ingredientsData}
               setItems={setIngredientsData}
+              portions={portions}
+              setPortions={setPortions}
             />
           )}
           {progress == "instructions" && (

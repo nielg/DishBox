@@ -1,14 +1,14 @@
 ---
+import type { RecipeMetaDataResponse } from "@/types/recipe";
 import Button from "../../components/basic/Button.astro";
 import WelcomeHeader from "../../components/basic/WelcomeHeader.astro";
 import MyRecipesCard from "../../components/myRecipes/MyRecipesCard.astro";
 import MyRecipesContainer from "../../components/myRecipes/MyRecipesContainer.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getCollection } from "astro:content";
+import RecipesService from "@/service/recipesService";
 
-export const prerender = true;
-
-const allRecipesFiles = await getCollection("recipe");
+const recipes: RecipeMetaDataResponse[] =
+  await RecipesService.getRecipeMetaData();
 ---
 
 <BaseLayout>
@@ -22,7 +22,7 @@ const allRecipesFiles = await getCollection("recipe");
       />
     </div>
     <MyRecipesContainer>
-      {allRecipesFiles.map((recipe) => <MyRecipesCard data={recipe.data} />)}
+      {recipes.map((recipe) => <MyRecipesCard data={recipe} />)}
     </MyRecipesContainer>
   </div>
 </BaseLayout>

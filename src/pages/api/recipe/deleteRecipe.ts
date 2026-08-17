@@ -1,5 +1,5 @@
+import RecipesService from "@/service/recipesService";
 import type { APIRoute } from "astro";
-import { RecipesService } from "@/service/recipesService";
 
 export const DELETE: APIRoute = async ({ request }) => {
   try {
@@ -12,7 +12,7 @@ export const DELETE: APIRoute = async ({ request }) => {
       });
     }
 
-    const deletedRecipe = await RecipesService.deleteRecipe(recipeId);
+    const deletedRecipe = await RecipesService.deleteRecipeById(recipeId);
 
     return new Response(JSON.stringify({ success: true, deletedRecipe }), {
       status: 200,

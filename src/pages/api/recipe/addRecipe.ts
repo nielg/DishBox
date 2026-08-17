@@ -1,29 +1,47 @@
+import RecipesService from "@/service/recipesService";
+import type { ApiResponse } from "@/types";
 import type { APIRoute } from "astro";
-import { RecipesService } from "../../../service/recipesService";
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request }): Promise<Response> => {
   try {
     const body = await request.json();
 
     if (!body.title || !body.description) {
-      return new Response(
-        JSON.stringify({ error: "Title and description are required" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        },
-      );
+      const errorPayload: ApiResponse = {
+        success: false,
+        error: "Title and description are required",
+        message: "Validation failed",
+      };
+
+      return new Response(JSON.stringify(errorPayload), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     const createdDataRecipe = await RecipesService.createRecipe(body);
 
-    return new Response(JSON.stringify({ success: true, createdDataRecipe }), {
+    const successPayload: ApiResponse = {
+      success: true,
+      error: null,
+      message: "Recipe created successfully!",
+      data: createdDataRecipe,
+    };
+
+    return new Response(JSON.stringify(successPayload), {
       status: 201,
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
     console.error("API Error:", error);
-    return new Response(JSON.stringify({ error: "Failed to create recipe" }), {
+
+    const serverErrorPayload: ApiResponse = {
+      success: false,
+      error: error instanceof Error ? error.message : "Internal Server Error",
+      message: "Failed to create recipe",
+    };
+
+    return new Response(JSON.stringify(serverErrorPayload), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });

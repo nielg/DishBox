@@ -1,16 +1,17 @@
 ---
 import { Image } from "astro:assets";
 import defaultImg from "../../assets/recipes-img/default-img.png";
-import type { InferEntrySchema } from "astro:content";
+import type { RecipeMetaDataResponse } from "@/types/recipe";
+import { date } from "astro:schema";
 
 type Props = {
-  data: InferEntrySchema<"recipe">;
+  data: RecipeMetaDataResponse;
 };
 
 const { data }: Props = Astro.props;
 ---
 
-<a href={`/recipes/${data.slug}`} class="card-link">
+<a href={`/myRecipes/${data.id}`} class="card-link">
   <div class="card-container">
     <div class="img-container">
       <Image

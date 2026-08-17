@@ -1,6 +1,6 @@
 import InputPreview from "@/components/input/InputPreview";
 import "@/styles/global.css";
-import type { RecipeIntroData } from "@/types/AddRecipe";
+import type { RecipeIntroData } from "@/types/recipe";
 import { useEffect, useState } from "react";
 
 type Props = {

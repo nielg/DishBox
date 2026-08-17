@@ -46,13 +46,13 @@ h2 {
   font-weight: 700;
 }
 
-button {
+button,
+.btn {
   color: white;
   background-color: var(--red-accent);
-
   padding: 0.5rem 1.5rem;
   border-radius: 0.5rem;
   border: none;
-
+  height: 2rem;
   cursor: pointer;
 }
