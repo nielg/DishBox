@@ -26,8 +26,35 @@ const dbLogin = async (
   }
 };
 
+const createUser = async ({
+  userName,
+  firstName,
+  lastName,
+  email,
+  password,
+}: {
+  userName: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}): Promise<{ success: boolean }> => {
+  try {
+    await sql`
+      INSERT INTO "user" (user_name, first_name, last_name, email, password)
+      VALUES (${userName}, ${firstName}, ${lastName}, ${email}, ${password})
+    `;
+
+    return { success: true };
+  } catch (error) {
+    console.error(`DB: Failed to create user ${userName}`, error);
+    return { success: false };
+  }
+};
+
 const userRepository = {
   dbLogin,
+  createUser,
 };
 
 export default userRepository;
