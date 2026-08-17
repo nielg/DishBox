@@ -4,3 +4,8 @@ export type ApiResponse = {
   message: string;
   data?: any;
 };
+
+export type dbResponse<T = any> = {
+  success: boolean;
+  result: T;
+};

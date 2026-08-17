@@ -1,4 +1,4 @@
-import RecipesService from "@/service/recipesService";
+import RecipesService from "@/repository/recipesRepository";
 import type { ApiResponse } from "@/types";
 import type { APIRoute } from "astro";
 

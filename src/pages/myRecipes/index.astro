@@ -5,7 +5,7 @@ import WelcomeHeader from "../../components/basic/WelcomeHeader.astro";
 import MyRecipesCard from "../../components/myRecipes/MyRecipesCard.astro";
 import MyRecipesContainer from "../../components/myRecipes/MyRecipesContainer.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import RecipesService from "@/service/recipesService";
+import RecipesService from "@/repository/recipesRepository";
 
 const recipes: RecipeMetaDataResponse[] =
   await RecipesService.getRecipeMetaData();

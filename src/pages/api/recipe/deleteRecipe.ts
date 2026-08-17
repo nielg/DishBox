@@ -1,4 +1,4 @@
-import RecipesService from "@/service/recipesService";
+import RecipesService from "@/repository/recipesRepository";
 import type { APIRoute } from "astro";
 
 export const DELETE: APIRoute = async ({ request }) => {
