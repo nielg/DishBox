@@ -3,6 +3,10 @@
   --text-primary: black;
   --red-accent: #a41623;
   --light-bg: #f4e0b0;
+  --text-white: white;
+  --text-gray: rgb(68, 63, 63);
+  --text-black: black;
+  --text-red: #a41623;
   --border-primary: rgb(189, 186, 186);
 }
 
@@ -29,10 +33,18 @@ a {
 /* Font colors */
 
 .text-gray {
-  color: gray;
+  color: var(--text-gray);
 }
 .text-white {
-  color: white;
+  color: var(--text-white);
+}
+
+.text-black {
+  color: var(--text-black);
+}
+
+.text-red {
+  color: var(--text-red);
 }
 
 /* Font sizes */
@@ -46,7 +58,6 @@ h2 {
   font-weight: 700;
 }
 
-button,
 .btn {
   color: white;
   background-color: var(--red-accent);

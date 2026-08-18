@@ -21,8 +21,6 @@ export default async function login({
   const loginData: dbResponse<UserLoginResponse | null> =
     await userRepository.dbLogin(username, password);
 
-  console.log(loginData, "logindata");
-
   if (loginData.success === false || loginData.result == null) {
     return { success: false, token: null, max: null };
   }
@@ -32,7 +30,7 @@ export default async function login({
     {
       exp: expire,
       email: loginData.result.email,
-      username: loginData.result.username,
+      username: loginData.result.user_name,
     },
     secret,
   );

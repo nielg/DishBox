@@ -1,0 +1,169 @@
+---
+export const prerender = false;
+import { Icon } from "astro-icon/components";
+import { decode } from "astro:schema";
+
+import wblt from "jsonwebtoken";
+
+const cookieName = "_Security_Login_";
+let username = "Guest";
+
+const tokenCookie = Astro.cookies.get(cookieName);
+
+if (tokenCookie?.value) {
+  const decoded = wblt.decode(tokenCookie.value) as {
+    username?: string;
+  } | null;
+
+  console.log(decoded);
+  if (decoded) {
+    username = decoded.username || "Guest";
+  }
+}
+
+console.log(username);
+---
+
+<div id="dropdown-container">
+  <button
+    type="button"
+    id="dropdown-toggle"
+    aria-haspopup="true"
+    aria-expanded="false"
+    aria-controls="dropdown-menu"
+  >
+    <Icon class="profile-icon" name="lucide:user-circle" />
+  </button>
+
+  <!-- Drop down menu -->
+  <ul
+    id="dropdown-menu"
+    class="hidden text-gray"
+    aria-labelledby="dropdown-toggle"
+  >
+    <p class="dropdown-item">Welcome {username}</p>
+    <li>
+      <a href="/" class="dropdown-item"> Home </a>
+    </li>
+    <li>
+      <a href="/" class="dropdown-item"> Profile </a>
+    </li>
+    <li>
+      <a href="/" class="dropdown-item text-red"> logout </a>
+    </li>
+  </ul>
+</div>
+
+<style>
+  #dropdown-container {
+    position: relative;
+    width: max-content;
+    cursor: pointer;
+  }
+
+  #dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: none;
+    background-color: transparent;
+  }
+
+  .profile-icon {
+    color: white;
+    font-size: 2rem;
+  }
+
+  #dropdown-menu {
+    position: absolute;
+    right: 0;
+    min-width: 10rem;
+    padding: 0;
+    width: 100%;
+    font-size: 1rem;
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.375rem;
+    box-shadow:
+      0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    z-index: 20;
+    overflow: hidden;
+    list-style: none;
+  }
+  #dropdown-menu.hidden {
+    display: none;
+  }
+
+  #dropdown-menu.show {
+    display: block;
+  }
+
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0 1rem;
+    width: 100%;
+    padding: 0.5rem;
+    text-decoration: none;
+  }
+
+  a.dropdown-item:hover {
+    background-color: rgb(235, 232, 232);
+  }
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", (): void => {
+    const toggle = document.getElementById(
+      "dropdown-toggle",
+    ) as HTMLButtonElement | null;
+    const menu = document.getElementById("dropdown-menu") as HTMLElement | null;
+
+    if (!toggle || !menu) return;
+
+    const links = menu.querySelectorAll<HTMLAnchorElement | HTMLButtonElement>(
+      ".dropdown-item",
+    );
+
+    function show(): void {
+      menu?.classList.remove("hidden");
+      menu?.classList.add("show");
+      toggle?.setAttribute("aria-expanded", "true");
+    }
+
+    function hide(): void {
+      menu?.classList.add("hidden");
+      menu?.classList.remove("show");
+      toggle?.setAttribute("aria-expanded", "false");
+    }
+
+    toggle.addEventListener("click", (e: MouseEvent): void => {
+      e.stopPropagation();
+      const isExpanded = toggle.getAttribute("aria-expanded") === "true";
+      isExpanded ? hide() : show();
+    });
+
+    // Close on Escape key (Essential for WCAG)
+    document.addEventListener("keydown", (e: KeyboardEvent): void => {
+      if (e.key === "Escape") {
+        hide();
+        toggle.focus();
+      }
+    });
+
+    // Close when clicking outside
+    document.addEventListener("click", (e: MouseEvent): void => {
+      const target = e.target as Node | null;
+      if (target && !menu.contains(target) && target !== toggle) {
+        hide();
+      }
+    });
+
+    // Close when a link is clicked
+    links.forEach((link: HTMLElement): void => {
+      link.addEventListener("click", hide);
+    });
+  });
+</script>
