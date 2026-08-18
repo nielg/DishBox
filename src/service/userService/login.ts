@@ -29,6 +29,7 @@ export default async function login({
   const token = wbtl.sign(
     {
       exp: expire,
+      id: loginData.result.id,
       email: loginData.result.email,
       username: loginData.result.user_name,
     },
