@@ -12,7 +12,7 @@ export const GET: APIRoute = async ({ cookies }): Promise<Response> => {
     secure: Boolean(COOKIE_SECURE || false),
   });
   const successPayload: ApiResponse<null> = {
-    success: false,
+    success: true,
     message: "Logout successfull",
     redirectUrl: "/",
   };

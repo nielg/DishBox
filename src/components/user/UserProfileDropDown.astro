@@ -49,7 +49,7 @@ console.log(username);
       <a href="/" class="dropdown-item"> Profile </a>
     </li>
     <li>
-      <a href="/" class="dropdown-item text-red"> logout </a>
+      <a href="/" class="dropdown-item text-red" id="logout"> logout </a>
     </li>
   </ul>
 </div>
@@ -115,7 +115,12 @@ console.log(username);
 </style>
 
 <script>
+  import { logoutUser } from "@/utils/auth";
+
   document.addEventListener("DOMContentLoaded", (): void => {
+    //
+    // Dropdown
+    //
     const toggle = document.getElementById(
       "dropdown-toggle",
     ) as HTMLButtonElement | null;
@@ -165,5 +170,19 @@ console.log(username);
     links.forEach((link: HTMLElement): void => {
       link.addEventListener("click", hide);
     });
+
+    //
+    // logout
+    //
+    const logoutElement: HTMLElement | null = document.getElementById("logout");
+    if (logoutElement) {
+      logoutElement.addEventListener(
+        "click",
+        async (e: MouseEvent): Promise<void> => {
+          e.preventDefault();
+          await logoutUser();
+        },
+      );
+    }
   });
 </script>
