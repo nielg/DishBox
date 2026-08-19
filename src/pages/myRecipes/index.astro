@@ -6,51 +6,29 @@ import MyRecipesCard from "../../components/myRecipes/MyRecipesCard.astro";
 import MyRecipesContainer from "../../components/myRecipes/MyRecipesContainer.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import RecipesService from "@/repository/recipesRepository";
-import wblt from "jsonwebtoken";
-import { COOKIE_NAME, COOKIE_SECRET } from "astro:env/server";
-import { logoutUser } from "@/utils/auth";
+import { getAuthenticatedUserId } from "@/utils/auth";
 
-let recipes: RecipeMetaDataResponse[] | null = null;
+const userId = await getAuthenticatedUserId(Astro.cookies);
+if (!userId) return Astro.redirect("/user/login");
 
-const cookie = Astro.cookies.get(COOKIE_NAME);
-if (cookie) {
-  const decoded = wblt.verify(cookie.value, COOKIE_SECRET) as {
-    id?: number;
-  } | null;
-
-  if (!decoded) {
-    return await logoutUser();
-  }
-
-  const user_id = decoded?.id;
-  if (user_id) {
-    recipes = await RecipesService.getRecipesMetaDataByUserId(user_id);
-  }
-}
+const recipes: RecipeMetaDataResponse[] =
+  await RecipesService.getRecipesMetaDataByUserId(userId);
 ---
 
 <BaseLayout>
-  {
-    recipes ? (
-      <div class="myRecipes-wrapper">
-        <div class="header">
-          <WelcomeHeader title="myRecipes" />
-          <Button
-            text="Add new recipe"
-            link="/myRecipes/addRecipe"
-            iconName="lucide:plus"
-          />
-        </div>
-        <MyRecipesContainer>
-          {recipes.map((recipe) => (
-            <MyRecipesCard data={recipe} />
-          ))}
-        </MyRecipesContainer>
-      </div>
-    ) : (
-      <p>login</p>
-    )
-  }
+  <div class="myRecipes-wrapper">
+    <div class="header">
+      <WelcomeHeader title="myRecipes" />
+      <Button
+        text="Add new recipe"
+        link="/myRecipes/addRecipe"
+        iconName="lucide:plus"
+      />
+    </div>
+    <MyRecipesContainer>
+      {recipes.map((recipe) => <MyRecipesCard data={recipe} />)}
+    </MyRecipesContainer>
+  </div>
 </BaseLayout>
 
 <style>
