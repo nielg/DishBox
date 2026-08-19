@@ -1,25 +1,30 @@
-import RecipesService from "@/repository/recipesRepository";
+import { z } from "zod";
 import type { ApiResponse } from "@/types";
 import type { APIRoute } from "astro";
+import createRecipe from "@/service/recipeService/createRecipe";
+import { handleZodValidationError } from "@/service";
 
-export const POST: APIRoute = async ({ request }): Promise<Response> => {
+const createRecipeSchema = z.object({
+  title: z.string().min(1, "Title cannot be empty"),
+  description: z.string().min(1, "Description cannot be empty"),
+});
+
+export const POST: APIRoute = async ({
+  request,
+  cookies,
+}): Promise<Response> => {
   try {
     const body = await request.json();
 
-    if (!body.title || !body.description) {
-      const errorPayload: ApiResponse = {
-        success: false,
-        error: "Title and description are required",
-        message: "Validation failed",
-      };
+    const result = createRecipeSchema.safeParse(body);
 
-      return new Response(JSON.stringify(errorPayload), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
+    const validationError = handleZodValidationError(result);
+
+    if (validationError) {
+      return validationError;
     }
 
-    const createdDataRecipe = await RecipesService.createRecipe(body);
+    const createdDataRecipe = await createRecipe(body, cookies);
 
     const successPayload: ApiResponse = {
       success: true,

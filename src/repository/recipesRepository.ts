@@ -10,13 +10,14 @@ async function createRecipe(recipe: RecipeRequest): Promise<RecipeResponse> {
 
   try {
     insertedRows = (await sql`
-      INSERT INTO recipes (title, description, portions, ingredients, instructions)
+      INSERT INTO recipes (title, description, portions, ingredients, instructions, user_id)
       VALUES (
         ${recipe.title},
         ${recipe.description},
         ${recipe.portions},
         ${sql.json(recipe.ingredients)},
-        ${sql.json(recipe.instructions)}
+        ${sql.json(recipe.instructions)},
+        ${recipe.user_id}
       )
       RETURNING id, title, description, portions, ingredients, instructions
     `) as RecipeResponse[];

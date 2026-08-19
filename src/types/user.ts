@@ -3,3 +3,9 @@ export type UserLoginResponse = {
   user_name: string;
   email: string;
 };
+
+export interface AuthUser {
+  id: number;
+  email: string;
+  role?: string;
+}

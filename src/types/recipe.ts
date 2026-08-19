@@ -19,6 +19,7 @@ export type DynamicInputIngredientsListItem = {
 };
 
 export type RecipeRequest = {
+  user_id: number;
   title: string;
   description: string;
   portions: number;
