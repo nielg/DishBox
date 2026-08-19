@@ -7,13 +7,21 @@ import MyRecipesContainer from "../../components/myRecipes/MyRecipesContainer.as
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import RecipesService from "@/repository/recipesRepository";
 import wblt from "jsonwebtoken";
-import { COOKIE_NAME } from "astro:env/server";
+import { COOKIE_NAME, COOKIE_SECRET } from "astro:env/server";
+import { logoutUser } from "@/utils/auth";
 
 let recipes: RecipeMetaDataResponse[] | null = null;
 
 const cookie = Astro.cookies.get(COOKIE_NAME);
 if (cookie) {
-  const decoded = wblt.decode(cookie.value) as { id?: number } | null;
+  const decoded = wblt.verify(cookie.value, COOKIE_SECRET) as {
+    id?: number;
+  } | null;
+
+  if (!decoded) {
+    return await logoutUser();
+  }
+
   const user_id = decoded?.id;
   if (user_id) {
     recipes = await RecipesService.getRecipesMetaDataByUserId(user_id);
