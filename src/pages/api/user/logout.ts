@@ -1,7 +1,7 @@
-import { COOKIE_NAME, COOKIE_SECURE } from "astro:env/server";
+import { COOKIE_NAME } from "astro:env/server";
 import type { APIRoute } from "astro";
 import type { ApiResponse } from "@/types";
-import { logoutService } from "@/service/userService/logoutService";
+import authService from "@/service/authService";
 
 const cookieName = COOKIE_NAME || "_Security_Login_";
 
@@ -19,7 +19,7 @@ export const GET: APIRoute = async ({ cookies }): Promise<Response> => {
     });
   }
 
-  await logoutService(cookies);
+  await authService.logout(cookies);
 
   const successPayload: ApiResponse<null> = {
     success: true,

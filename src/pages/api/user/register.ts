@@ -1,4 +1,4 @@
-import registerUser from "@/service/userService/register";
+import authService from "@/service/authService";
 import type { APIRoute } from "astro";
 
 export const POST: APIRoute = async ({ request }): Promise<Response> => {
@@ -10,7 +10,7 @@ export const POST: APIRoute = async ({ request }): Promise<Response> => {
   const email = formData.get("email")?.toString() ?? "";
   const password = formData.get("password")?.toString() ?? "";
 
-  const result = await registerUser({
+  const result = await authService.registerUser({
     username,
     firstName,
     lastName,

@@ -1,4 +1,5 @@
 ---
+export const prerender = false;
 import type { RecipeMetaDataResponse } from "@/types/recipe";
 import Button from "../../components/basic/Button.astro";
 import WelcomeHeader from "../../components/basic/WelcomeHeader.astro";
@@ -6,9 +7,9 @@ import MyRecipesCard from "../../components/myRecipes/MyRecipesCard.astro";
 import MyRecipesContainer from "../../components/myRecipes/MyRecipesContainer.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import RecipesService from "@/repository/recipesRepository";
-import { getAuthenticatedUserId } from "@/utils/auth";
+import authService from "@/service/authService";
 
-const userId = await getAuthenticatedUserId(Astro.cookies);
+const userId = await authService.getAuthenticatedUserId(Astro.cookies);
 if (!userId) return Astro.redirect("/user/login");
 
 const recipes: RecipeMetaDataResponse[] =

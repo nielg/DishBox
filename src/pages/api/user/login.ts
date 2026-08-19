@@ -1,12 +1,7 @@
-import {
-  COOKIE_NAME,
-  COOKIE_SECRET,
-  COOKIE_SECURE,
-  MAX_AGE,
-} from "astro:env/server";
+import { COOKIE_NAME, COOKIE_SECURE } from "astro:env/server";
 import type { APIRoute } from "astro";
-import loginSave from "@/service/userService/login";
 import type { ApiResponse } from "@/types";
+import authService from "@/service/authService";
 
 const cookieName = COOKIE_NAME || "_Security_Login_";
 let maxAge = 604800;
@@ -20,11 +15,9 @@ export const POST: APIRoute = async ({
   const username = formData.get("username")?.toString() ?? "";
   const password = formData.get("password")?.toString() ?? "";
 
-  const result = await loginSave({
+  const result = await authService.login({
     username,
     password,
-    maxAge: Number(MAX_AGE || 604800),
-    secret: COOKIE_SECRET || "secret",
   });
   let token = "none";
 
