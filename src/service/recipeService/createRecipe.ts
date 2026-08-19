@@ -8,12 +8,11 @@ export default async function addRecipe(
   body: any,
   cookies: AstroCookies,
 ): Promise<RecipeResponse> {
-  const decoded_jwt: AuthUser = verifyAuthToken(cookies);
-  console.log(decoded_jwt);
+  const decoded: AuthUser = verifyAuthToken(cookies);
 
   const createdDataRecipe = await RecipesRepository.createRecipe({
     ...body,
-    user_id: decoded_jwt.id,
+    user_id: decoded.id,
   });
 
   return createdDataRecipe;

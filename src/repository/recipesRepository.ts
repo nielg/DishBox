@@ -33,12 +33,15 @@ async function createRecipe(recipe: RecipeRequest): Promise<RecipeResponse> {
   return insertedRows[0];
 }
 
-async function getRecipeMetaData(): Promise<RecipeMetaDataResponse[]> {
+async function getRecipesMetaDataByUserId(
+  user_id: number,
+): Promise<RecipeMetaDataResponse[]> {
   let resultRows: RecipeMetaDataResponse[] | null = null;
 
   try {
     resultRows = (await sql`
       SELECT * FROM recipes
+      WHERE ${user_id} = user_id
       `) as RecipeResponse[];
   } catch (error) {
     console.error("DB: Failed to fetch recipeMetaData:", error);
@@ -85,7 +88,7 @@ async function deleteRecipeById(id: number): Promise<string> {
 }
 const RecipesService = {
   createRecipe,
-  getRecipeMetaData,
+  getRecipesMetaDataByUserId,
   getRecipeById,
   deleteRecipeById,
 };

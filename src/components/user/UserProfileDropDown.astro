@@ -1,13 +1,12 @@
 ---
 export const prerender = false;
 import { Icon } from "astro-icon/components";
-
+import { COOKIE_NAME } from "astro:env/server";
 import wblt from "jsonwebtoken";
 
-const cookieName = "_Security_Login_";
 let username;
 
-const tokenCookie = Astro.cookies.get(cookieName);
+const tokenCookie = Astro.cookies.get(COOKIE_NAME);
 
 if (tokenCookie?.value) {
   const decoded = wblt.decode(tokenCookie.value) as {

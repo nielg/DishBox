@@ -6,26 +6,45 @@ import MyRecipesCard from "../../components/myRecipes/MyRecipesCard.astro";
 import MyRecipesContainer from "../../components/myRecipes/MyRecipesContainer.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import RecipesService from "@/repository/recipesRepository";
+import wblt from "jsonwebtoken";
+import { COOKIE_NAME } from "astro:env/server";
 
-const recipes: RecipeMetaDataResponse[] =
-  await RecipesService.getRecipeMetaData();
+let recipes: RecipeMetaDataResponse[] | null = null;
+
+const cookie = Astro.cookies.get(COOKIE_NAME);
+if (cookie) {
+  const decoded = wblt.decode(cookie.value) as { id?: number } | null;
+  const user_id = decoded?.id;
+  if (user_id) {
+    recipes = await RecipesService.getRecipesMetaDataByUserId(user_id);
+  }
+}
 ---
 
 <BaseLayout>
-  <div class="myRecipes-wrapper">
-    <div class="header">
-      <WelcomeHeader title="myRecipes" />
-      <Button
-        text="Add new recipe"
-        link="/myRecipes/addRecipe"
-        iconName="lucide:plus"
-      />
-    </div>
-    <MyRecipesContainer>
-      {recipes.map((recipe) => <MyRecipesCard data={recipe} />)}
-    </MyRecipesContainer>
-  </div>
+  {
+    recipes ? (
+      <div class="myRecipes-wrapper">
+        <div class="header">
+          <WelcomeHeader title="myRecipes" />
+          <Button
+            text="Add new recipe"
+            link="/myRecipes/addRecipe"
+            iconName="lucide:plus"
+          />
+        </div>
+        <MyRecipesContainer>
+          {recipes.map((recipe) => (
+            <MyRecipesCard data={recipe} />
+          ))}
+        </MyRecipesContainer>
+      </div>
+    ) : (
+      <p>login</p>
+    )
+  }
 </BaseLayout>
+
 <style>
   .header {
     display: flex;

@@ -1,6 +1,5 @@
 import bcrypt from "bcryptjs";
 import userRepository from "@/repository/userRepository";
-import type { dbResponse } from "@/types";
 
 type RegisterInput = {
   username: string;
@@ -17,7 +16,7 @@ type RegisterResponse = {
 
 // Simple regex helpers
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const username_REGEX = /^[a-zA-Z0-9_]{3,30}$/; // 3-30 chars, alphanumeric + underscores
+const username_REGEX = /^[a-zA-Z0-9_]{3,30}$/;
 
 export default async function registerUser({
   username,
