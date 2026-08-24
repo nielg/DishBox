@@ -1,13 +1,12 @@
 ---
-import { Icon } from "astro-icon/components";
-import UserProfileDropDown from "./user/UserProfileDropDown.astro";
+import UserProfileDropDown from "@/components/user/UserProfileDropDown.astro";
 ---
 
 <header class="text-white">
   <h2>Recipies</h2>
   <div class="right-header">
-    <p>Home</p>
-    <a href="/myRecipes" class="text-white"><p>myRecipes</p></a>
+    <a href="/"> Home </a>
+    <a href="/myRecipes">myRecipes</a>
     <UserProfileDropDown />
   </div>
 </header>
