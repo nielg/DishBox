@@ -5,8 +5,3 @@ export type ApiResponse<T = any> = {
   data?: T;
   redirectUrl?: string;
 };
-
-export type dbResponse<T = any> = {
-  success: boolean;
-  result: T;
-};

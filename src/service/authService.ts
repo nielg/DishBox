@@ -6,9 +6,9 @@ import {
   MAX_AGE,
 } from "astro:env/server";
 import jwt from "jsonwebtoken";
-import userRepository from "@/repository/userRepository";
-import type { dbResponse } from "@/types";
-import type { UserLoginResponse } from "@/types/user";
+import userRepository, {
+  type UserLoginResponse,
+} from "@/repository/userRepository";
 import bcrypt from "bcryptjs";
 import type { CreateUserInput } from "@/pages/api/user/register";
 
@@ -16,10 +16,6 @@ type RegisterResponse = {
   success: boolean;
   message: string;
 };
-
-type LoginResponse =
-  | { success: false; token: null; max: null }
-  | { success: true; token: string; max: number };
 
 /**
  * Checks user credentials if success create jwt token
@@ -32,25 +28,23 @@ async function login({
 }: {
   username: string;
   password: string;
-}): Promise<LoginResponse> {
-  const loginData: dbResponse<UserLoginResponse | null> =
-    await userRepository.dbLogin(username, password);
-
-  if (loginData.success === false || loginData.result == null) {
-    return { success: false, token: null, max: null };
-  }
+}): Promise<string> {
+  const loginData: UserLoginResponse = await userRepository.dbLogin(
+    username,
+    password,
+  );
 
   const expire = Math.floor(Date.now() / 1000) + MAX_AGE;
   const token = jwt.sign(
     {
       exp: expire,
-      id: loginData.result.id,
-      email: loginData.result.email,
-      username: loginData.result.user_name,
+      id: loginData.id,
+      email: loginData.email,
+      username: loginData.user_name,
     },
     COOKIE_SECRET,
   );
-  return { success: true, token: `${token}`, max: MAX_AGE };
+  return token;
 }
 
 /**
@@ -153,11 +147,21 @@ async function registerUser(data: CreateUserInput): Promise<RegisterResponse> {
   }
 }
 
+/**
+ * Deletes user account
+ * @param user_id
+ * @returns Success boolean
+ */
+async function deleteUser(user_id: number): Promise<boolean> {
+  return false;
+}
+
 const authService = {
   registerUser,
   login,
   logout,
   getAuthenticatedUserId,
+  deleteUser,
 };
 
 export default authService;

@@ -1,53 +1,51 @@
 import bcrypt from "bcryptjs";
 import sql from "@/lib/db";
-import type { dbResponse } from "@/types";
-import type { UserLoginResponse } from "@/types/user";
+import { z } from "zod";
 
-type UserWithPassword = UserLoginResponse & {
-  password: string;
-};
+export const UserLoginSchema = z.object({
+  id: z.number(),
+  user_name: z.string(),
+  email: z.string().email(),
+});
+
+const UserWithPasswordSchema = UserLoginSchema.extend({
+  password: z.string(),
+});
+
+// Infer TypeScript types directly from Zod
+export type UserLoginResponse = z.infer<typeof UserLoginSchema>;
 
 const dbLogin = async (
   username: string,
   password: string,
-): Promise<dbResponse<UserLoginResponse | null>> => {
+): Promise<UserLoginResponse> => {
+  let rows;
+
   try {
-    const rows = await sql<UserWithPassword[]>`
+    rows = await sql`
       SELECT id, user_name, email, password
       FROM "user"
       WHERE user_name = ${username}
       LIMIT 1
     `;
-
-    const userRecord = rows[0] ?? null;
-
-    if (!userRecord) {
-      return {
-        success: false,
-        result: null,
-      };
-    }
-
-    const isPasswordValid = await bcrypt.compare(password, userRecord.password);
-
-    if (!isPasswordValid) {
-      return {
-        success: false,
-        result: null,
-      };
-    }
-
-    // Exclude password hash before returning the user result
-    const { password: _, ...user } = userRecord;
-
-    return {
-      success: true,
-      result: user,
-    };
-  } catch (error) {
-    console.error(`DB: Query failed for user ${username}:`, error);
+  } catch (dbError) {
+    console.error(`DB: Query failed for user ${username}:`, dbError);
     throw new Error("Database fetch failed");
   }
+
+  const rawRecord = rows[0] ?? null;
+  if (!rawRecord) {
+    throw new Error("Invalid username or password"); // Generic message for security
+  }
+
+  const userRecord = UserWithPasswordSchema.parse(rawRecord);
+
+  const isPasswordValid = await bcrypt.compare(password, userRecord.password);
+  if (!isPasswordValid) {
+    throw new Error("Invalid username or password");
+  }
+
+  return UserLoginSchema.parse(userRecord);
 };
 
 const createUser = async ({
