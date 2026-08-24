@@ -10,14 +10,7 @@ import userRepository from "@/repository/userRepository";
 import type { dbResponse } from "@/types";
 import type { UserLoginResponse } from "@/types/user";
 import bcrypt from "bcryptjs";
-
-type RegisterInput = {
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-};
+import type { CreateUserInput } from "@/pages/api/user/register";
 
 type RegisterResponse = {
   success: boolean;
@@ -108,29 +101,12 @@ const username_REGEX = /^[a-zA-Z0-9_]{3,30}$/;
  * @param Params vor table user
  * @returns RegisterResponse
  */
-async function registerUser({
-  username,
-  firstName,
-  lastName,
-  email,
-  password,
-}: RegisterInput): Promise<RegisterResponse> {
+async function registerUser(data: CreateUserInput): Promise<RegisterResponse> {
   // Sanitize Inputs (trim whitespace)
-  const cleanusername = username.trim();
-  const cleanFirstName = firstName.trim();
-  const cleanLastName = lastName.trim();
-  const cleanEmail = email.trim().toLowerCase();
-
-  // Validate Required Fields
-  if (
-    !cleanusername ||
-    !cleanFirstName ||
-    !cleanLastName ||
-    !cleanEmail ||
-    !password
-  ) {
-    return { success: false, message: "All fields are required." };
-  }
+  const cleanusername = data.username.trim();
+  const cleanFirstname = data.firstname.trim();
+  const cleanLastname = data.lastname.trim();
+  const cleanEmail = data.email.trim().toLowerCase();
 
   // Validate Email Format
   if (!EMAIL_REGEX.test(cleanEmail)) {
@@ -146,22 +122,14 @@ async function registerUser({
     };
   }
 
-  // Validate Password Strength (Minimum 8 characters)
-  if (password.length < 8) {
-    return {
-      success: false,
-      message: "Password must be at least 8 characters long.",
-    };
-  }
-
   try {
     const SALT_ROUNDS = 12;
-    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+    const hashedPassword = await bcrypt.hash(data.password, SALT_ROUNDS);
 
     const dbResult = await userRepository.createUser({
       username: cleanusername,
-      firstName: cleanFirstName,
-      lastName: cleanLastName,
+      firstName: cleanFirstname,
+      lastName: cleanLastname,
       email: cleanEmail,
       password: hashedPassword,
     });

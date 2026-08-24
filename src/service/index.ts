@@ -3,31 +3,26 @@ import jwt from "jsonwebtoken";
 import { COOKIE_SECRET, COOKIE_NAME } from "astro:env/server";
 import type { AuthUser } from "@/types/user";
 import type { AstroCookies } from "astro";
+import type { ZodError } from "astro:schema";
 
 /**
- * Controleert de uitkomst van een Zod safeParse .
- * Als de validatie faalt, retourneert het direct een 400 Response object.
- * Als de validatie slaagt, retourneert het null.
+ * Confert the zod.error object to a ApiResponse
  */
-export function handleZodValidationError(result: any): Response | null {
-  if (!result.success) {
-    const errorMessage = result.error.issues
-      .map((issue: any) => `${issue.path.join(".")}: ${issue.message}`)
-      .join(", ");
+export function handleZodValidationError(error: ZodError): Response {
+  const errorMessage = error.issues
+    .map((issue: any) => `${issue.path.join(".")}: ${issue.message}`)
+    .join(", ");
 
-    const errorPayload: ApiResponse = {
-      success: false,
-      message: "Validation failed",
-      error: errorMessage,
-    };
+  const errorPayload: ApiResponse = {
+    success: false,
+    message: "Validation failed",
+    error: errorMessage,
+  };
 
-    return new Response(JSON.stringify(errorPayload), {
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
-  return null;
+  return new Response(JSON.stringify(errorPayload), {
+    status: 400,
+    headers: { "Content-Type": "application/json" },
+  });
 }
 /**
  * Verifieert een JWT token en geeft de volledige payload (of geselecteerde velden) terug.

@@ -1,11 +1,12 @@
 import RecipesRepository from "@/repository/recipesRepository";
 import type { AstroCookies } from "astro";
 import type { RecipeResponse } from "@/types/recipe";
-import { verifyAuthToken } from "..";
+import { verifyAuthToken } from ".";
 import type { AuthUser } from "@/types/user";
+import type { createRecipeInput } from "@/pages/api/recipe/addRecipe";
 
-export default async function addRecipe(
-  body: any,
+async function addRecipe(
+  body: createRecipeInput,
   cookies: AstroCookies,
 ): Promise<RecipeResponse> {
   const decoded: AuthUser = verifyAuthToken(cookies);
@@ -17,3 +18,9 @@ export default async function addRecipe(
 
   return createdDataRecipe;
 }
+
+const recipeService = {
+  addRecipe,
+};
+
+export default recipeService;
