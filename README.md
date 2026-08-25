@@ -89,43 +89,7 @@ Always follow these steps:
 - **Authentication** → Use `getAuthenticatedUserId` to verify the JWT token for protected routes. It automatically returns the standard `Authentication failed` response when invalid.
 - **Service** → Call the service within a `try-catch` block and always send a custom error message with the response.
 
-##### Template
-
-```typescript
-import { z } from "zod";
-import { handleZodValidationError } from "@/service";
-
-const schema = z.object({
-  title: z.string().min(1, "Title cannot be empty"),
-  portions: z.number().positive("Portions must be a positive number"),
-});
-
-export const POST: APIRoute = async ({ request }) => {
-  const body = await request.json();
-  const validation = schema.safeParse(body);
-
-  if (!validation.success) {
-    return handleZodValidationError(validation.error);
-  }
-
-  try {
-    await service();
-    const successPayload: ApiResponse<null> = {
-      success: true,
-      message: "Success",
-    };
-    return Response.json(successPayload, { status: 200 });
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed";
-    const errorPayload: ApiResponse<null> = {
-      success: false,
-      message,
-    };
-
-    return Response.json(errorPayload, { status: 500 });
-  }
-};
-```
+> See Template `src/pages/api/template.Ts`
 
 ---
 
