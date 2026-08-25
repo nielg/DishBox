@@ -3,21 +3,12 @@ import type { ApiResponse } from "@/types";
 import type { APIRoute } from "astro";
 
 export const DELETE: APIRoute = async ({ cookies }): Promise<Response> => {
-  const user_id: number | null =
-    await authService.getAuthenticatedUserId(cookies);
+  const auth = await authService.getAuthenticatedUserId(cookies);
 
-  if (!user_id) {
-    const errorPayload: ApiResponse<null> = {
-      success: false,
-      message: "Authentication failed",
-    };
-
-    return new Response(JSON.stringify(errorPayload), {
-      status: 401,
-      headers: { "Content-Type": "application/json" },
-    });
+  if (!auth.success) {
+    return auth.response;
   }
-
+  const user_id = auth.user_id;
   try {
     const result = await authService.deleteUser(user_id);
 

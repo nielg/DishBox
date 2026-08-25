@@ -1,5 +1,4 @@
 import { z } from "zod";
-
 import { COOKIE_NAME, COOKIE_SECURE, MAX_AGE } from "astro:env/server";
 import type { APIRoute } from "astro";
 import type { ApiResponse } from "@/types";

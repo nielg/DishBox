@@ -12,6 +12,7 @@ import userRepository, {
 import bcrypt from "bcryptjs";
 import type { CreateUserInput } from "@/pages/api/user/register";
 import type { loginInput } from "@/pages/api/user/login";
+import type { ApiResponse } from "@/types";
 
 type RegisterResponse = {
   success: boolean;
@@ -48,24 +49,51 @@ async function login(data: loginInput): Promise<string> {
  * @param cookies
  * @returns null | user_id
  */
+type AuthResult =
+  | { success: true; user_id: number }
+  | { success: false; response: Response };
+
 async function getAuthenticatedUserId(
   cookies: AstroCookies,
-): Promise<number | null> {
+): Promise<AuthResult> {
   const cookie = cookies.get(COOKIE_NAME);
 
-  if (!cookie?.value) return null;
+  if (!cookie?.value) {
+    return {
+      success: false,
+      response: new Response(
+        JSON.stringify({ success: false, message: "Authentication failed" }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        },
+      ),
+    };
+  }
 
   try {
     const decoded = jwt.verify(cookie.value, COOKIE_SECRET) as {
       id?: number;
     } | null;
-    if (decoded?.id) return decoded.id;
+    if (decoded?.id) {
+      return { success: true, user_id: decoded.id };
+    }
   } catch (error) {
     console.warn("Token verification failed");
   }
 
   await logout(cookies);
-  return null;
+
+  return {
+    success: false,
+    response: new Response(
+      JSON.stringify({ success: false, message: "Authentication failed" }),
+      {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      },
+    ),
+  };
 }
 
 /**

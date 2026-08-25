@@ -9,11 +9,11 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import RecipesService from "@/repository/recipesRepository";
 import authService from "@/service/authService";
 
-const userId = await authService.getAuthenticatedUserId(Astro.cookies);
-if (!userId) return Astro.redirect("/user/login");
+const auth = await authService.getAuthenticatedUserId(Astro.cookies);
+if (!auth.success) return Astro.redirect("/user/login");
 
 const recipes: RecipeMetaDataResponse[] =
-  await RecipesService.getRecipesMetaDataByUserId(userId);
+  await RecipesService.getRecipesMetaDataByUserId(auth.user_id);
 ---
 
 <BaseLayout>
