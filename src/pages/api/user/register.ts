@@ -4,11 +4,11 @@ import type { APIRoute } from "astro";
 import { handleZodValidationError } from "@/service";
 import type { ApiResponse } from "@/types";
 
-const createUserSchema = z.object({
-  username: z.string().min(1, "Username cannot be empty"),
-  firstname: z.string().min(1, "Firstname cannot be empty"),
-  lastname: z.string().min(1, "Lastname cannot be empty"),
-  email: z.string().email("Invalid email address"),
+export const createUserSchema = z.object({
+  username: z.string().trim().min(1, "Username cannot be empty"),
+  firstname: z.string().trim().min(1, "Firstname cannot be empty"),
+  lastname: z.string().trim().min(1, "Lastname cannot be empty"),
+  email: z.string().trim().toLowerCase().email("Invalid email address"),
   password: z
     .string()
     .min(8, "Password needs to be at least 8 characters long"),

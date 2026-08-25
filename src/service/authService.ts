@@ -102,30 +102,27 @@ const logout = (cookies: AstroCookies): void => {
  * @param Params for table user
  */
 async function registerUser(data: CreateUserInput): Promise<void> {
-  // Sanitize Inputs (trim whitespace)
-  const cleanusername = data.username.trim();
-  const cleanFirstname = data.firstname.trim();
-  const cleanLastname = data.lastname.trim();
-  const cleanEmail = data.email.trim().toLowerCase();
-
   try {
     const SALT_ROUNDS = 12;
     const hashedPassword = await bcrypt.hash(data.password, SALT_ROUNDS);
 
     await userRepository.createUser({
-      username: cleanusername,
-      firstName: cleanFirstname,
-      lastName: cleanLastname,
-      email: cleanEmail,
+      username: data.username,
+      firstname: data.firstname,
+      lastname: data.lastname,
+      email: data.email,
       password: hashedPassword,
     });
   } catch (error: any) {
+    const pgCode = error?.cause?.code || error?.code;
     // Check for PostgreSQL unique constraint violation (code 23505)
-    if (error?.code === "23505") {
-      throw Error("Username or email already taken");
+    if (pgCode === "23505") {
+      throw new Error("Username or email already taken");
     }
 
-    throw Error("Registration failed", error.message);
+    throw new Error(
+      error instanceof Error ? error.message : "Registration failed",
+    );
   }
 }
 

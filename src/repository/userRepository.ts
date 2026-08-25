@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import sql from "@/lib/db";
 import { z } from "zod";
+import type { CreateUserInput } from "@/pages/api/user/register";
 
 export const UserLoginSchema = z.object({
   id: z.number(),
@@ -48,27 +49,15 @@ const dbLogin = async (
   return UserLoginSchema.parse(userRecord);
 };
 
-const createUser = async ({
-  username,
-  firstName,
-  lastName,
-  email,
-  password,
-}: {
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-}): Promise<void> => {
+const createUser = async (user: CreateUserInput): Promise<void> => {
   try {
     await sql`
       INSERT INTO "user" (user_name, first_name, last_name, email, password)
-      VALUES (${username}, ${firstName}, ${lastName}, ${email}, ${password})
+      VALUES (${user.username}, ${user.firstname}, ${user.lastname}, ${user.email}, ${user.password})
     `;
   } catch (error) {
-    console.error(`DB: Failed to create user ${username}`, error);
-    throw Error("DB: Failed to create user");
+    console.error(`DB: Failed to create user ${user.username}`, error);
+    throw new Error("DB: Failed to create user", { cause: error });
   }
 };
 
