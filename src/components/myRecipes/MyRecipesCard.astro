@@ -2,7 +2,7 @@
 import { Image } from "astro:assets";
 import defaultImg from "../../assets/recipes-img/default-img.png";
 import type { RecipeMetaDataResponse } from "@/types/recipe";
-import { date } from "astro:schema";
+import { Icon } from "astro-icon/components";
 
 type Props = {
   data: RecipeMetaDataResponse;
@@ -12,21 +12,28 @@ const { data }: Props = Astro.props;
 ---
 
 <a href={`/myRecipes/${data.id}`} class="card-link">
-  <div class="card-container">
-    <div class="img-container">
+  <article class="card">
+    <div class="card-thumbnail">
       <Image
-        class="img"
+        class="card-img"
         src={defaultImg}
-        width={100}
-        height={100}
-        alt="Default recipes img"
+        width={280}
+        height={160}
+        alt={`${data.title} thumbnail`}
       />
+      <div class="card-img-overlay"></div>
     </div>
-    <div class="content">
-      <h3>{data.title}</h3>
-      <p>{data.description}</p>
+    <div class="card-body">
+      <h3 class="card-title">{data.title}</h3>
+      {data.description && <p class="card-desc">{data.description}</p>}
+      <div class="card-footer">
+        <span class="view-link">
+          View recipe
+          <Icon name="lucide:arrow-right" class="arrow-icon" />
+        </span>
+      </div>
     </div>
-  </div>
+  </article>
 </a>
 
 <style>
@@ -36,31 +43,105 @@ const { data }: Props = Astro.props;
     display: block;
   }
 
-  .card-container {
+  .card {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
     overflow: hidden;
-
-    width: 15rem;
-
-    border: 2px solid rgb(61, 56, 56);
-    background-color: white;
-    border-radius: 0.5rem;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 1rem;
+    box-shadow: var(--shadow-md);
+    transition: transform 0.2s ease, box-shadow 0.25s ease, border-color 0.2s ease;
+    height: 100%;
   }
 
-  .img-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg), var(--shadow-ocean);
+    border-color: var(--primary-300);
+  }
+
+  .card-thumbnail {
+    position: relative;
     width: 100%;
     height: 10rem;
     overflow: hidden;
+    background-color: var(--bg-surface-subtle);
   }
 
-  .img {
+  .card-img {
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.35s ease;
+  }
+
+  .card:hover .card-img {
+    transform: scale(1.04);
+  }
+
+  .card-img-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 40%, rgba(13, 148, 136, 0.12) 100%);
+  }
+
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1rem 1.1rem 1.1rem;
+    flex: 1;
+  }
+
+  .card-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-desc {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex: 1;
+  }
+
+  .card-footer {
+    margin-top: auto;
+    padding-top: 0.65rem;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .view-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--primary-600);
+    transition: gap 0.2s ease, color 0.15s ease;
+  }
+
+  .card:hover .view-link {
+    gap: 0.5rem;
+    color: var(--primary-800);
+  }
+
+  .arrow-icon {
+    width: 0.85rem;
+    height: 0.85rem;
   }
 </style>
