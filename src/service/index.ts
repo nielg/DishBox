@@ -24,27 +24,3 @@ export function handleZodValidationError(error: ZodError): Response {
     headers: { "Content-Type": "application/json" },
   });
 }
-/**
- * Verifieert een JWT token en geeft de volledige payload (of geselecteerde velden) terug.
- * Gooit een error als het token ongeldig of verlopen is.
- */
-export function verifyAuthToken(cookies: AstroCookies): AuthUser {
-  try {
-    const token = cookies.get(COOKIE_NAME)?.value;
-
-    if (!token) {
-      throw new Error("Unauthorized: Geen token meegegeven");
-    }
-
-    const decoded = jwt.verify(token, COOKIE_SECRET) as AuthUser;
-
-    if (!decoded || !decoded.id) {
-      throw new Error("Ongeldige token payload");
-    }
-
-    return decoded;
-  } catch (error) {
-    console.error("JWT verificatie mislukt:", error);
-    throw new Error("Unauthorized: Ongeldig of verlopen token");
-  }
-}

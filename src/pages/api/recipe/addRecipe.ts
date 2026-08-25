@@ -3,6 +3,7 @@ import type { ApiResponse } from "@/types";
 import type { APIRoute } from "astro";
 import recipeService from "@/service/recipeService";
 import { handleZodValidationError } from "@/service";
+import authService from "@/service/authService";
 
 const createRecipeSchema = z.object({
   title: z.string().min(1, "Title cannot be empty"),
@@ -19,20 +20,32 @@ const createRecipeSchema = z.object({
     .min(1, "At least one instruction required"),
 });
 
-export type createRecipeInput = z.infer<typeof createRecipeSchema>;
+export type CreateRecipeInput = z.infer<typeof createRecipeSchema> & {
+  user_id: number;
+};
 
 export const POST: APIRoute = async ({
   request,
   cookies,
 }): Promise<Response> => {
   try {
+    const auth = await authService.getAuthenticatedUserId(cookies);
+
+    if (!auth.success) {
+      return auth.response;
+    }
+
     const body = await request.json();
     const data = createRecipeSchema.safeParse(body);
 
     if (!data.success) {
       return handleZodValidationError(data.error);
     }
-    const createdDataRecipe = await recipeService.addRecipe(data.data, cookies);
+
+    const createdDataRecipe = await recipeService.addRecipe({
+      ...data.data,
+      user_id: auth.user_id,
+    });
 
     const successPayload: ApiResponse = {
       success: true,
