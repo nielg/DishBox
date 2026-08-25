@@ -13,11 +13,6 @@ import bcrypt from "bcryptjs";
 import type { CreateUserInput } from "@/pages/api/user/register";
 import type { loginInput } from "@/pages/api/user/login";
 
-type RegisterResponse = {
-  success: boolean;
-  message: string;
-};
-
 /**
  * Checks user credentials if success create jwt token
  * @param username, password
@@ -137,10 +132,10 @@ async function registerUser(data: CreateUserInput): Promise<void> {
 /**
  * Deletes user account
  * @param user_id
- * @returns Success boolean
+ * @returns void
  */
-async function deleteUser(user_id: number): Promise<boolean> {
-  return false;
+async function deleteUser(user_id: number): Promise<void> {
+  await userRepository.dbDeleteUser(user_id);
 }
 
 const authService = {

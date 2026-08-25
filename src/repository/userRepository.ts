@@ -60,23 +60,33 @@ const createUser = async ({
   lastName: string;
   email: string;
   password: string;
-}): Promise<{ success: boolean }> => {
+}): Promise<void> => {
   try {
     await sql`
       INSERT INTO "user" (user_name, first_name, last_name, email, password)
       VALUES (${username}, ${firstName}, ${lastName}, ${email}, ${password})
     `;
-
-    return { success: true };
   } catch (error) {
     console.error(`DB: Failed to create user ${username}`, error);
-    return { success: false };
+    throw Error("DB: Failed to create user");
+  }
+};
+
+const dbDeleteUser = async (user_id: number): Promise<void> => {
+  try {
+    await sql`
+      DELETE FROM "user"
+      WHERE id = ${user_id}
+    `;
+  } catch (error) {
+    throw Error(`DB: Failed to delete user ${user_id}`, { cause: error });
   }
 };
 
 const userRepository = {
   dbLogin,
   createUser,
+  dbDeleteUser,
 };
 
 export default userRepository;
