@@ -36,7 +36,7 @@ const dbLogin = async (
 
   const rawRecord = rows[0] ?? null;
   if (!rawRecord) {
-    throw new Error("Invalid username or password"); // Generic message for security
+    throw new Error("Invalid username or password");
   }
 
   const userRecord = UserWithPasswordSchema.parse(rawRecord);

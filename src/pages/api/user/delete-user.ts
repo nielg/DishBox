@@ -10,20 +10,7 @@ export const DELETE: APIRoute = async ({ cookies }): Promise<Response> => {
   }
   const user_id = auth.user_id;
   try {
-    const result = await authService.deleteUser(user_id);
-
-    if (!result) {
-      const errorPayload: ApiResponse<number> = {
-        success: false,
-        message: "User account could not be found or deleted",
-        data: user_id,
-      };
-
-      return new Response(JSON.stringify(errorPayload), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
+    await authService.deleteUser(user_id);
 
     // Clear session cookies upon successful deletion
     authService.logout(cookies);
