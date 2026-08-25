@@ -38,24 +38,18 @@ export const POST: APIRoute = async ({
     });
 
     const successPayload: ApiResponse<null> = {
-      success: false,
-      message: "Login successfull",
+      success: true,
+      message: "Login successful",
       redirectUrl: "/",
     };
 
-    return new Response(JSON.stringify(successPayload), {
-      status: 201,
-      headers: { "Content-Type": "application/json" },
-    });
+    return Response.json(successPayload, { status: 200 });
   } catch (error) {
     const errorPayload: ApiResponse<null> = {
       success: false,
       message: "Login failed",
     };
 
-    return new Response(JSON.stringify(errorPayload), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return Response.json(errorPayload, { status: 500 });
   }
 };

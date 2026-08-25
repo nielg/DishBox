@@ -1,7 +1,7 @@
 import RecipesService from "@/repository/recipesRepository";
 import type { APIRoute } from "astro";
 
-export const DELETE: APIRoute = async ({ request }) => {
+export const DELETE: APIRoute = async ({ request }): Promise<Response> => {
   try {
     const data = await request.json();
     const { id: recipeId } = data;

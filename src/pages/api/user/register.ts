@@ -2,6 +2,7 @@ import { z } from "zod";
 import authService from "@/service/authService";
 import type { APIRoute } from "astro";
 import { handleZodValidationError } from "@/service";
+import type { ApiResponse } from "@/types";
 
 const createUserSchema = z.object({
   username: z.string().min(1, "Username cannot be empty"),
@@ -21,14 +22,17 @@ export const POST: APIRoute = async ({ request }): Promise<Response> => {
     return handleZodValidationError(data.error);
   }
 
-  const result = await authService.registerUser(data.data);
+  try {
+    await authService.registerUser(data.data);
+    return Response.redirect(new URL("user/login", request.url), 303);
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Regristation failed";
+    const errorPayload: ApiResponse<null> = {
+      success: false,
+      message,
+    };
 
-  if (!result.success) {
-    return new Response(JSON.stringify({ message: result.message }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" },
-    });
+    return Response.json(errorPayload, { status: 500 });
   }
-
-  return Response.redirect(new URL("user/login", request.url), 303);
 };

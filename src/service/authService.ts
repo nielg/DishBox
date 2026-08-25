@@ -12,7 +12,6 @@ import userRepository, {
 import bcrypt from "bcryptjs";
 import type { CreateUserInput } from "@/pages/api/user/register";
 import type { loginInput } from "@/pages/api/user/login";
-import type { ApiResponse } from "@/types";
 
 type RegisterResponse = {
   success: boolean;
@@ -61,12 +60,9 @@ async function getAuthenticatedUserId(
   if (!cookie?.value) {
     return {
       success: false,
-      response: new Response(
-        JSON.stringify({ success: false, message: "Authentication failed" }),
-        {
-          status: 401,
-          headers: { "Content-Type": "application/json" },
-        },
+      response: Response.json(
+        { success: false, message: "Authentication failed" },
+        { status: 401 },
       ),
     };
   }
@@ -86,12 +82,9 @@ async function getAuthenticatedUserId(
 
   return {
     success: false,
-    response: new Response(
-      JSON.stringify({ success: false, message: "Authentication failed" }),
-      {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      },
+    response: Response.json(
+      { success: false, message: "Authentication failed" },
+      { status: 401 },
     ),
   };
 }
@@ -107,66 +100,37 @@ const logout = (cookies: AstroCookies): void => {
   });
 };
 
-//  regex helpers for registerUser
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const username_REGEX = /^[a-zA-Z0-9_]{3,30}$/;
-
 /**
  * Sanitizes and validates inputs, hashes password
  * Checks for username and email unique constraints
  * Stores user in db
- * @param Params vor table user
- * @returns RegisterResponse
+ * @param Params for table user
  */
-async function registerUser(data: CreateUserInput): Promise<RegisterResponse> {
+async function registerUser(data: CreateUserInput): Promise<void> {
   // Sanitize Inputs (trim whitespace)
   const cleanusername = data.username.trim();
   const cleanFirstname = data.firstname.trim();
   const cleanLastname = data.lastname.trim();
   const cleanEmail = data.email.trim().toLowerCase();
 
-  // Validate Email Format
-  if (!EMAIL_REGEX.test(cleanEmail)) {
-    return { success: false, message: "Invalid email format." };
-  }
-
-  // Validate username Format
-  if (!username_REGEX.test(cleanusername)) {
-    return {
-      success: false,
-      message:
-        "username must be 3-30 characters long and contain only letters, numbers, or underscores.",
-    };
-  }
-
   try {
     const SALT_ROUNDS = 12;
     const hashedPassword = await bcrypt.hash(data.password, SALT_ROUNDS);
 
-    const dbResult = await userRepository.createUser({
+    await userRepository.createUser({
       username: cleanusername,
       firstName: cleanFirstname,
       lastName: cleanLastname,
       email: cleanEmail,
       password: hashedPassword,
     });
-
-    if (!dbResult.success) {
-      return { success: false, message: "User registration failed." };
-    }
-
-    return { success: true, message: "User registered successfully." };
   } catch (error: any) {
     // Check for PostgreSQL unique constraint violation (code 23505)
     if (error?.code === "23505") {
-      return {
-        success: false,
-        message: "username or email is already taken.",
-      };
+      throw Error("Username or email already taken");
     }
 
-    console.error("Registration error:", error);
-    return { success: false, message: "An unexpected error occurred." };
+    throw Error("Registration failed", error.message);
   }
 }
 
