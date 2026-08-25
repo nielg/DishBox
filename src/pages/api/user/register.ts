@@ -8,8 +8,10 @@ const createUserSchema = z.object({
   username: z.string().min(1, "Username cannot be empty"),
   firstname: z.string().min(1, "Firstname cannot be empty"),
   lastname: z.string().min(1, "Lastname cannot be empty"),
-  email: z.email().min(1, "email cannot be empty"),
-  password: z.string().min(8, "Password needs to be atleast 8 characters long"),
+  email: z.string().email("Invalid email address"),
+  password: z
+    .string()
+    .min(8, "Password needs to be at least 8 characters long"),
 });
 
 export type CreateUserInput = z.infer<typeof createUserSchema>;
@@ -24,10 +26,16 @@ export const POST: APIRoute = async ({ request }): Promise<Response> => {
 
   try {
     await authService.registerUser(data.data);
-    return Response.redirect(new URL("user/login", request.url), 303);
+    const successPayload: ApiResponse<null> = {
+      success: true,
+      message: "Registration successful",
+      redirectUrl: "/user/login",
+    };
+
+    return Response.json(successPayload, { status: 201 });
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Regristation failed";
+      error instanceof Error ? error.message : "Registration failed";
     const errorPayload: ApiResponse<null> = {
       success: false,
       message,
