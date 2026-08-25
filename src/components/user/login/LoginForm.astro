@@ -9,34 +9,48 @@
     <br />
     <input type="password" name="password" id="password" required />
   </div>
-  <br />
+  <p>Don't have a account yet? <a href="/user/register">register here</a></p>
   <button type="submit">Submit</button>
+  <p id="login-error-message" style="color: red;"></p>
 </form>
 
 <script>
   const form = document.getElementById("login-form") as HTMLFormElement;
+  const errorMsg = document.getElementById(
+    "login-error-message",
+  ) as HTMLParagraphElement;
 
   form?.addEventListener("submit", async (e) => {
     e.preventDefault();
+    if (errorMsg) errorMsg.textContent = "";
 
     const formData = new FormData(form);
-    console.log(formData);
+    const payload = Object.fromEntries(formData.entries());
+
     try {
       const response = await fetch("/api/user/login", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
-      console.log(data);
 
       if (!response.ok) {
-        console.error("Login failed");
+        if (errorMsg) {
+          errorMsg.textContent = data.error || data.message || "Login failed";
+        }
+        console.error("Login failed", data);
         return;
       }
 
-      window.location.href = "/";
+      window.location.href = data.redirectUrl || "/";
     } catch (error) {
+      if (errorMsg) {
+        errorMsg.textContent = "An unexpected network error occurred.";
+      }
       console.error("An unexpected network error occurred.");
     }
   });

@@ -73,8 +73,9 @@ async function getRecipeById(id: number): Promise<RecipeResponse> {
 }
 
 async function deleteRecipeById(id: number): Promise<string> {
+  let result;
   try {
-    await sql`
+    result = await sql`
       DELETE
       FROM recipes
       WHERE id = ${id}
@@ -82,6 +83,10 @@ async function deleteRecipeById(id: number): Promise<string> {
   } catch (error) {
     console.error("DB: Failed to delete recipe:", error);
     throw new Error("Database delete failed");
+  }
+
+  if (result.count === 0) {
+    throw new Error(`Recipe with ID ${id} not found`);
   }
 
   return `Succesfully delete recipe ${id}`;

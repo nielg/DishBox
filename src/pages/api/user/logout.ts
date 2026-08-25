@@ -13,10 +13,8 @@ export const GET: APIRoute = async ({ cookies }): Promise<Response> => {
       success: false,
       message: "No active session found",
     };
-    return new Response(JSON.stringify(errorPayload), {
-      status: 401,
-      headers: { "Content-Type": "application/json" },
-    });
+
+    return Response.json(errorPayload, { status: 401 });
   }
 
   await authService.logout(cookies);
@@ -27,8 +25,5 @@ export const GET: APIRoute = async ({ cookies }): Promise<Response> => {
     redirectUrl: "/",
   };
 
-  return new Response(JSON.stringify(successPayload), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
+  return Response.json(successPayload, { status: 200 });
 };

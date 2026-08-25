@@ -1,0 +1,34 @@
+---
+import ConfirmModal from "@/components/ConfirmModal.astro";
+---
+
+<section class="text-red">
+  <h3>Danger zone</h3>
+  <button
+    class="btn"
+    onclick="document.getElementById('delete-account').showModal()"
+    >Delete account</button
+  >
+
+  <ConfirmModal
+    modalId="delete-account"
+    title="Delete Account"
+    message="This action cannot be undone. Are you sure you want to proceed?"
+    actionUrl="/api/delete-account"
+    method="POST"
+  />
+</section>
+
+<style>
+  section {
+    border: 1px solid var(--red-accent);
+    background-color: #edb0b5;
+    padding: 2rem;
+    border-radius: 10px;
+    box-sizing: border-box;
+  }
+
+  h3 {
+    margin-top: 0;
+  }
+</style>
