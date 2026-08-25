@@ -63,10 +63,14 @@ const createUser = async (user: CreateUserInput): Promise<void> => {
 
 const dbDeleteUser = async (user_id: number): Promise<void> => {
   try {
-    await sql`
+    const result = await sql`
       DELETE FROM "user"
       WHERE id = ${user_id}
     `;
+
+    if (result.count === 0) {
+      throw new Error(`User with ID ${user_id} not found`);
+    }
   } catch (error) {
     throw Error(`DB: Failed to delete user ${user_id}`, { cause: error });
   }
