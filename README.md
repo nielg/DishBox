@@ -1,93 +1,93 @@
 # 🍲 DishBox
 
-**DishBox** is een moderne, self-hosted webapplicatie voor het beheren, organiseren en bewaren van je eigen kookrecepten. De applicatie is gebouwd met een sterke nadruk op prestaties, typeveiligheid en een modulaire layered architectuur.
+**DishBox** is a modern, self-hosted web application for managing, organizing, and saving your personal cooking recipes. The application is built with a strong focus on performance, type-safety, and a modular layered architecture.
 
 ---
 
-## 1. Project Overzicht & Architectuur
+## 1. Project Overview & Architecture
 
-DishBox combineert Server-Side Rendering (SSR) voor snelle paginaweergaven en SEO met interactieve client-side componenten (React Islands) waar nodig.
+DishBox combines Server-Side Rendering (SSR) for fast page loads and SEO with interactive client-side components (React Islands) where needed.
 
 ### Tech Stack
 
-- **Full-stack Framework:** [Astro 5+](https://astro.build/) (geconfigureerd in `output: "server"` SSR-modus met `@astrojs/node` standalone adapter).
-- **Front-end UI:** Astro componenten (`.astro`) voor SSR pagina's en layouts; [React 19](https://react.dev/) voor dynamische, interactieve multi-step formulieren.
-- **Iconen & Styling:** CSS Modules, Scoped CSS, `astro-icon` met [Lucide Icons](https://lucide.dev/).
-- **Database:** [PostgreSQL](https://www.postgresql.org/) met de snelle client [`postgres.js`](https://github.com/porsager/postgres) (connection pooling).
-- **Validatie:** [Zod](https://zod.dev/) voor runtime schema validatie van API-requests en database responses.
-- **Authenticatie:** JWT (`jsonwebtoken`) opgeslagen in veilige `HttpOnly` cookies, wachtwoord hashing via `bcryptjs`.
+- **Full-stack Framework:** [Astro 5+](https://astro.build/) (configured in `output: "server"` SSR mode with `@astrojs/node` standalone adapter).
+- **Front-end UI:** Astro components (`.astro`) for SSR pages and layouts; [React 19](https://react.dev/) for dynamic, interactive multi-step forms.
+- **Icons & Styling:** CSS Modules, Scoped CSS, `astro-icon` with [Lucide Icons](https://lucide.dev/).
+- **Database:** [PostgreSQL](https://www.postgresql.org/) with the fast [`postgres.js`](https://github.com/porsager/postgres) client (connection pooling).
+- **Validation:** [Zod](https://zod.dev/) for runtime schema validation of API requests and database responses.
+- **Authentication:** JWT (`jsonwebtoken`) stored in secure `HttpOnly` cookies, password hashing with `bcryptjs`.
 - **Runtime:** Node.js `>= 22.12.0`.
 
 ---
 
-## 2. Mapstructuur (Directory Structure)
+## 2. Directory Structure
 
 ```text
 dishBox/
-├── public/                 # Statische publieke bestanden (favicons, etc.)
+├── public/                 # Static public files (favicons, etc.)
 ├── src/
-│   ├── assets/             # Statische assets die door Astro geoptimaliseerd worden (bijv. afbeeldingen)
-│   ├── components/         # Herbruikbare UI-componenten
-│   ├── layouts/            # Basis HTML layouts (BaseLayout.astro, Layout.astro)
-│   ├── lib/                # Externe clients en infrastructurele helpers (PostgreSQL connectie)
-│   ├── pages/              # File-based routing voor pagina's en API endpoints
+│   ├── assets/             # Static assets optimized by Astro (e.g. images)
+│   ├── components/         # Reusable UI components
+│   ├── layouts/            # Base HTML layouts (BaseLayout.astro, Layout.astro)
+│   ├── lib/                # External clients and infrastructure helpers (PostgreSQL connection)
+│   ├── pages/              # File-based routing for pages and API endpoints
 │   │   ├── api/            # Server-side API endpoints (JSON REST routes)
-│   │   ├── ...             # Resterend pagina's
-│   ├── repository/         # Data Access Layer (Rechtstreekse SQL queries naar PostgreSQL)
-│   ├── service/            # Business Logic Layer (Hashing, tokens, validaties, business rules)
-│   ├── types/              # TypeScript definities en interfaces (ApiResponse, Recipe, User)
-│   ├── utils/              # Herbruikbare client/server utility functies (bijv. auth helpers)
-│   ├── middleware.ts       # Astro middleware voor sessie-extractie en route context
-│   └── env.d.ts            # Type-definities voor Astro environment variabelen
-├── astro.config.mjs        # Astro configuratie (Node adapter, Astro env schema, plugins)
-├── package.json            # Project dependencies en scripts
-└── tsconfig.json           # TypeScript compiler configuratie
+│   │   ├── ...             # Remaining pages
+│   ├── repository/         # Data Access Layer (Direct SQL queries to PostgreSQL)
+│   ├── service/            # Business Logic Layer (Hashing, tokens, validations, business rules)
+│   ├── types/              # TypeScript definitions and interfaces (ApiResponse, Recipe, User)
+│   ├── utils/              # Reusable client/server utility functions (e.g. auth helpers)
+│   ├── middleware.ts       # Astro middleware for session extraction and route context
+│   └── env.d.ts            # Type definitions for Astro environment variables
+├── astro.config.mjs        # Astro configuration (Node adapter, Astro env schema, plugins)
+├── package.json            # Project dependencies and scripts
+└── tsconfig.json           # TypeScript compiler configuration
 ```
 
 ---
 
-## 3. Back-end Werking
+## 3. Back-end Architecture
 
-De back-end volgt een strikte **3-Layer Architecture** (Drielagenarchitectuur). Dit zorgt voor een duidelijke scheiding van verantwoordelijkheden:
+The back-end follows a strict **3-Layer Architecture**. This ensures a clear separation of concerns:
 
 ```mermaid
 graph LR
     Client[Client / Frontend] -->|HTTP Request| API[API Route /pages/api/*]
-    API -->|Valideert met Zod & roept aan| Service[Service Layer /src/service/*]
-    Service -->|Business Logic & roept aan| Repo[Repository Layer /src/repository/*]
+    API -->|Validates with Zod & calls| Service[Service Layer /src/service/*]
+    Service -->|Business Logic & calls| Repo[Repository Layer /src/repository/*]
     Repo -->|SQL Query via postgres.js| DB[(PostgreSQL Database)]
 ```
 
 ### 1. API Route Layer (`src/pages/api/`)
 
-- Ontvangt HTTP requests.
-- Leest de JSON body (`await request.json()`).
-- Valideert de input met een **Zod schema** (`schema.safeParse(body)`).
-- Controleert authenticatie via de service layer (`authService.getAuthenticatedUserId(cookies)`).
-- Retourneert altijd een gestandaardiseerd `ApiResponse<T>` JSON-object.
+- Receives HTTP requests.
+- Reads the JSON body (`await request.json()`).
+- Validates the input with a **Zod schema** (`schema.safeParse(body)`).
+- Checks authentication via the service layer (`authService.getAuthenticatedUserId(cookies)`).
+- Always returns a standardized `ApiResponse<T>` JSON object.
 
 ### 2. Service Layer (`src/service/`)
 
-- Bevat de business logica van de applicatie.
-- Voert wachtwoordhashing uit (`bcrypt.hash`) en genereert JWT tokens (`jwt.sign`).
-- Valideert sessiecookies en verifieert tokens (`jwt.verify`).
-- Handelt specifieke business rules af (zoals unieke username/email checks).
+- Contains the business logic of the application.
+- Handles password hashing (`bcrypt.hash`) and generates JWT tokens (`jwt.sign`).
+- Validates session cookies and verifies tokens (`jwt.verify`).
+- Handles specific business rules (such as unique username/email checks).
 
 ### 3. Repository Layer (`src/repository/`)
 
-- De enige plek in de codebase waar SQL-queries worden uitgevoerd.
-- Maakt gebruik van de `sql` tagged template literal van `postgres.js` (veilig tegen SQL-injecties).
-- Mapt de geretourneerde database-rijen naar TypeScript types.
+- The only place in the codebase where SQL queries are executed.
+- Uses the `sql` tagged template literal from `postgres.js` (safe against SQL injection).
+- Maps returned database rows to TypeScript types.
 
 ---
 
-### Layout API endpoint
+### Layout API Endpoint
 
-Volg altijd volgende stappen
+Always follow these steps:
 
-- **Zod validation** → Create for every body a zod schema and an input type. Validate the body and return the error with `handleZodValidationError` that returns the correct response.
-- **Authentication** → For authentication use the function `getAuthenticatedUserId` to verify the jwt token. It returns the correct `Authetication failed` response if needed.
-- **Service** → Call the service in a `try-catch` block and always sent the custom error message with the response.
+- **Zod validation** → Create a Zod schema and input type for every request body. Validate the body and return errors using `handleZodValidationError`, which sends the appropriate error response.
+- **Authentication** → Use `getAuthenticatedUserId` to verify the JWT token for protected routes. It automatically returns the standard `Authentication failed` response when invalid.
+- **Service** → Call the service within a `try-catch` block and always send a custom error message with the response.
 
 ##### Template
 
@@ -96,8 +96,8 @@ import { z } from "zod";
 import { handleZodValidationError } from "@/service";
 
 const schema = z.object({
-  title: z.string().min(1, "Titel mag niet leeg zijn"),
-  portions: z.number().positive("Porties moet een positief getal zijn"),
+  title: z.string().min(1, "Title cannot be empty"),
+  portions: z.number().positive("Portions must be a positive number"),
 });
 
 export const POST: APIRoute = async ({ request }) => {
@@ -127,17 +127,17 @@ export const POST: APIRoute = async ({ request }) => {
 };
 ```
 
-### 2. HTTP Status Codes Matrix
-
-Gebruik altijd de juiste HTTP status code in API routes:
-
-| Status Code              | Naam             | Wanneer gebruiken?                                                                 |
-| :----------------------- | :--------------- | :--------------------------------------------------------------------------------- |
-| **`200 OK`**             | Success          | Succesvolle read (`GET`), update (`PUT/PATCH`), actie (`DELETE`) of login.         |
-| **`201 Created`**        | Resource Created | Succesvol aanmaken van een resource (`POST /api/recipe/addRecipe`, registratie).   |
-| **`400 Bad Request`**    | Client Error     | Zod schema validatiefouten, ontbrekende verplichte velden of ongeldige parameters. |
-| **`401 Unauthorized`**   | Auth Error       | Niet ingelogd, ontbrekende cookie, of verlopen/ongeldig JWT-token.                 |
-| **`404 Not Found`**      | Not Found        | Opgevraagde entiteit (bijv. recept-ID of gebruiker) bestaat niet in de database.   |
-| **`500 Internal Error`** | Server Error     | Onverwachte databasefouten, syntaxfouten of servercrashes.                         |
-
 ---
+
+### 4. HTTP Status Codes Matrix
+
+Always use the appropriate HTTP status code in API routes:
+
+| Status Code              | Name             | When to use?                                                                    |
+| :----------------------- | :--------------- | :------------------------------------------------------------------------------ |
+| **`200 OK`**             | Success          | Successful read (`GET`), update (`PUT/PATCH`), action (`DELETE`), or login.     |
+| **`201 Created`**        | Resource Created | Successful creation of a resource (`POST /api/recipe/addRecipe`, registration). |
+| **`400 Bad Request`**    | Client Error     | Zod schema validation errors, missing required fields, or invalid parameters.   |
+| **`401 Unauthorized`**   | Auth Error       | Not logged in, missing cookie, or expired/invalid JWT token.                    |
+| **`404 Not Found`**      | Not Found        | Requested entity (e.g. recipe ID or user) does not exist in the database.       |
+| **`500 Internal Error`** | Server Error     | Unexpected database errors, syntax errors, or server crashes.                   |
