@@ -11,6 +11,7 @@ import userRepository, {
 } from "@/repository/userRepository";
 import bcrypt from "bcryptjs";
 import type { CreateUserInput } from "@/pages/api/user/register";
+import type { loginInput } from "@/pages/api/user/login";
 
 type RegisterResponse = {
   success: boolean;
@@ -22,16 +23,10 @@ type RegisterResponse = {
  * @param username, password
  * @returns LoginResponse
  */
-async function login({
-  username,
-  password,
-}: {
-  username: string;
-  password: string;
-}): Promise<string> {
+async function login(data: loginInput): Promise<string> {
   const loginData: UserLoginResponse = await userRepository.dbLogin(
-    username,
-    password,
+    data.username,
+    data.password,
   );
 
   const expire = Math.floor(Date.now() / 1000) + MAX_AGE;

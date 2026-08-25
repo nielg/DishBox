@@ -1,24 +1,35 @@
+import { z } from "zod";
+
 import { COOKIE_NAME, COOKIE_SECURE, MAX_AGE } from "astro:env/server";
 import type { APIRoute } from "astro";
 import type { ApiResponse } from "@/types";
 import authService from "@/service/authService";
+import { handleZodValidationError } from "@/service";
 
 const cookieName = COOKIE_NAME || "_Security_Login_";
+
+const loginSchema = z.object({
+  username: z.string().min(1, "Username cannot be empty"),
+  password: z
+    .string()
+    .min(8, "Password needs to be at least 8 characters long"),
+});
+
+export type loginInput = z.infer<typeof loginSchema>;
 
 export const POST: APIRoute = async ({
   cookies,
   request,
 }): Promise<Response> => {
-  const formData = await request.formData();
+  const body = await request.json();
+  const data = loginSchema.safeParse(body);
 
-  const username = formData.get("username")?.toString() ?? "";
-  const password = formData.get("password")?.toString() ?? "";
+  if (!data.success) {
+    return handleZodValidationError(data.error);
+  }
 
   try {
-    const result = await authService.login({
-      username,
-      password,
-    });
+    const result = await authService.login(data.data);
 
     const token = result || "none";
     cookies.set(cookieName, token, {
