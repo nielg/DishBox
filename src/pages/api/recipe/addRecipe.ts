@@ -49,27 +49,19 @@ export const POST: APIRoute = async ({
 
     const successPayload: ApiResponse = {
       success: true,
-      error: null,
       message: "Recipe created successfully!",
       data: createdDataRecipe,
     };
 
-    return new Response(JSON.stringify(successPayload), {
-      status: 201,
-      headers: { "Content-Type": "application/json" },
-    });
+    return Response.json(successPayload, { status: 201 });
   } catch (error) {
-    console.error("API Error:", error);
+    const message =
+      error instanceof Error ? error.message : "Failed to create recipe";
 
-    const serverErrorPayload: ApiResponse = {
+    const errorPayload: ApiResponse = {
       success: false,
-      error: error instanceof Error ? error.message : "Internal Server Error",
-      message: "Failed to create recipe",
+      message,
     };
-
-    return new Response(JSON.stringify(serverErrorPayload), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return Response.json(errorPayload, { status: 500 });
   }
 };

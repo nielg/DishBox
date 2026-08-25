@@ -45,9 +45,10 @@ export const POST: APIRoute = async ({
 
     return Response.json(successPayload, { status: 200 });
   } catch (error) {
+    const message = error instanceof Error ? error.message : "Login failed";
     const errorPayload: ApiResponse<null> = {
       success: false,
-      message: "Login failed",
+      message,
     };
 
     return Response.json(errorPayload, { status: 500 });
