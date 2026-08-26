@@ -8,36 +8,24 @@ import type { DynamicInputInstructionsListItem } from "@/types/recipe";
 import { useAddRecipe } from "../myRecipes/addRecipe/AddRecipeContext";
 
 export function DynamicInstructionsList() {
-  const { formData } = useAddRecipe();
-  const [items, setItems] = useState<DynamicInputInstructionsListItem[]>([]);
-
+  const { updateListItem, formData, addListItem, deleteListItem } =
+    useAddRecipe();
   const [editingId, setEditingId] = useState<number | null>(
-    items[0]?.id || null,
+    formData.ingredients[0]?.id || null,
   );
 
   const addItem = () => {
     const newId = formData.instructions.length;
-    setItems((prev) => [
-      ...prev,
-      { id: newId, value: "", step: 1, duration: "10min" },
-    ]);
+    addListItem("instructions", newId);
     setEditingId(newId);
   };
 
-  const deleteItem = (id: number) => {
-    if (items.length <= 1) return;
-    setItems((prev) => prev.filter((item) => item.id !== id));
-    if (editingId === id) setEditingId(null);
-  };
-
-  const updateItem = (id: number, value: string) => {
-    setItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, value } : item)),
-    );
-  };
-
   return (
-    <DynamicInputList type="instructions" items={items} onAddItem={addItem}>
+    <DynamicInputList
+      type="instructions"
+      items={formData.instructions}
+      onAddItem={addItem}
+    >
       {(item, index) => {
         const isEditing = editingId === item.id;
         const isEmpty = !item.value.trim();
@@ -47,16 +35,18 @@ export function DynamicInstructionsList() {
             key={item.id}
             type="instructions"
             isEditing={isEditing}
-            canDelete={items.length > 1}
+            canDelete={formData.instructions.length > 1}
             onToggleEdit={() => setEditingId(isEditing ? null : item.id)}
-            onDelete={() => deleteItem(item.id)}
+            onDelete={() => deleteListItem("instructions", item.id)}
             renderInput={
               <textarea
                 className={styles["input-preview__field"]}
                 value={item.value}
                 placeholder="Placeholder"
                 autoFocus
-                onChange={(e) => updateItem(item.id, e.target.value)}
+                onChange={(e) =>
+                  updateListItem("instructions", item.id, e.target.value)
+                }
               />
             }
             renderDisplay={
