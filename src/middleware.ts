@@ -5,17 +5,19 @@ import jwt from "jsonwebtoken";
 export const onRequest = defineMiddleware((context, next) => {
   const tokenCookie = context.cookies.get(COOKIE_NAME);
 
+  let authenticated: boolean = false;
   // Attempt token verification
   if (tokenCookie?.value) {
     try {
       const decoded = jwt.verify(tokenCookie.value, COOKIE_SECRET) as {
         username?: string;
-        user_id?: number;
+        id?: number;
       } | null;
 
       if (decoded?.username) {
+        authenticated = true;
         context.locals.username = decoded.username;
-        context.locals.user_id = decoded.user_id;
+        context.locals.user_id = decoded.id;
       }
     } catch (error) {
       // Invalid/expired token: clear the bad cookie
@@ -31,7 +33,7 @@ export const onRequest = defineMiddleware((context, next) => {
     url.pathname.startsWith(path),
   );
 
-  if (isProtectedRoute && !context.locals.user_id) {
+  if (isProtectedRoute && !authenticated) {
     return context.redirect("/user/login");
   }
 
