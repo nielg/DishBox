@@ -1,53 +1,56 @@
-import { COOKIE_NAME, COOKIE_SECURE } from "astro:env/server";
+import { z } from "zod";
+import { COOKIE_NAME, COOKIE_SECURE, MAX_AGE } from "astro:env/server";
 import type { APIRoute } from "astro";
 import type { ApiResponse } from "@/types";
 import authService from "@/service/authService";
+import { handleZodValidationError } from "@/service";
 
 const cookieName = COOKIE_NAME || "_Security_Login_";
-let maxAge = 604800;
+
+const loginSchema = z.object({
+  username: z.string().min(1, "Username cannot be empty"),
+  password: z
+    .string()
+    .min(8, "Password needs to be at least 8 characters long"),
+});
+
+export type loginInput = z.infer<typeof loginSchema>;
 
 export const POST: APIRoute = async ({
   cookies,
   request,
 }): Promise<Response> => {
-  const formData = await request.formData();
+  const body = await request.json();
+  const data = loginSchema.safeParse(body);
 
-  const username = formData.get("username")?.toString() ?? "";
-  const password = formData.get("password")?.toString() ?? "";
-
-  const result = await authService.login({
-    username,
-    password,
-  });
-  let token = "none";
-
-  if (!result.success) {
-    const errorPayload: ApiResponse<null> = {
-      success: false,
-      message: "Login failed",
-    };
-
-    return new Response(JSON.stringify(errorPayload), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+  if (!data.success) {
+    return handleZodValidationError(data.error);
   }
 
-  token = result?.token || "none";
-  maxAge = result?.max || 604800;
-  cookies.set(cookieName, token, {
-    path: "/",
-    maxAge: maxAge,
-    secure: Boolean(COOKIE_SECURE || false),
-  });
-  const successPayload: ApiResponse<null> = {
-    success: false,
-    message: "Login successfull",
-    redirectUrl: "/",
-  };
+  try {
+    const result = await authService.login(data.data);
 
-  return new Response(JSON.stringify(successPayload), {
-    status: 201,
-    headers: { "Content-Type": "application/json" },
-  });
+    const token = result || "none";
+    cookies.set(cookieName, token, {
+      path: "/",
+      maxAge: MAX_AGE,
+      secure: Boolean(COOKIE_SECURE || false),
+    });
+
+    const successPayload: ApiResponse<null> = {
+      success: true,
+      message: "Login successful",
+      redirectUrl: "/",
+    };
+
+    return Response.json(successPayload, { status: 200 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Login failed";
+    const errorPayload: ApiResponse<null> = {
+      success: false,
+      message,
+    };
+
+    return Response.json(errorPayload, { status: 500 });
+  }
 };

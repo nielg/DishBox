@@ -6,51 +6,35 @@ import {
   MAX_AGE,
 } from "astro:env/server";
 import jwt from "jsonwebtoken";
-import userRepository from "@/repository/userRepository";
-import type { dbResponse } from "@/types";
-import type { UserLoginResponse } from "@/types/user";
+import userRepository, {
+  type UserLoginResponse,
+} from "@/repository/userRepository";
 import bcrypt from "bcryptjs";
 import type { CreateUserInput } from "@/pages/api/user/register";
-
-type RegisterResponse = {
-  success: boolean;
-  message: string;
-};
-
-type LoginResponse =
-  | { success: false; token: null; max: null }
-  | { success: true; token: string; max: number };
+import type { loginInput } from "@/pages/api/user/login";
 
 /**
  * Checks user credentials if success create jwt token
  * @param username, password
  * @returns LoginResponse
  */
-async function login({
-  username,
-  password,
-}: {
-  username: string;
-  password: string;
-}): Promise<LoginResponse> {
-  const loginData: dbResponse<UserLoginResponse | null> =
-    await userRepository.dbLogin(username, password);
-
-  if (loginData.success === false || loginData.result == null) {
-    return { success: false, token: null, max: null };
-  }
+async function login(data: loginInput): Promise<string> {
+  const loginData: UserLoginResponse = await userRepository.dbLogin(
+    data.username,
+    data.password,
+  );
 
   const expire = Math.floor(Date.now() / 1000) + MAX_AGE;
   const token = jwt.sign(
     {
       exp: expire,
-      id: loginData.result.id,
-      email: loginData.result.email,
-      username: loginData.result.user_name,
+      id: loginData.id,
+      email: loginData.email,
+      username: loginData.user_name,
     },
     COOKIE_SECRET,
   );
-  return { success: true, token: `${token}`, max: MAX_AGE };
+  return token;
 }
 
 /**
@@ -59,24 +43,45 @@ async function login({
  * @param cookies
  * @returns null | user_id
  */
+type AuthResult =
+  | { success: true; user_id: number }
+  | { success: false; response: Response };
+
 async function getAuthenticatedUserId(
   cookies: AstroCookies,
-): Promise<number | null> {
+): Promise<AuthResult> {
   const cookie = cookies.get(COOKIE_NAME);
 
-  if (!cookie?.value) return null;
+  if (!cookie?.value) {
+    return {
+      success: false,
+      response: Response.json(
+        { success: false, message: "Authentication failed" },
+        { status: 401 },
+      ),
+    };
+  }
 
   try {
     const decoded = jwt.verify(cookie.value, COOKIE_SECRET) as {
       id?: number;
     } | null;
-    if (decoded?.id) return decoded.id;
+    if (decoded?.id) {
+      return { success: true, user_id: decoded.id };
+    }
   } catch (error) {
     console.warn("Token verification failed");
   }
 
   await logout(cookies);
-  return null;
+
+  return {
+    success: false,
+    response: Response.json(
+      { success: false, message: "Authentication failed" },
+      { status: 401 },
+    ),
+  };
 }
 
 /**
@@ -90,67 +95,44 @@ const logout = (cookies: AstroCookies): void => {
   });
 };
 
-//  regex helpers for registerUser
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const username_REGEX = /^[a-zA-Z0-9_]{3,30}$/;
-
 /**
  * Sanitizes and validates inputs, hashes password
  * Checks for username and email unique constraints
  * Stores user in db
- * @param Params vor table user
- * @returns RegisterResponse
+ * @param Params for table user
  */
-async function registerUser(data: CreateUserInput): Promise<RegisterResponse> {
-  // Sanitize Inputs (trim whitespace)
-  const cleanusername = data.username.trim();
-  const cleanFirstname = data.firstname.trim();
-  const cleanLastname = data.lastname.trim();
-  const cleanEmail = data.email.trim().toLowerCase();
-
-  // Validate Email Format
-  if (!EMAIL_REGEX.test(cleanEmail)) {
-    return { success: false, message: "Invalid email format." };
-  }
-
-  // Validate username Format
-  if (!username_REGEX.test(cleanusername)) {
-    return {
-      success: false,
-      message:
-        "username must be 3-30 characters long and contain only letters, numbers, or underscores.",
-    };
-  }
-
+async function registerUser(data: CreateUserInput): Promise<void> {
   try {
     const SALT_ROUNDS = 12;
     const hashedPassword = await bcrypt.hash(data.password, SALT_ROUNDS);
 
-    const dbResult = await userRepository.createUser({
-      username: cleanusername,
-      firstName: cleanFirstname,
-      lastName: cleanLastname,
-      email: cleanEmail,
+    await userRepository.createUser({
+      username: data.username,
+      firstname: data.firstname,
+      lastname: data.lastname,
+      email: data.email,
       password: hashedPassword,
     });
-
-    if (!dbResult.success) {
-      return { success: false, message: "User registration failed." };
-    }
-
-    return { success: true, message: "User registered successfully." };
   } catch (error: any) {
+    const pgCode = error?.cause?.code || error?.code;
     // Check for PostgreSQL unique constraint violation (code 23505)
-    if (error?.code === "23505") {
-      return {
-        success: false,
-        message: "username or email is already taken.",
-      };
+    if (pgCode === "23505") {
+      throw new Error("Username or email already taken");
     }
 
-    console.error("Registration error:", error);
-    return { success: false, message: "An unexpected error occurred." };
+    throw new Error(
+      error instanceof Error ? error.message : "Registration failed",
+    );
   }
+}
+
+/**
+ * Deletes user account
+ * @param user_id
+ * @returns void
+ */
+async function deleteUser(user_id: number): Promise<void> {
+  await userRepository.dbDeleteUser(user_id);
 }
 
 const authService = {
@@ -158,6 +140,7 @@ const authService = {
   login,
   logout,
   getAuthenticatedUserId,
+  deleteUser,
 };
 
 export default authService;

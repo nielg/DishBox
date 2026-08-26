@@ -1,0 +1,72 @@
+---
+interface Props {
+  modalId: string;
+  title?: string;
+  message: string;
+  actionUrl: string;
+  method?: "POST" | "DELETE";
+}
+
+const {
+  modalId,
+  title = "Are you sure?",
+  message,
+  actionUrl,
+  method = "POST",
+} = Astro.props;
+---
+
+<dialog id={modalId} class="confirm-modal">
+  <div class="modal-content">
+    <h3>{title}</h3>
+    <p>{message}</p>
+
+    <form action={actionUrl} method="POST">
+      {
+        method === "DELETE" && (
+          <input type="hidden" name="_method" value="DELETE" />
+        )
+      }
+      <div class="btn-container">
+        <button type="button" class="cancel-btn btn">Cancel</button>
+        <button type="submit" class="btn">Confirm</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<script>
+  // Attach event listeners to native dialogs
+  document.querySelectorAll("dialog.confirm-modal").forEach((modal) => {
+    const dialog = modal as HTMLDialogElement;
+
+    // Close on cancel click
+    dialog
+      .querySelector(".cancel-btn")
+      ?.addEventListener("click", () => dialog.close());
+
+    // Close on background backdrop click
+    dialog.addEventListener("click", (e) => {
+      if (e.target === dialog) dialog.close();
+    });
+  });
+</script>
+
+<style>
+  dialog::backdrop {
+    background: rgba(0, 0, 0, 0.5);
+  }
+  dialog {
+    border: none;
+    border-radius: 8px;
+    padding: 1.5rem;
+  }
+
+  .btn-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    margin-top: 2rem;
+  }
+</style>

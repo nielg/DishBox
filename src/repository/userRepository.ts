@@ -1,84 +1,85 @@
 import bcrypt from "bcryptjs";
 import sql from "@/lib/db";
-import type { dbResponse } from "@/types";
-import type { UserLoginResponse } from "@/types/user";
+import { z } from "zod";
+import type { CreateUserInput } from "@/pages/api/user/register";
 
-type UserWithPassword = UserLoginResponse & {
-  password: string;
-};
+export const UserLoginSchema = z.object({
+  id: z.number(),
+  user_name: z.string(),
+  email: z.string().email(),
+});
+
+const UserWithPasswordSchema = UserLoginSchema.extend({
+  password: z.string(),
+});
+
+// Infer TypeScript types directly from Zod
+export type UserLoginResponse = z.infer<typeof UserLoginSchema>;
 
 const dbLogin = async (
   username: string,
   password: string,
-): Promise<dbResponse<UserLoginResponse | null>> => {
+): Promise<UserLoginResponse> => {
+  let rows;
+
   try {
-    const rows = await sql<UserWithPassword[]>`
+    rows = await sql`
       SELECT id, user_name, email, password
       FROM "user"
       WHERE user_name = ${username}
       LIMIT 1
     `;
-
-    const userRecord = rows[0] ?? null;
-
-    if (!userRecord) {
-      return {
-        success: false,
-        result: null,
-      };
-    }
-
-    const isPasswordValid = await bcrypt.compare(password, userRecord.password);
-
-    if (!isPasswordValid) {
-      return {
-        success: false,
-        result: null,
-      };
-    }
-
-    // Exclude password hash before returning the user result
-    const { password: _, ...user } = userRecord;
-
-    return {
-      success: true,
-      result: user,
-    };
-  } catch (error) {
-    console.error(`DB: Query failed for user ${username}:`, error);
+  } catch (dbError) {
+    console.error(`DB: Query failed for user ${username}:`, dbError);
     throw new Error("Database fetch failed");
   }
+
+  const rawRecord = rows[0] ?? null;
+  if (!rawRecord) {
+    throw new Error("Invalid username or password");
+  }
+
+  const userRecord = UserWithPasswordSchema.parse(rawRecord);
+
+  const isPasswordValid = await bcrypt.compare(password, userRecord.password);
+  if (!isPasswordValid) {
+    throw new Error("Invalid username or password");
+  }
+
+  return UserLoginSchema.parse(userRecord);
 };
 
-const createUser = async ({
-  username,
-  firstName,
-  lastName,
-  email,
-  password,
-}: {
-  username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-}): Promise<{ success: boolean }> => {
+const createUser = async (user: CreateUserInput): Promise<void> => {
   try {
     await sql`
       INSERT INTO "user" (user_name, first_name, last_name, email, password)
-      VALUES (${username}, ${firstName}, ${lastName}, ${email}, ${password})
+      VALUES (${user.username}, ${user.firstname}, ${user.lastname}, ${user.email}, ${user.password})
     `;
-
-    return { success: true };
   } catch (error) {
-    console.error(`DB: Failed to create user ${username}`, error);
-    return { success: false };
+    console.error(`DB: Failed to create user ${user.username}`, error);
+    throw new Error("DB: Failed to create user", { cause: error });
+  }
+};
+
+const dbDeleteUser = async (user_id: number): Promise<void> => {
+  let result;
+  try {
+    result = await sql`
+      DELETE FROM "user"
+      WHERE id = ${user_id}
+    `;
+  } catch (error) {
+    throw Error(`DB: Failed to delete user ${user_id}`, { cause: error });
+  }
+  if (result.count === 0) {
+    throw new Error(`User with ID ${user_id} not found`);
   }
 };
 
 const userRepository = {
   dbLogin,
   createUser,
+  dbDeleteUser,
 };
 
 export default userRepository;

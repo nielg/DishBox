@@ -8,35 +8,117 @@ import MyRecipesContainer from "../../components/myRecipes/MyRecipesContainer.as
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import RecipesService from "@/repository/recipesRepository";
 import authService from "@/service/authService";
+import { Icon } from "astro-icon/components";
 
-const userId = await authService.getAuthenticatedUserId(Astro.cookies);
-if (!userId) return Astro.redirect("/user/login");
+const auth = await authService.getAuthenticatedUserId(Astro.cookies);
+if (!auth.success) return Astro.redirect("/user/login");
 
 const recipes: RecipeMetaDataResponse[] =
-  await RecipesService.getRecipesMetaDataByUserId(userId);
+  await RecipesService.getRecipesMetaDataByUserId(auth.user_id);
 ---
 
 <BaseLayout>
-  <div class="myRecipes-wrapper">
-    <div class="header">
-      <WelcomeHeader title="myRecipes" />
+  <div class="page-wrapper">
+    <div class="page-header">
+      <WelcomeHeader
+        title="My Recipes"
+        subtitle="All your saved recipes in one place"
+      />
       <Button
         text="Add new recipe"
         link="/myRecipes/addRecipe"
         iconName="lucide:plus"
       />
     </div>
-    <MyRecipesContainer>
-      {recipes.map((recipe) => <MyRecipesCard data={recipe} />)}
-    </MyRecipesContainer>
+
+    <div class="section-divider"></div>
+
+    {
+      recipes.length === 0 ? (
+        <div class="empty-state">
+          <div class="empty-icon-wrap">
+            <Icon name="lucide:book-open" class="empty-icon" />
+          </div>
+          <h3>No recipes yet</h3>
+          <p>Start building your cookbook by adding your first recipe.</p>
+          <Button
+            text="Add your first recipe"
+            link="/myRecipes/addRecipe"
+            iconName="lucide:plus"
+          />
+        </div>
+      ) : (
+        <MyRecipesContainer>
+          {recipes.map((recipe) => (
+            <MyRecipesCard data={recipe} />
+          ))}
+        </MyRecipesContainer>
+      )
+    }
   </div>
 </BaseLayout>
 
 <style>
-  .header {
+  .page-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .page-header {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .section-divider {
+    width: 100%;
+    height: 1px;
+    background: var(--border-subtle);
+  }
+
+  /* Empty state */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 4rem 2rem;
+    text-align: center;
+  }
+
+  .empty-icon-wrap {
+    width: 4.5rem;
+    height: 4.5rem;
+    border-radius: 50%;
+    background: var(--gradient-seafoam);
+    border: 1px solid var(--primary-200);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .empty-icon {
+    width: 2rem;
+    height: 2rem;
+    color: var(--primary-600);
+  }
+
+  .empty-state h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .empty-state p {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    max-width: 26rem;
   }
 </style>

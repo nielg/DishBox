@@ -2,27 +2,44 @@
 export const prerender = false;
 type Props = {
   title: string;
+  subtitle?: string;
 };
 
-const { title }: Props = Astro.props;
+const { title, subtitle }: Props = Astro.props;
 ---
 
 <div class="welcome-header">
-  <p class="text-gray">Welcom user</p>
+  <span class="eyebrow">My DishBox</span>
   <h2>{title}</h2>
-  <p class="text-gray">bread/crums/</p>
+  {subtitle && <p class="subtitle">{subtitle}</p>}
 </div>
 
 <style>
   .welcome-header {
     display: flex;
     flex-direction: column;
-    gap: 0;
-    margin: 2rem 0;
+    gap: 0.35rem;
   }
 
-  .welcome-header h2,
-  .welcome-header p {
+  .eyebrow {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--primary-600);
+  }
+
+  .welcome-header h2 {
     margin: 0;
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.025em;
+  }
+
+  .subtitle {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text-muted);
   }
 </style>

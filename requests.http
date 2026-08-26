@@ -1,0 +1,76 @@
+@baseUrl = http://localhost:4321
+
+###############################################################################
+# USER AUTHENTICATION & MANAGEMENT
+###############################################################################
+
+### 1. Register a new user
+# @name registerUser
+POST {{baseUrl}}/api/user/register
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "firstname": "John",
+  "lastname": "Doe",
+  "email": "john.doe@example.com",
+  "password": "Password123!"
+}
+
+### 2. Login user (Sets session cookie in REST Client)
+# @name loginUser
+POST {{baseUrl}}/api/user/login
+Content-Type: application/json
+
+{
+  "username": "testuser",
+  "password": "Password123!"
+}
+
+### 3. Logout user
+# @name logoutUser
+GET {{baseUrl}}/api/user/logout
+
+### 4. Delete user account (Requires active login session)
+# @name deleteUser
+DELETE {{baseUrl}}/api/user/delete-user
+Content-Type: application/json
+
+
+###############################################################################
+# RECIPES
+###############################################################################
+
+### 5. Create a new recipe (Requires active login session)
+# @name createRecipe
+POST {{baseUrl}}/api/recipe/addRecipe
+Content-Type: application/json
+
+{
+  "title": "Spaghetti Carbonara",
+  "description": "A classic Italian pasta dish with eggs, cheese, pancetta, and black pepper.",
+  "portions": 4,
+  "ingredients": [
+    "400g spaghetti",
+    "150g pancetta or guanciale",
+    "4 large eggs",
+    "50g Pecorino Romano grated",
+    "Freshly ground black pepper"
+  ],
+  "instructions": [
+    "Boil spaghetti in salted water until al dente.",
+    "Fry pancetta in a pan until crispy.",
+    "Whisk eggs and cheese together in a bowl.",
+    "Combine pasta, pancetta, and egg mixture off the heat, tossing quickly."
+  ]
+}
+
+### 6. Delete a recipe by ID (Requires active login session)
+# @name deleteRecipe
+DELETE {{baseUrl}}/api/recipe/deleteRecipe
+Content-Type: application/json
+
+{
+  "id": 2
+}
+

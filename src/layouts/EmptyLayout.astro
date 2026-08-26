@@ -1,7 +1,35 @@
 ---
+import Header from "@/components/layout/Header.astro";
 import Layout from "../layouts/Layout.astro";
+
+interface Props {
+  title?: string;
+}
+
+const { title = "DishBox" } = Astro.props;
 ---
 
-<Layout>
-  <slot />
+<Layout title={title}>
+  <Header />
+  <main>
+    <slot />
+  </main>
 </Layout>
+
+<style>
+  main {
+    background: radial-gradient(
+      circle at 80% 20%,
+      var(--primary-50) 0%,
+      var(--bg-app) 55%,
+      var(--secondary-50) 100%
+    );
+    min-height: calc(100vh - 4.5rem);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 1rem;
+    box-sizing: border-box;
+  }
+</style>
