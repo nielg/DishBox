@@ -1,50 +1,375 @@
 ---
-
+import { Icon } from "astro-icon/components";
 ---
 
-<form id="register-form">
-  <div>
-    <label for="username">username:</label>
-    <br />
-    <input type="text" id="username" name="username" required />
+<div class="register-card">
+  <div class="register-header">
+    <div class="brand-badge">
+      <Icon name="lucide:utensils" class="brand-icon" />
+      <span>DishBox</span>
+    </div>
+    <h1>Create an Account</h1>
+    <p class="subtitle">Join DishBox to save and organize your recipes</p>
   </div>
-  <div>
-    <label for="firstName">First Name:</label>
-    <br />
-    <input type="text" id="firstName" name="firstname" required />
+
+  <form id="register-form">
+    <div id="register-error-container" class="error-banner hidden">
+      <Icon name="lucide:alert-circle" class="error-icon" />
+      <span id="register-error-message"></span>
+    </div>
+
+    <div class="input-group">
+      <label for="username">Username</label>
+      <div class="input-wrapper">
+        <Icon name="lucide:user" class="input-icon" />
+        <input
+          type="text"
+          id="username"
+          name="username"
+          placeholder="Choose a username"
+          required
+          autocomplete="username"
+        />
+      </div>
+    </div>
+
+    <div class="input-row">
+      <div class="input-group">
+        <label for="firstName">First Name</label>
+        <div class="input-wrapper">
+          <Icon name="lucide:user" class="input-icon" />
+          <input
+            type="text"
+            id="firstName"
+            name="firstname"
+            placeholder="John"
+            required
+            autocomplete="given-name"
+          />
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label for="lastName">Last Name</label>
+        <div class="input-wrapper">
+          <Icon name="lucide:user" class="input-icon" />
+          <input
+            type="text"
+            id="lastName"
+            name="lastname"
+            placeholder="Doe"
+            required
+            autocomplete="family-name"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label for="email">Email Address</label>
+      <div class="input-wrapper">
+        <Icon name="lucide:mail" class="input-icon" />
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="john.doe@example.com"
+          required
+          autocomplete="email"
+        />
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label for="password">Password</label>
+      <div class="input-wrapper">
+        <Icon name="lucide:lock" class="input-icon" />
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="At least 8 characters"
+          required
+          minlength="8"
+          autocomplete="new-password"
+        />
+      </div>
+      <span class="input-hint">Must be at least 8 characters long</span>
+    </div>
+
+    <button type="submit" id="submit-btn" class="submit-btn">
+      <span id="submit-text">Create Account</span>
+      <Icon name="lucide:arrow-right" class="btn-icon" />
+    </button>
+  </form>
+
+  <div class="register-footer">
+    <p>
+      Already have an account?{" "}
+      <a href="/user/login" class="login-link">Log in here</a>
+    </p>
   </div>
-  <div>
-    <label for="lastName">Last Name:</label>
-    <br />
-    <input type="text" id="lastName" name="lastname" required />
-  </div>
-  <div>
-    <label for="email">Email:</label>
-    <br />
-    <input type="email" id="email" name="email" required />
-  </div>
-  <div>
-    <label for="password">Password:</label>
-    <br />
-    <input type="password" id="password" name="password" required />
-  </div>
-  <p>Already have an account? <a href="/user/login">login.</a></p>
-  <button type="submit" id="submit-btn">Register</button>
-  <p id="error-message" style="color: red;"></p>
-</form>
+</div>
+
+<style>
+  .register-card {
+    width: 100%;
+    max-width: 480px;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 1.5rem;
+    padding: 2.75rem 2.25rem;
+    box-shadow: var(--shadow-lg), var(--shadow-ocean);
+    box-sizing: border-box;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .register-header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .brand-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--primary-50);
+    color: var(--primary-700);
+    border: 1px solid var(--primary-200);
+    padding: 0.35rem 0.85rem;
+    border-radius: 2rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+  }
+
+  .brand-icon {
+    width: 1rem;
+    height: 1rem;
+    color: var(--primary-600);
+  }
+
+  h1 {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.025em;
+  }
+
+  .subtitle {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin: 0;
+  }
+
+  #register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  @media (max-width: 480px) {
+    .input-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    text-align: left;
+  }
+
+  label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .input-icon {
+    position: absolute;
+    left: 1rem;
+    width: 1.15rem;
+    height: 1.15rem;
+    color: var(--text-muted);
+    pointer-events: none;
+    transition: color 0.2s ease;
+  }
+
+  input {
+    width: 100%;
+    padding: 0.8rem 1rem 0.8rem 2.75rem;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    background-color: var(--bg-surface-subtle);
+    border: 1.5px solid var(--border-default);
+    border-radius: 0.75rem;
+    outline: none;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    font-family: inherit;
+  }
+
+  input:hover {
+    border-color: var(--primary-400);
+  }
+
+  input:focus {
+    background-color: var(--bg-surface);
+    border-color: var(--primary-600);
+    box-shadow: 0 0 0 3.5px rgba(13, 148, 136, 0.15);
+  }
+
+  .input-wrapper:focus-within .input-icon {
+    color: var(--primary-600);
+  }
+
+  .input-hint {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 0.15rem;
+  }
+
+  .submit-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    margin-top: 0.5rem;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-inverse);
+    background: var(--gradient-ocean);
+    border: none;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-ocean);
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.2s ease,
+      filter 0.2s ease;
+    font-family: inherit;
+  }
+
+  .submit-btn:hover {
+    transform: translateY(-1.5px);
+    filter: brightness(1.05);
+    box-shadow: 0 12px 25px -4px rgba(13, 148, 136, 0.35);
+  }
+
+  .submit-btn:active {
+    transform: translateY(0);
+  }
+
+  .submit-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-icon {
+    width: 1.1rem;
+    height: 1.1rem;
+    transition: transform 0.2s ease;
+  }
+
+  .submit-btn:hover .btn-icon {
+    transform: translateX(3px);
+  }
+
+  .error-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background-color: var(--error-bg);
+    border: 1px solid rgba(225, 29, 72, 0.25);
+    border-radius: 0.65rem;
+    color: var(--error);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: left;
+  }
+
+  .error-banner.hidden {
+    display: none;
+  }
+
+  .error-icon {
+    width: 1.15rem;
+    height: 1.15rem;
+    flex-shrink: 0;
+  }
+
+  .register-footer {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-subtle);
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+  }
+
+  .register-footer p {
+    margin: 0;
+  }
+
+  .login-link {
+    color: var(--primary-600);
+    font-weight: 600;
+    text-decoration: none;
+    transition:
+      color 0.15s ease,
+      text-decoration 0.15s ease;
+  }
+
+  .login-link:hover {
+    color: var(--primary-800);
+    text-decoration: underline;
+  }
+</style>
 
 <script>
   const form = document.getElementById("register-form") as HTMLFormElement;
+  const errorContainer = document.getElementById(
+    "register-error-container",
+  ) as HTMLDivElement;
   const errorMsg = document.getElementById(
-    "error-message",
-  ) as HTMLParagraphElement;
+    "register-error-message",
+  ) as HTMLSpanElement;
+  const submitBtn = document.getElementById("submit-btn") as HTMLButtonElement;
+  const submitText = document.getElementById("submit-text") as HTMLSpanElement;
 
   form?.addEventListener("submit", async (e) => {
     e.preventDefault();
-    errorMsg.textContent = "";
+    if (errorContainer) errorContainer.classList.add("hidden");
+    if (errorMsg) errorMsg.textContent = "";
 
     const formData = new FormData(form);
     const payload = Object.fromEntries(formData.entries());
+
+    if (submitBtn && submitText) {
+      submitBtn.disabled = true;
+      submitText.textContent = "Creating Account...";
+    }
 
     try {
       const response = await fetch("/api/user/register", {
@@ -58,13 +383,27 @@
       const data = await response.json();
 
       if (!response.ok) {
-        errorMsg.textContent =
-          data.error || data.message || "Registration failed";
+        if (errorContainer && errorMsg) {
+          errorMsg.textContent =
+            data.error ||
+            data.message ||
+            "Registration failed. Please check your details.";
+          errorContainer.classList.remove("hidden");
+        }
         return;
       }
       window.location.href = data.redirectUrl || "/user/login";
     } catch (err) {
-      errorMsg.textContent = "An unexpected network error occurred.";
+      if (errorContainer && errorMsg) {
+        errorMsg.textContent =
+          "An unexpected network error occurred. Please try again.";
+        errorContainer.classList.remove("hidden");
+      }
+    } finally {
+      if (submitBtn && submitText) {
+        submitBtn.disabled = false;
+        submitText.textContent = "Create Account";
+      }
     }
   });
 </script>
