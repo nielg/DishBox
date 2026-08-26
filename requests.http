@@ -71,6 +71,6 @@ DELETE {{baseUrl}}/api/recipe/deleteRecipe
 Content-Type: application/json
 
 {
-  "id": 2
+  "id": 25
 }
 

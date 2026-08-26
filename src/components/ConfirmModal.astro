@@ -21,33 +21,55 @@ const {
     <h3>{title}</h3>
     <p>{message}</p>
 
-    <form action={actionUrl} method="POST">
-      {
-        method === "DELETE" && (
-          <input type="hidden" name="_method" value="DELETE" />
-        )
-      }
-      <div class="btn-container">
-        <button type="button" class="cancel-btn btn">Cancel</button>
-        <button type="submit" class="btn">Confirm</button>
-      </div>
-    </form>
+    <div class="btn-container">
+      <button type="button" class="cancel-btn btn">Cancel</button>
+      <button
+        type="button"
+        class="confirm-btn btn"
+        data-url={actionUrl}
+        data-method={method}
+      >
+        Confirm
+      </button>
+    </div>
   </div>
 </dialog>
 
 <script>
-  // Attach event listeners to native dialogs
-  document.querySelectorAll("dialog.confirm-modal").forEach((modal) => {
-    const dialog = modal as HTMLDialogElement;
+  const modals = document.querySelectorAll<HTMLDialogElement>(".confirm-modal");
 
-    // Close on cancel click
-    dialog
-      .querySelector(".cancel-btn")
-      ?.addEventListener("click", () => dialog.close());
+  modals.forEach((modal) => {
+    const cancelBtn = modal.querySelector(".cancel-btn");
+    const confirmBtn = modal.querySelector<HTMLButtonElement>(".confirm-btn");
 
-    // Close on background backdrop click
-    dialog.addEventListener("click", (e) => {
-      if (e.target === dialog) dialog.close();
+    // Close modal on cancel
+    cancelBtn?.addEventListener("click", () => modal.close());
+
+    // Handle fetch on confirm
+    confirmBtn?.addEventListener("click", async () => {
+      const url = confirmBtn.dataset.url;
+      const method = confirmBtn.dataset.method;
+
+      if (!url) return;
+
+      try {
+        const response = await fetch(url, {
+          method: method || "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          modal.close();
+          // Reload or redirect to reflect changes
+          window.location.reload();
+        } else {
+          console.error("Failed request with status:", response.status);
+        }
+      } catch (error) {
+        console.error("Fetch error:", error);
+      }
     });
   });
 </script>
