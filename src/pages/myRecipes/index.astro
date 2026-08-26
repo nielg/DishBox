@@ -6,15 +6,13 @@ import WelcomeHeader from "../../components/layout/WelcomeHeader.astro";
 import MyRecipesCard from "../../components/myRecipes/MyRecipesCard.astro";
 import MyRecipesContainer from "../../components/myRecipes/MyRecipesContainer.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import RecipesService from "@/repository/recipesRepository";
-import authService from "@/service/authService";
 import { Icon } from "astro-icon/components";
+import RecipesService from "@/service/recipeService";
 
-const auth = await authService.getAuthenticatedUserId(Astro.cookies);
-if (!auth.success) return Astro.redirect("/user/login");
-
+const { user_id } = Astro.locals;
+if (!user_id) return Astro.redirect("/user/login");
 const recipes: RecipeMetaDataResponse[] =
-  await RecipesService.getRecipesMetaDataByUserId(auth.user_id);
+  await RecipesService.getRecipesMetaData(user_id);
 ---
 
 <BaseLayout>
