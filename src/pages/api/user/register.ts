@@ -29,7 +29,6 @@ export const POST: APIRoute = async ({ request }): Promise<Response> => {
     const successPayload: ApiResponse<null> = {
       success: true,
       message: "Registration successful",
-      redirectUrl: "/user/login",
     };
 
     return Response.json(successPayload, { status: 201 });

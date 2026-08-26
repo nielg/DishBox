@@ -40,7 +40,6 @@ export const POST: APIRoute = async ({
     const successPayload: ApiResponse<null> = {
       success: true,
       message: "Login successful",
-      redirectUrl: "/",
     };
 
     return Response.json(successPayload, { status: 200 });
