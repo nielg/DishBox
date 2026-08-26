@@ -21,15 +21,13 @@ const { username } = Astro.locals;
     class="hidden text-gray"
     aria-labelledby="dropdown-toggle"
   >
-    <p class="dropdown-item">Welcome {username}</p>
-    <li>
-      <a href="/" class="dropdown-item">Home</a>
-    </li>
-    <li>
-      <a href="/user/profile" class="dropdown-item">Profile</a>
-    </li>
+    <p class="dropdown-item welcome">Welcome {username}</p>
+
     {
       username ? (
+      <li>
+        <a href="/user/profile" class="dropdown-item">Profile</a>
+      </li>
         <li>
           <a href="/" class="dropdown-item text-red" id="logout">
             Logout
@@ -99,6 +97,11 @@ const { username } = Astro.locals;
     width: 100%;
     padding: 0.5rem;
     text-decoration: none;
+  }
+
+  .dropdown-item.welcome {
+    border-bottom: 1px solid var(--border-subtle);
+    margin: 0;
   }
 
   a.dropdown-item:hover {

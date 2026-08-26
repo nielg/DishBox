@@ -1,6 +1,7 @@
 Front-end
 [] Welcome root is not displayed when loggedin on addRecipes page in het header
 [] Remove Profile tab in the header when user not logged in
+[] By createRecipe when change the portions is afflected in the preview
 
 Database
 [] Add flyway for database migrations
