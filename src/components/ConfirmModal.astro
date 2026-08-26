@@ -4,7 +4,9 @@ interface Props {
   title?: string;
   message: string;
   actionUrl: string;
+  redirectUrl?: string;
   method?: "POST" | "DELETE";
+  body?: BodyInit | null | undefined;
 }
 
 const {
@@ -12,7 +14,9 @@ const {
   title = "Are you sure?",
   message,
   actionUrl,
+  redirectUrl,
   method = "POST",
+  body,
 } = Astro.props;
 ---
 
@@ -28,6 +32,8 @@ const {
         class="confirm-btn btn"
         data-url={actionUrl}
         data-method={method}
+        data-redirecturl={redirectUrl}
+        data-body={body}
       >
         Confirm
       </button>
@@ -49,6 +55,8 @@ const {
     confirmBtn?.addEventListener("click", async () => {
       const url = confirmBtn.dataset.url;
       const method = confirmBtn.dataset.method;
+      const redirectUrl = confirmBtn.dataset.redirecturl;
+      const body = confirmBtn.dataset.body;
 
       if (!url) return;
 
@@ -58,12 +66,18 @@ const {
           headers: {
             "Content-Type": "application/json",
           },
+          body,
         });
 
         if (response.ok) {
           modal.close();
           // Reload or redirect to reflect changes
-          window.location.reload();
+          console.log("redirect", redirectUrl);
+          if (redirectUrl) {
+            window.location.href = redirectUrl; // or window.location.assign(redirectUrl);
+          } else {
+            window.location.reload();
+          }
         } else {
           console.error("Failed request with status:", response.status);
         }
