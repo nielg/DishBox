@@ -172,6 +172,10 @@ h3 {
   text-align: center;
 }
 
+.text-end {
+  text-align: end;
+}
+
 /* Flex box */
 .center {
   display: flex;

@@ -11,14 +11,16 @@ export default function RecipePreview() {
 
       <div className={s.recipePreviewContainer}>
         {/* Title */}
-        <h2
-          className={`${s.previewTitle} ${formData.title ? s.previewTitleFilled : s.previewTitleEmpty}`}
-        >
-          {formData.title || "Your recipe title"}
-        </h2>
-        {!formData.title && (
-          <p className={s.validationWarning}>Title required</p>
-        )}
+        <div className={s.sectionHeadingContainer}>
+          <h2
+            className={`${s.previewTitle} ${formData.title ? s.previewTitleFilled : s.previewTitleEmpty}`}
+          >
+            {formData.title || "Your recipe title"}
+          </h2>
+          {!formData.title && (
+            <p className={s.validationWarning}>Title required</p>
+          )}
+        </div>
 
         {/* Description */}
         <p
@@ -27,7 +29,9 @@ export default function RecipePreview() {
           {formData.description || "Your description will appear here…"}
         </p>
         {!formData.description && (
-          <p className={s.validationWarning}>Description required</p>
+          <p className={`${s.validationWarning} text-end`}>
+            Description required
+          </p>
         )}
 
         {/* Divider */}
@@ -39,7 +43,12 @@ export default function RecipePreview() {
         </div>
 
         {/* Ingredients */}
-        <h3 className={s.sectionHeading}>Ingredients</h3>
+        <div className={s.sectionHeadingContainer}>
+          <h3 className={s.sectionHeading}>Ingredients</h3>
+          {formData.ingredients.length == 0 && (
+            <p className={s.validationWarning}>1 ingredient required</p>
+          )}
+        </div>
         {formData.ingredients.length > 0 ? (
           <ul className={s.ingredientsList}>
             {formData.ingredients.map((item, index) => (
@@ -50,14 +59,16 @@ export default function RecipePreview() {
             ))}
           </ul>
         ) : (
-          <>
-            <p className={s.emptyStateText}>No ingredients added yet…</p>
-            <p className={s.validationWarning}>1 ingredient required</p>
-          </>
+          <p className={s.emptyStateText}>No ingredients added yet…</p>
         )}
 
         {/* Instructions */}
-        <h3 className={s.sectionHeading}>Instructions</h3>
+        <div className={s.sectionHeadingContainer}>
+          <h3 className={s.sectionHeading}>Instructions</h3>
+          {formData.instructions.length == 0 && (
+            <p className={s.validationWarning}>1 instruction required</p>
+          )}
+        </div>
         {formData.instructions.length > 0 ? (
           <ol className={s.instructionsList}>
             {formData.instructions.map((item, index) => (
@@ -68,10 +79,7 @@ export default function RecipePreview() {
             ))}
           </ol>
         ) : (
-          <>
-            <p className={s.emptyStateText}>No instructions added yet…</p>
-            <p className={s.validationWarning}>1 instruction required</p>
-          </>
+          <p className={s.emptyStateText}>No instructions added yet…</p>
         )}
       </div>
     </section>
