@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
+import { z } from "zod";
 
 export type ListItem = { id: number; value: string };
 
@@ -24,6 +25,15 @@ const STEPS: RecipeProgress[] = [
   "preview",
 ];
 
+export const createRecipeSchema = z.object({
+  title: z.string().trim().min(1),
+  description: z.string().trim().min(1),
+  portions: z.number().min(1),
+  instructions: z.array(z.string().trim().min(1)),
+  ingredients: z.array(z.string().trim().min(1)),
+});
+export type CreateRecipeInput = z.infer<typeof createRecipeSchema>;
+
 interface AddRecipeContextType {
   formData: FormDataType;
   updateField: <K extends keyof FormDataType>(
@@ -43,6 +53,7 @@ interface AddRecipeContextType {
   handleNext: () => void;
   handlePrevious: () => void;
   submit: () => void;
+  isValid: () => CreateRecipeInput | null;
 }
 
 const AddRecipeContext = createContext<AddRecipeContextType | undefined>(
@@ -110,8 +121,8 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // On submit
-  const submit = async () => {
+  // Validation
+  const isValid = (): CreateRecipeInput | null => {
     const recipeRequest = {
       title: formData.title,
       description: formData.description,
@@ -124,7 +135,18 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
         .map((item) => item.value),
     };
 
-    console.table(recipeRequest);
+    const result = createRecipeSchema.safeParse(recipeRequest);
+
+    return result.success ? result.data : null;
+  };
+
+  // On submit
+  const submit = async () => {
+    const body = isValid();
+
+    if (!body) {
+      return;
+    }
 
     try {
       const response = await fetch("/api/recipe/addRecipe", {
@@ -132,7 +154,7 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(recipeRequest),
+        body: JSON.stringify(body),
       });
 
       if (response.ok) {
@@ -161,6 +183,7 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
         handleNext,
         handlePrevious,
         submit,
+        isValid,
       }}
     >
       {children}

@@ -2,7 +2,7 @@ import { useAddRecipe } from "./AddRecipeContext";
 import s from "@/styles/components/addRecipe.module.css";
 
 export default function AddRecipeReview() {
-  const { submit } = useAddRecipe();
+  const { submit, isValid } = useAddRecipe();
   return (
     <div className={s.reviewContainer}>
       <span className={s.stepBadge}>Step 4</span>
@@ -10,7 +10,7 @@ export default function AddRecipeReview() {
       <p className={s.stepDescription}>
         Check the preview on the right. Once you're happy, submit your recipe!
       </p>
-      <button onClick={() => submit()} className={s.submitBtn}>
+      <button onClick={submit} className={s.submitBtn} disabled={!isValid()}>
         Submit Recipe →
       </button>
     </div>
