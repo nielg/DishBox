@@ -1,5 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
+import ConfirmModal from "../ConfirmModal.astro";
 
 interface Props {
   recipeId: number;
@@ -8,10 +9,25 @@ interface Props {
 const { recipeId } = Astro.props;
 ---
 
-<button id="delete-recipe-btn" class="delete-btn" data-recipe-id={recipeId}>
+<button
+  id="delete-recipe-btn"
+  class="delete-btn"
+  data-recipe-id={recipeId}
+  onclick="document.getElementById('delete-recipe').showModal()"
+>
   <Icon name="lucide:trash-2" class="delete-icon" />
   <span>Delete Recipe</span>
 </button>
+
+<ConfirmModal
+  modalId="delete-recipe"
+  title="Delete Recipe"
+  message="This action cannot be undone. Are you sure you want to proceed?"
+  actionUrl="/api/recipe/deleteRecipe"
+  redirectUrl="/myRecipes"
+  method="DELETE"
+  body={JSON.stringify({ id: recipeId })}
+/>
 
 <style>
   .delete-btn {
@@ -49,7 +65,7 @@ const { recipeId } = Astro.props;
   }
 </style>
 
-<script>
+<!-- <script>
   const deleteBtn = document.getElementById("delete-recipe-btn");
 
   deleteBtn?.addEventListener("click", async () => {
@@ -57,22 +73,20 @@ const { recipeId } = Astro.props;
 
     if (!recipeId) return;
 
-    if (confirm("Are you sure you want to delete this recipe?")) {
-      try {
-        const response = await fetch(`/api/recipe/deleteRecipe`, {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: recipeId }),
-        });
+    try {
+      const response = await fetch(`/api/recipe/deleteRecipe`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: recipeId }),
+      });
 
-        if (response.ok) {
-          window.location.href = "/myRecipes";
-        } else {
-          console.error("Failed to delete recipe.");
-        }
-      } catch (error) {
-        console.error("Error deleting recipe:", error);
+      if (response.ok) {
+        window.location.href = "/myRecipes";
+      } else {
+        console.error("Failed to delete recipe.");
       }
+    } catch (error) {
+      console.error("Error deleting recipe:", error);
     }
   });
-</script>
+</script> -->
