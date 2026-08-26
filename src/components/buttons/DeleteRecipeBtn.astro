@@ -1,4 +1,6 @@
 ---
+import { Icon } from "astro-icon/components";
+
 interface Props {
   recipeId: number;
 }
@@ -6,9 +8,46 @@ interface Props {
 const { recipeId } = Astro.props;
 ---
 
-<button id="delete-recipe-btn" data-recipe-id={recipeId}>
-  Delete Recipe
+<button id="delete-recipe-btn" class="delete-btn" data-recipe-id={recipeId}>
+  <Icon name="lucide:trash-2" class="delete-icon" />
+  <span>Delete Recipe</span>
 </button>
+
+<style>
+  .delete-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.6rem 1.1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--error);
+    background-color: var(--error-bg);
+    border: 1.5px solid rgba(225, 29, 72, 0.25);
+    border-radius: 0.65rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      transform 0.15s ease;
+  }
+
+  .delete-btn:hover {
+    background-color: rgba(225, 29, 72, 0.12);
+    border-color: rgba(225, 29, 72, 0.45);
+    transform: translateY(-1px);
+  }
+
+  .delete-btn:active {
+    transform: translateY(0);
+  }
+
+  .delete-icon {
+    width: 1rem;
+    height: 1rem;
+  }
+</style>
 
 <script>
   const deleteBtn = document.getElementById("delete-recipe-btn");

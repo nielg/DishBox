@@ -14,6 +14,13 @@ const STEPS: RecipeProgress[] = [
   "preview",
 ];
 
+const STEP_LABELS: Record<RecipeProgress, string> = {
+  intro: "Intro",
+  ingredients: "Ingredients",
+  instructions: "Instructions",
+  preview: "Review",
+};
+
 export default function AddRecipeProgressBtn({ location, setProgress }: Props) {
   const currentIndex = STEPS.indexOf(location);
 
@@ -35,41 +42,61 @@ export default function AddRecipeProgressBtn({ location, setProgress }: Props) {
         className={styles.btn}
         onClick={handlePrevious}
         disabled={currentIndex === 0}
+        aria-label="Previous step"
       >
-        <ArrowLeft size={18} />
+        <ArrowLeft size={16} />
       </button>
 
-      <button
-        className={`${styles.btn} ${location === "intro" ? styles.active : ""}`}
-        onClick={() => setProgress("intro")}
-      >
-        1
-      </button>
-      <button
-        className={`${styles.btn} ${location === "ingredients" ? styles.active : ""}`}
-        onClick={() => setProgress("ingredients")}
-      >
-        2
-      </button>
-      <button
-        className={`${styles.btn} ${location === "instructions" ? styles.active : ""}`}
-        onClick={() => setProgress("instructions")}
-      >
-        3
-      </button>
-      <button
-        className={`${styles.btn} ${location === "preview" ? styles.active : ""}`}
-        onClick={() => setProgress("preview")}
-      >
-        4
-      </button>
+      <div className={styles.separator} />
+
+      {STEPS.map((step, index) => (
+        <>
+          <div
+            key={step}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "0.3rem",
+            }}
+          >
+            <button
+              className={`${styles.btn} ${location === step ? styles.active : ""}`}
+              onClick={() => setProgress(step)}
+              aria-label={`Go to step ${index + 1}: ${STEP_LABELS[step]}`}
+            >
+              {index + 1}
+            </button>
+            <span
+              style={{
+                fontSize: "0.7rem",
+                fontWeight: 600,
+                color:
+                  location === step
+                    ? "var(--primary-700)"
+                    : "var(--text-muted)",
+                transition: "color 0.2s",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {STEP_LABELS[step]}
+            </span>
+          </div>
+          {index < STEPS.length - 1 && (
+            <div key={`sep-${step}`} className={styles.separator} />
+          )}
+        </>
+      ))}
+
+      <div className={styles.separator} />
 
       <button
         className={styles.btn}
         onClick={handleNext}
         disabled={currentIndex === STEPS.length - 1}
+        aria-label="Next step"
       >
-        <ArrowRight size={18} />
+        <ArrowRight size={16} />
       </button>
     </div>
   );

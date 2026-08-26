@@ -1,13 +1,95 @@
 :root {
-  --primary: #f85e00;
-  --text-primary: black;
-  --red-accent: #a41623;
-  --light-bg: #f4e0b0;
-  --text-white: white;
-  --text-gray: rgb(68, 63, 63);
-  --text-black: black;
-  --text-red: #a41623;
-  --border-primary: rgb(189, 186, 186);
+  /* -------------------------------------------------------------------------
+   * BRAND & PRIMARY (Sea Blue-Green / Ocean Teal)
+   * ------------------------------------------------------------------------- */
+  --primary-50: #f0fdfa; /* Sea foam tint / subtle badge bg */
+  --primary-100: #ccfbf1; /* Soft aqua / highlight pill */
+  --primary-200: #99f6e4; /* Light seafoam */
+  --primary-300: #5eead4; /* Vibrant sea green */
+  --primary-400: #2dd4bf; /* Coastal aqua */
+  --primary-500: #14b8a6; /* Bright teal / active states */
+  --primary-600: #0d9488; /* PRIMARY BRAND / buttons / main icons */
+  --primary-700: #0f766e; /* Primary hover / header background */
+  --primary-800: #115e59; /* Deep ocean */
+  --primary-900: #134e4a; /* Abyssal marine */
+
+  /* -------------------------------------------------------------------------
+   * SECONDARY & ACCENTS (Ocean Blue & Warm Coral)
+   * ------------------------------------------------------------------------- */
+  --secondary-50: #f0f9ff;
+  --secondary-100: #e0f2fe;
+  --secondary-500: #0ea5e9; /* Bright ocean blue */
+  --secondary-600: #0284c7; /* Wave blue / secondary buttons */
+  --secondary-800: #075985; /* Deep ocean wave */
+  --secondary-900: #0c4a6e; /* Midnight ocean */
+
+  --accent-coral: #fb7185; /* Soft warm coral (great for tags/recipe loves) */
+  --accent-sand: #f59e0b; /* Golden sand (stars, ratings, timers) */
+
+  /* -------------------------------------------------------------------------
+   * NEUTRALS & SURFACES (Clean Coastal Slate)
+   * ------------------------------------------------------------------------- */
+  --bg-app: #f6f9f9; /* Fresh crisp background */
+  --bg-surface: #ffffff; /* Cards, modals, white sections */
+  --bg-surface-subtle: #edf4f4; /* Inputs, secondary panels */
+  --bg-surface-elevated: #ffffff; /* Dropdowns, tooltips, popovers */
+
+  /* -------------------------------------------------------------------------
+   * BORDERS
+   * ------------------------------------------------------------------------- */
+  --border-subtle: #e2ecec; /* Light divider */
+  --border-default: #cbdada; /* Input outlines, cards */
+  --border-strong: #94a3b8; /* Focus rings, active borders */
+
+  /* -------------------------------------------------------------------------
+   * TEXT & TYPOGRAPHY
+   * ------------------------------------------------------------------------- */
+  --text-primary: #0f172a; /* Dark slate / highest contrast text */
+  --text-secondary: #334155; /* Body copy & descriptions */
+  --text-muted: #64748b; /* Placeholders, captions, timestamps */
+  --text-inverse: #ffffff; /* Text on dark/primary backgrounds */
+  --text-brand: #0d9488; /* Links, active nav items */
+
+  /* -------------------------------------------------------------------------
+   * FEEDBACK & SEMANTICS
+   * ------------------------------------------------------------------------- */
+  --success: #10b981;
+  --success-bg: #ecfdf5;
+  --warning: #f59e0b;
+  --warning-bg: #fffbeb;
+  --error: #e11d48; /* Modern crimson/coral red */
+  --error-bg: #ffe4e6;
+  --error-hover: #be123c;
+
+  /* -------------------------------------------------------------------------
+   * MODERN GRADIENTS & SHADOWS
+   * ------------------------------------------------------------------------- */
+  --gradient-ocean: linear-gradient(135deg, #0d9488 0%, #0284c7 100%);
+  --gradient-deep-sea: linear-gradient(135deg, #0f766e 0%, #0f172a 100%);
+  --gradient-seafoam: linear-gradient(135deg, #f0fdfa 0%, #e0f2fe 100%);
+  --gradient-glow: linear-gradient(135deg, #2dd4bf 0%, #38bdf8 100%);
+
+  --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --shadow-md:
+    0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.06);
+  --shadow-lg:
+    0 10px 15px -3px rgba(15, 23, 42, 0.08),
+    0 4px 6px -4px rgba(15, 23, 42, 0.04);
+  --shadow-ocean: 0 10px 25px -5px rgba(13, 148, 136, 0.25);
+
+  /* -------------------------------------------------------------------------
+   * BACKWARD COMPATIBILITY ALIASES
+   * ------------------------------------------------------------------------- */
+  --primary: var(--primary-600);
+  --secondary: var(--secondary-900);
+  --light-bg: var(--bg-app);
+  --border-color: var(--border-default);
+  --border-primary: var(--border-default);
+  --red-accent: var(--error);
+  --text-white: var(--text-inverse);
+  --text-gray: var(--text-muted);
+  --text-black: var(--text-primary);
+  --text-red: var(--error);
 }
 
 html,
@@ -15,8 +97,20 @@ body {
   margin: 0;
   width: 100%;
   min-height: 100%;
-  background-color: rgb(250, 246, 246);
-  font-family: "sans-serif";
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    "Open Sans",
+    "Helvetica Neue",
+    sans-serif;
   font-style: normal;
   scroll-behavior: smooth;
 }
@@ -69,4 +163,19 @@ h3 {
   border: none;
   height: 2rem;
   cursor: pointer;
+  align-content: center;
+}
+
+/* Text align */
+
+.text-center {
+  text-align: center;
+}
+
+/* Flex box */
+.center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
 }

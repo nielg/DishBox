@@ -2,9 +2,21 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   column-gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .inputPreviewContainer {
+    grid-template-columns: 1fr;
+  }
 }
 
 .recipePreviewContainer {
-  border: 1px solid black;
-  padding: 3rem;
+  position: sticky;
+  top: 1.5rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: 1rem;
+  padding: 2rem;
+  background-color: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
 }

@@ -4,18 +4,33 @@ export const prerender = true;
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import AddRecipeForm from "../../../components/myRecipes/addRecipe/AddRecipeForm.tsx";
 import WelcomeHeader from "../../../components/layout/WelcomeHeader.astro";
+import GoBackBtn from "../../../components/buttons/GoBackBtn.astro";
 ---
 
-<BaseLayout>
+<BaseLayout title="Add Recipe | DishBox">
   <div class="page-wrapper">
-    <WelcomeHeader title="Add a new Recipe" />
+    <div class="page-nav">
+      <GoBackBtn href="/myRecipes" />
+    </div>
+    <WelcomeHeader
+      title="Add a new Recipe"
+      subtitle="Fill in the steps below to add your recipe to DishBox"
+    />
     <AddRecipeForm client:load />
   </div>
 </BaseLayout>
 
 <style>
   .page-wrapper {
-    margin: 2rem;
-    margin: auto;
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .page-nav {
+    display: flex;
+    align-items: center;
   }
 </style>
