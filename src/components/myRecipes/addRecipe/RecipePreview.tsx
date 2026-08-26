@@ -1,20 +1,9 @@
 import s from "@/styles/components/addRecipe.module.css";
+import { useAddRecipe } from "./AddRecipeContext";
 
-type Props = {
-  title: string;
-  description: string;
-  portions: number;
-  ingredients: string[];
-  instructions: string[];
-};
+export default function RecipePreview() {
+  const { formData, updateField } = useAddRecipe();
 
-export default function RecipePreview({
-  title,
-  description,
-  portions,
-  ingredients,
-  instructions,
-}: Props) {
   return (
     <section>
       {/* Preview label */}
@@ -44,11 +33,11 @@ export default function RecipePreview({
             margin: "0 0 0.5rem",
             fontSize: "1.35rem",
             fontWeight: 800,
-            color: title ? "var(--text-primary)" : "var(--text-muted)",
-            fontStyle: title ? "normal" : "italic",
+            color: formData.title ? "var(--text-primary)" : "var(--text-muted)",
+            fontStyle: formData.title ? "normal" : "italic",
           }}
         >
-          {title || "Your recipe title"}
+          {formData.title || "Your recipe title"}
         </h2>
 
         {/* Description */}
@@ -56,12 +45,14 @@ export default function RecipePreview({
           style={{
             margin: "0 0 1rem",
             fontSize: "0.875rem",
-            color: description ? "var(--text-secondary)" : "var(--text-muted)",
-            fontStyle: description ? "normal" : "italic",
+            color: formData.description
+              ? "var(--text-secondary)"
+              : "var(--text-muted)",
+            fontStyle: formData.description ? "normal" : "italic",
             lineHeight: 1.6,
           }}
         >
-          {description || "Your description will appear here…"}
+          {formData.description || "Your description will appear here…"}
         </p>
 
         {/* Divider */}
@@ -89,7 +80,7 @@ export default function RecipePreview({
             marginBottom: "1rem",
           }}
         >
-          {portions} {portions === 1 ? "portion" : "portions"}
+          {formData.portions} {formData.portions === 1 ? "portion" : "portions"}
         </div>
 
         {/* Ingredients */}
@@ -105,7 +96,7 @@ export default function RecipePreview({
         >
           Ingredients
         </h3>
-        {ingredients.length > 0 ? (
+        {formData.ingredients.length > 0 ? (
           <ul
             style={{
               listStyle: "none",
@@ -116,7 +107,7 @@ export default function RecipePreview({
               gap: "0.4rem",
             }}
           >
-            {ingredients.map((item, index) => (
+            {formData.ingredients.map((item, index) => (
               <li
                 key={`ingredient-${index}`}
                 style={{
@@ -167,7 +158,7 @@ export default function RecipePreview({
         >
           Instructions
         </h3>
-        {instructions.length > 0 ? (
+        {formData.instructions.length > 0 ? (
           <ol
             style={{
               listStyle: "none",
@@ -178,7 +169,7 @@ export default function RecipePreview({
               gap: "0.75rem",
             }}
           >
-            {instructions.map((item, index) => (
+            {formData.instructions.map((item, index) => (
               <li
                 key={`instruction-${index}`}
                 style={{

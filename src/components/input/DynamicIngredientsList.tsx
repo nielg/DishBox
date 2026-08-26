@@ -5,20 +5,11 @@ import DynamicInputList from "./DynamicInputList";
 import DynamicInputItemSlot from "./DynamicInputItemSlot";
 import styles from "@/styles/components/inputPreview.module.css";
 import type { DynamicInputIngredientsListItem } from "@/types/recipe";
+import { useAddRecipe } from "../myRecipes/addRecipe/AddRecipeContext";
 
-type IngredientsListProps = {
-  items: DynamicInputIngredientsListItem[];
-  setItems: React.Dispatch<
-    React.SetStateAction<DynamicInputIngredientsListItem[]>
-  >;
-  placeHolder?: string;
-};
-
-export function DynamicIngredientsList({
-  items,
-  setItems,
-  placeHolder = "Add ingredient...",
-}: IngredientsListProps) {
+export function DynamicIngredientsList() {
+  const { formData, updateField } = useAddRecipe();
+  const [items, setItems] = useState<DynamicInputIngredientsListItem[]>([]);
   const [editingId, setEditingId] = useState<string | null>(
     items[0]?.id || null,
   );
@@ -60,7 +51,7 @@ export function DynamicIngredientsList({
                 type="text"
                 className={styles["input-preview__field"]}
                 value={item.value}
-                placeholder={placeHolder}
+                placeholder="Ingredients here"
                 autoFocus
                 onChange={(e) => updateItem(item.id, e.target.value)}
               />
@@ -69,7 +60,7 @@ export function DynamicIngredientsList({
               <p
                 className={`${styles["input-preview__text"]} ${isEmpty ? styles["is-empty"] : ""}`}
               >
-                - {item.value || placeHolder}
+                - {item.value}
               </p>
             }
           />

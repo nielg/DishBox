@@ -1,6 +1,7 @@
 import type { RecipeProgress } from "@/types/recipe";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import styles from "@/styles/components/progressBtn.module.css";
+import { useAddRecipe } from "./AddRecipeContext";
 
 interface Props {
   location: RecipeProgress;
@@ -21,20 +22,9 @@ const STEP_LABELS: Record<RecipeProgress, string> = {
   preview: "Review",
 };
 
-export default function AddRecipeProgressBtn({ location, setProgress }: Props) {
-  const currentIndex = STEPS.indexOf(location);
-
-  const handlePrevious = () => {
-    if (currentIndex > 0) {
-      setProgress(STEPS[currentIndex - 1]);
-    }
-  };
-
-  const handleNext = () => {
-    if (currentIndex < STEPS.length - 1) {
-      setProgress(STEPS[currentIndex + 1]);
-    }
-  };
+export default function AddRecipeProgressBtn() {
+  const { handleNext, handlePrevious, currentIndex, progress, setProgress } =
+    useAddRecipe();
 
   return (
     <div className={styles.container}>
@@ -61,7 +51,7 @@ export default function AddRecipeProgressBtn({ location, setProgress }: Props) {
             }}
           >
             <button
-              className={`${styles.btn} ${location === step ? styles.active : ""}`}
+              className={`${styles.btn} ${progress === step ? styles.active : ""}`}
               onClick={() => setProgress(step)}
               aria-label={`Go to step ${index + 1}: ${STEP_LABELS[step]}`}
             >
@@ -72,7 +62,7 @@ export default function AddRecipeProgressBtn({ location, setProgress }: Props) {
                 fontSize: "0.7rem",
                 fontWeight: 600,
                 color:
-                  location === step
+                  progress === step
                     ? "var(--primary-700)"
                     : "var(--text-muted)",
                 transition: "color 0.2s",

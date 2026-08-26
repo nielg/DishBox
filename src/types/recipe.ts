@@ -6,6 +6,15 @@ export type RecipeProgress =
 
 export type RecipeIntroData = { title: string; description: string };
 
+export type FormDataType = {
+  title: string;
+  describe: string;
+  portions: number;
+  ingredients: { id: number; value: string }[];
+  instructions: { id: number; value: string }[];
+  public: boolean;
+};
+
 export type DynamicInputInstructionsListItem = {
   id: string;
   value: string;

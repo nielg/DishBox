@@ -2,15 +2,10 @@
 
 import { DynamicInstructionsList } from "@/components/input/DynamicInstructionsList";
 import type { DynamicInputInstructionsListItem } from "@/types/recipe";
+import { useState } from "react";
 
-type Props = {
-  items: DynamicInputInstructionsListItem[];
-  setItems: React.Dispatch<
-    React.SetStateAction<DynamicInputInstructionsListItem[]>
-  >;
-};
-
-export default function AddRecipeInstructions({ items, setItems }: Props) {
+export default function AddRecipeInstructions() {
+  const [items, setItems] = useState<DynamicInputInstructionsListItem[]>([]);
   return (
     <>
       <div style={{ marginBottom: "1.5rem" }}>

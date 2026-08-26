@@ -1,23 +1,10 @@
 "use client";
 
 import { DynamicIngredientsList } from "@/components/input/DynamicIngredientsList";
-import type { DynamicInputIngredientsListItem } from "@/types/recipe";
+import { useAddRecipe } from "./AddRecipeContext";
 
-type Props = {
-  items: DynamicInputIngredientsListItem[];
-  setItems: React.Dispatch<
-    React.SetStateAction<DynamicInputIngredientsListItem[]>
-  >;
-  portions: number;
-  setPortions: React.Dispatch<React.SetStateAction<number>>;
-};
-
-export default function AddRecipeIngredients({
-  items,
-  setItems,
-  portions,
-  setPortions,
-}: Props) {
+export default function AddRecipeIngredients() {
+  const { formData, updateField } = useAddRecipe();
   return (
     <>
       <div style={{ marginBottom: "1.5rem" }}>
@@ -87,10 +74,9 @@ export default function AddRecipeIngredients({
           id="portions"
           type="number"
           min="1"
-          value={portions || ""}
+          value={formData.portions}
           onChange={(e) => {
-            const val = parseInt(e.target.value, 10);
-            setPortions(isNaN(val) ? 1 : val);
+            updateField("portions", e.target.value);
           }}
           style={{
             width: "5rem",
@@ -108,11 +94,7 @@ export default function AddRecipeIngredients({
         />
       </div>
 
-      <DynamicIngredientsList
-        items={items}
-        setItems={setItems}
-        placeHolder="e.g. 200g flour"
-      />
+      <DynamicIngredientsList />
     </>
   );
 }
