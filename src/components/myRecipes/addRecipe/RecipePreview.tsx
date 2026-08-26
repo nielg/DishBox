@@ -128,7 +128,7 @@ export default function RecipePreview() {
                     marginTop: "0.42rem",
                   }}
                 />
-                {item}
+                {item.value}
               </li>
             ))}
           </ul>
@@ -198,7 +198,7 @@ export default function RecipePreview() {
                   {index + 1}
                 </span>
                 <span style={{ paddingTop: "0.2rem", lineHeight: 1.55 }}>
-                  {item}
+                  {item.value}
                 </span>
               </li>
             ))}

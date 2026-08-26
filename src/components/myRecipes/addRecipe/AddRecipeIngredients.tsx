@@ -76,7 +76,7 @@ export default function AddRecipeIngredients() {
           min="1"
           value={formData.portions}
           onChange={(e) => {
-            updateField("portions", e.target.value);
+            updateField("portions", Number(e.target.value));
           }}
           style={{
             width: "5rem",

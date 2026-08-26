@@ -72,7 +72,6 @@ const {
         if (response.ok) {
           modal.close();
           // Reload or redirect to reflect changes
-          console.log("redirect", redirectUrl);
           if (redirectUrl) {
             window.location.href = redirectUrl; // or window.location.assign(redirectUrl);
           } else {

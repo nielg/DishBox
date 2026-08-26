@@ -29,13 +29,15 @@ interface AddRecipeContextType {
     field: K,
     value: FormDataType[K],
   ) => void;
-  addListItem: (list: "ingredients" | "instructions", value: string) => void;
+  addListItem: (list: "ingredients" | "instructions", id: number) => void;
   updateListItem: (
     listName: "ingredients" | "instructions",
     index: number,
     value: string,
   ) => void;
+  deleteListItem: (list: "ingredients" | "instructions", id: number) => void;
   progress: RecipeProgress;
+  currentIndex: number;
   setProgress: (step: RecipeProgress) => void;
   handleNext: () => void;
   handlePrevious: () => void;
@@ -64,21 +66,21 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const addListItem = (list: "ingredients" | "instructions", value: string) => {
+  const addListItem = (list: "ingredients" | "instructions", id: number) => {
     setFormData((prev) => ({
       ...prev,
-      [list]: [...prev[list], { id: Date.now(), value }],
+      [list]: [...prev[list], { id, value: "" }],
     }));
   };
 
   const updateListItem = (
     listName: "ingredients" | "instructions",
-    index: number,
+    id: number,
     value: string,
   ) => {
     setFormData((prev) => {
       const updatedList = [...prev[listName]];
-      updatedList[index] = { ...updatedList[index], value };
+      updatedList[id] = { ...updatedList[id], value };
       return {
         ...prev,
         [listName]: updatedList,
@@ -86,6 +88,12 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  const deleteListItem = (list: "ingredients" | "instructions", id: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      [list]: prev[list].filter((_, i) => i !== id),
+    }));
+  };
   // Progress
   const currentIndex = STEPS.indexOf(progress);
 
@@ -103,7 +111,19 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
 
   // On submit
   const submit = async () => {
-    console.table(formData);
+    const recipeRequest = {
+      title: formData.title,
+      description: formData.description,
+      portions: formData.portions,
+      ingredients: formData.ingredients
+        .filter((item) => item.value.trim())
+        .map((item) => item.value),
+      instructions: formData.instructions
+        .filter((item) => item.value.trim())
+        .map((item) => item.value),
+    };
+
+    console.table(recipeRequest);
 
     try {
       const response = await fetch("/api/recipe/addRecipe", {
@@ -111,11 +131,10 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(recipeRequest),
       });
 
       if (response.ok) {
-        console.log("Recipe created successfully!");
         window.location.href = `/myRecipes`;
       } else {
         const errorData = await response.json();
@@ -134,7 +153,9 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
         updateField,
         addListItem,
         updateListItem,
+        deleteListItem,
         progress,
+        currentIndex,
         setProgress,
         handleNext,
         handlePrevious,

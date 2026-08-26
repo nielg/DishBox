@@ -11,7 +11,7 @@ type Props = {
   type: "h1" | "textarea";
   rows?: number;
   value: string;
-  setValue: React.Dispatch<React.SetStateAction<string>>;
+  setValue: (value: string) => void;
 };
 
 export default function InputPreview({

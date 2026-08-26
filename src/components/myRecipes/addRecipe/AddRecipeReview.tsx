@@ -1,8 +1,7 @@
-type Props = {
-  onSubmit: () => Promise<void>;
-};
+import { useAddRecipe } from "./AddRecipeContext";
 
-export default function AddRecipeReview({ onSubmit }: Props) {
+export default function AddRecipeReview() {
+  const { submit } = useAddRecipe();
   return (
     <div
       style={{
@@ -47,7 +46,7 @@ export default function AddRecipeReview({ onSubmit }: Props) {
         Check the preview on the right. Once you're happy, submit your recipe!
       </p>
       <button
-        onClick={() => onSubmit()}
+        onClick={() => submit()}
         style={{
           marginTop: "0.5rem",
           display: "inline-flex",

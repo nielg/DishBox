@@ -5,26 +5,18 @@ import DynamicInputList from "./DynamicInputList";
 import DynamicInputItemSlot from "./DynamicInputItemSlot";
 import styles from "@/styles/components/inputPreview.module.css";
 import type { DynamicInputInstructionsListItem } from "@/types/recipe";
+import { useAddRecipe } from "../myRecipes/addRecipe/AddRecipeContext";
 
-type InstructionsListProps = {
-  items: DynamicInputInstructionsListItem[];
-  setItems: React.Dispatch<
-    React.SetStateAction<DynamicInputInstructionsListItem[]>
-  >;
-  placeHolder?: string;
-};
+export function DynamicInstructionsList() {
+  const { formData } = useAddRecipe();
+  const [items, setItems] = useState<DynamicInputInstructionsListItem[]>([]);
 
-export function DynamicInstructionsList({
-  items,
-  setItems,
-  placeHolder = "Add instruction step...",
-}: InstructionsListProps) {
-  const [editingId, setEditingId] = useState<string | null>(
+  const [editingId, setEditingId] = useState<number | null>(
     items[0]?.id || null,
   );
 
   const addItem = () => {
-    const newId = crypto.randomUUID();
+    const newId = formData.instructions.length;
     setItems((prev) => [
       ...prev,
       { id: newId, value: "", step: 1, duration: "10min" },
@@ -32,13 +24,13 @@ export function DynamicInstructionsList({
     setEditingId(newId);
   };
 
-  const deleteItem = (id: string) => {
+  const deleteItem = (id: number) => {
     if (items.length <= 1) return;
     setItems((prev) => prev.filter((item) => item.id !== id));
     if (editingId === id) setEditingId(null);
   };
 
-  const updateItem = (id: string, value: string) => {
+  const updateItem = (id: number, value: string) => {
     setItems((prev) =>
       prev.map((item) => (item.id === id ? { ...item, value } : item)),
     );
@@ -62,7 +54,7 @@ export function DynamicInstructionsList({
               <textarea
                 className={styles["input-preview__field"]}
                 value={item.value}
-                placeholder={placeHolder}
+                placeholder="Placeholder"
                 autoFocus
                 onChange={(e) => updateItem(item.id, e.target.value)}
               />
@@ -71,7 +63,7 @@ export function DynamicInstructionsList({
               <p
                 className={`${styles["input-preview__text"]} ${isEmpty ? styles["is-empty"] : ""}`}
               >
-                {index + 1}. {item.value || placeHolder}
+                {index + 1}. {item.value || "Placeholder"}
               </p>
             }
           />

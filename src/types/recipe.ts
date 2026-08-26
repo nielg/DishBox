@@ -16,14 +16,14 @@ export type FormDataType = {
 };
 
 export type DynamicInputInstructionsListItem = {
-  id: string;
+  id: number;
   value: string;
   step: number;
   duration: string;
 };
 
 export type DynamicInputIngredientsListItem = {
-  id: string;
+  id: number;
   value: string;
 };
 

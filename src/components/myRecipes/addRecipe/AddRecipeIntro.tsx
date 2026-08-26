@@ -1,12 +1,10 @@
 import InputPreview from "@/components/input/InputPreview";
 import "@/styles/global.css";
+import { useAddRecipe } from "./AddRecipeContext";
 
-type Props = {
-  formData: any;
-  updateField: any;
-};
+export default function AddRecipeIntro() {
+  const { formData, updateField } = useAddRecipe();
 
-export default function AddRecipeIntro({ formData, updateField }: Props) {
   return (
     <>
       <div style={{ marginBottom: "1.5rem" }}>
@@ -55,17 +53,18 @@ export default function AddRecipeIntro({ formData, updateField }: Props) {
           placeHolder="Recipe title"
           type="h1"
           value={formData.title}
-          setValue={updateField}
+          setValue={(val) => updateField("title", val)}
         />
         <InputPreview
           name="description"
           placeHolder="Describe your recipe…"
           type="textarea"
           rows={5}
-          value={formData}
-          setValue={updateField}
+          value={formData.description}
+          setValue={(val) => updateField("description", val)}
         />
       </form>
     </>
   );
 }
+

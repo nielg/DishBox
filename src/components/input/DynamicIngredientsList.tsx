@@ -4,36 +4,27 @@ import { useState } from "react";
 import DynamicInputList from "./DynamicInputList";
 import DynamicInputItemSlot from "./DynamicInputItemSlot";
 import styles from "@/styles/components/inputPreview.module.css";
-import type { DynamicInputIngredientsListItem } from "@/types/recipe";
 import { useAddRecipe } from "../myRecipes/addRecipe/AddRecipeContext";
 
 export function DynamicIngredientsList() {
-  const { formData, updateField } = useAddRecipe();
-  const [items, setItems] = useState<DynamicInputIngredientsListItem[]>([]);
-  const [editingId, setEditingId] = useState<string | null>(
-    items[0]?.id || null,
+  const { updateListItem, formData, addListItem, deleteListItem } =
+    useAddRecipe();
+  const [editingId, setEditingId] = useState<number | null>(
+    formData.ingredients[0]?.id || null,
   );
 
   const addItem = () => {
-    const newId = crypto.randomUUID();
-    setItems((prev) => [...prev, { id: newId, value: "" }]); // Match your expected fields
+    const newId = formData.ingredients.length;
+    addListItem("ingredients", newId);
     setEditingId(newId);
   };
 
-  const deleteItem = (id: string) => {
-    if (items.length <= 1) return;
-    setItems((prev) => prev.filter((item) => item.id !== id));
-    if (editingId === id) setEditingId(null);
-  };
-
-  const updateItem = (id: string, value: string) => {
-    setItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, value } : item)),
-    );
-  };
-
   return (
-    <DynamicInputList type="ingredients" items={items} onAddItem={addItem}>
+    <DynamicInputList
+      type="ingredients"
+      items={formData.ingredients}
+      onAddItem={addItem}
+    >
       {(item) => {
         const isEditing = editingId === item.id;
         const isEmpty = !item.value.trim();
@@ -43,9 +34,9 @@ export function DynamicIngredientsList() {
             key={item.id}
             type="ingredients"
             isEditing={isEditing}
-            canDelete={items.length > 1}
+            canDelete={formData.ingredients.length > 1}
             onToggleEdit={() => setEditingId(isEditing ? null : item.id)}
-            onDelete={() => deleteItem(item.id)}
+            onDelete={() => deleteListItem("ingredients", item.id)}
             renderInput={
               <input
                 type="text"
@@ -53,7 +44,9 @@ export function DynamicIngredientsList() {
                 value={item.value}
                 placeholder="Ingredients here"
                 autoFocus
-                onChange={(e) => updateItem(item.id, e.target.value)}
+                onChange={(e) =>
+                  updateListItem("ingredients", item.id, e.target.value)
+                }
               />
             }
             renderDisplay={
