@@ -33,7 +33,7 @@ export const onRequest = defineMiddleware((context, next) => {
     url.pathname.startsWith(path),
   );
 
-  if (isProtectedRoute && !authenticated) {
+  if (isProtectedRoute && !context.locals.user_id) {
     return context.redirect("/user/login");
   }
 
