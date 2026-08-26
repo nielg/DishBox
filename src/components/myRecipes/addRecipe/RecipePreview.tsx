@@ -2,217 +2,76 @@ import s from "@/styles/components/addRecipe.module.css";
 import { useAddRecipe } from "./AddRecipeContext";
 
 export default function RecipePreview() {
-  const { formData, updateField } = useAddRecipe();
+  const { formData } = useAddRecipe();
 
   return (
     <section>
       {/* Preview label */}
-      <div
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          backgroundColor: "var(--primary-50)",
-          color: "var(--primary-700)",
-          border: "1px solid var(--primary-200)",
-          padding: "0.25rem 0.7rem",
-          borderRadius: "2rem",
-          fontSize: "0.75rem",
-          fontWeight: 700,
-          textTransform: "uppercase",
-          letterSpacing: "0.06em",
-          marginBottom: "1rem",
-        }}
-      >
-        Live Preview
-      </div>
+      <div className={s.livePreviewBadge}>Live Preview</div>
 
       <div className={s.recipePreviewContainer}>
         {/* Title */}
         <h2
-          style={{
-            margin: "0 0 0.5rem",
-            fontSize: "1.35rem",
-            fontWeight: 800,
-            color: formData.title ? "var(--text-primary)" : "var(--text-muted)",
-            fontStyle: formData.title ? "normal" : "italic",
-          }}
+          className={`${s.previewTitle} ${formData.title ? s.previewTitleFilled : s.previewTitleEmpty}`}
         >
           {formData.title || "Your recipe title"}
         </h2>
+        {!formData.title && (
+          <p className={s.validationWarning}>Title required</p>
+        )}
 
         {/* Description */}
         <p
-          style={{
-            margin: "0 0 1rem",
-            fontSize: "0.875rem",
-            color: formData.description
-              ? "var(--text-secondary)"
-              : "var(--text-muted)",
-            fontStyle: formData.description ? "normal" : "italic",
-            lineHeight: 1.6,
-          }}
+          className={`${s.previewDescription} ${formData.description ? s.previewDescriptionFilled : s.previewDescriptionEmpty}`}
         >
           {formData.description || "Your description will appear here…"}
         </p>
+        {!formData.description && (
+          <p className={s.validationWarning}>Description required</p>
+        )}
 
         {/* Divider */}
-        <div
-          style={{
-            height: "1px",
-            backgroundColor: "var(--border-subtle)",
-            margin: "0.75rem 0",
-          }}
-        />
+        <div className={s.previewDivider} />
 
         {/* Portions badge */}
-        <div
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "0.35rem",
-            backgroundColor: "var(--primary-50)",
-            color: "var(--primary-700)",
-            border: "1px solid var(--primary-200)",
-            padding: "0.25rem 0.65rem",
-            borderRadius: "2rem",
-            fontSize: "0.78rem",
-            fontWeight: 600,
-            marginBottom: "1rem",
-          }}
-        >
+        <div className={s.portionsBadge}>
           {formData.portions} {formData.portions === 1 ? "portion" : "portions"}
         </div>
 
         {/* Ingredients */}
-        <h3
-          style={{
-            margin: "0 0 0.6rem",
-            fontSize: "0.95rem",
-            fontWeight: 700,
-            color: "var(--primary-700)",
-            textTransform: "uppercase",
-            letterSpacing: "0.05em",
-          }}
-        >
-          Ingredients
-        </h3>
+        <h3 className={s.sectionHeading}>Ingredients</h3>
         {formData.ingredients.length > 0 ? (
-          <ul
-            style={{
-              listStyle: "none",
-              margin: "0 0 1.25rem",
-              padding: 0,
-              display: "flex",
-              flexDirection: "column",
-              gap: "0.4rem",
-            }}
-          >
+          <ul className={s.ingredientsList}>
             {formData.ingredients.map((item, index) => (
-              <li
-                key={`ingredient-${index}`}
-                style={{
-                  display: "flex",
-                  alignItems: "flex-start",
-                  gap: "0.6rem",
-                  fontSize: "0.875rem",
-                  color: "var(--text-secondary)",
-                }}
-              >
-                <span
-                  style={{
-                    width: "0.4rem",
-                    height: "0.4rem",
-                    borderRadius: "50%",
-                    backgroundColor: "var(--primary-400)",
-                    flexShrink: 0,
-                    marginTop: "0.42rem",
-                  }}
-                />
+              <li key={`ingredient-${index}`} className={s.ingredientItem}>
+                <span className={s.ingredientBullet} />
                 {item.value}
               </li>
             ))}
           </ul>
         ) : (
-          <p
-            style={{
-              fontSize: "0.8rem",
-              color: "var(--text-muted)",
-              fontStyle: "italic",
-              marginBottom: "1.25rem",
-            }}
-          >
-            No ingredients added yet…
-          </p>
+          <>
+            <p className={s.emptyStateText}>No ingredients added yet…</p>
+            <p className={s.validationWarning}>1 ingredient required</p>
+          </>
         )}
 
         {/* Instructions */}
-        <h3
-          style={{
-            margin: "0 0 0.6rem",
-            fontSize: "0.95rem",
-            fontWeight: 700,
-            color: "var(--primary-700)",
-            textTransform: "uppercase",
-            letterSpacing: "0.05em",
-          }}
-        >
-          Instructions
-        </h3>
+        <h3 className={s.sectionHeading}>Instructions</h3>
         {formData.instructions.length > 0 ? (
-          <ol
-            style={{
-              listStyle: "none",
-              margin: 0,
-              padding: 0,
-              display: "flex",
-              flexDirection: "column",
-              gap: "0.75rem",
-            }}
-          >
+          <ol className={s.instructionsList}>
             {formData.instructions.map((item, index) => (
-              <li
-                key={`instruction-${index}`}
-                style={{
-                  display: "flex",
-                  gap: "0.75rem",
-                  alignItems: "flex-start",
-                  fontSize: "0.875rem",
-                  color: "var(--text-secondary)",
-                }}
-              >
-                <span
-                  style={{
-                    width: "1.6rem",
-                    height: "1.6rem",
-                    borderRadius: "50%",
-                    background: "var(--gradient-ocean)",
-                    color: "white",
-                    fontSize: "0.72rem",
-                    fontWeight: 700,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                  }}
-                >
-                  {index + 1}
-                </span>
-                <span style={{ paddingTop: "0.2rem", lineHeight: 1.55 }}>
-                  {item.value}
-                </span>
+              <li key={`instruction-${index}`} className={s.instructionItem}>
+                <span className={s.stepNumberBadge}>{index + 1}</span>
+                <span className={s.stepText}>{item.value}</span>
               </li>
             ))}
           </ol>
         ) : (
-          <p
-            style={{
-              fontSize: "0.8rem",
-              color: "var(--text-muted)",
-              fontStyle: "italic",
-            }}
-          >
-            No instructions added yet…
-          </p>
+          <>
+            <p className={s.emptyStateText}>No instructions added yet…</p>
+            <p className={s.validationWarning}>1 instruction required</p>
+          </>
         )}
       </div>
     </section>

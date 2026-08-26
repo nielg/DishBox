@@ -1,11 +1,6 @@
-"use client";
-
 import { DynamicInstructionsList } from "@/components/input/DynamicInstructionsList";
-import type { DynamicInputInstructionsListItem } from "@/types/recipe";
-import { useState } from "react";
 
 export default function AddRecipeInstructions() {
-  const [items, setItems] = useState<DynamicInputInstructionsListItem[]>([]);
   return (
     <>
       <div style={{ marginBottom: "1.5rem" }}>
@@ -47,11 +42,7 @@ export default function AddRecipeInstructions() {
           Describe each step to prepare the recipe.
         </p>
       </div>
-      <DynamicInstructionsList
-        items={items}
-        setItems={setItems}
-        placeHolder="e.g. Cut the apple into slices"
-      />
+      <DynamicInstructionsList />
     </>
   );
 }
