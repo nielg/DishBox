@@ -51,7 +51,10 @@ const { data }: Props = Astro.props;
     border: 1px solid var(--border-subtle);
     border-radius: 1rem;
     box-shadow: var(--shadow-md);
-    transition: transform 0.2s ease, box-shadow 0.25s ease, border-color 0.2s ease;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.25s ease,
+      border-color 0.2s ease;
     height: 100%;
   }
 
@@ -84,7 +87,11 @@ const { data }: Props = Astro.props;
   .card-img-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(to bottom, transparent 40%, rgba(13, 148, 136, 0.12) 100%);
+    background: linear-gradient(
+      to bottom,
+      transparent 40%,
+      rgba(13, 148, 136, 0.12) 100%
+    );
   }
 
   .card-body {
@@ -132,7 +139,9 @@ const { data }: Props = Astro.props;
     font-size: 0.8rem;
     font-weight: 600;
     color: var(--primary-600);
-    transition: gap 0.2s ease, color 0.15s ease;
+    transition:
+      gap 0.2s ease,
+      color 0.15s ease;
   }
 
   .card:hover .view-link {
