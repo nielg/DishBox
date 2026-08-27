@@ -1,6 +1,6 @@
 import InputPreview from "@/components/input/InputPreview";
 import "@/styles/global.css";
-import { useAddRecipe } from "./AddRecipeContext";
+import { useAddRecipe } from "./context/AddRecipeContext";
 import s from "@/styles/components/addRecipe.module.css";
 
 export default function AddRecipeIntro() {

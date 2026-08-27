@@ -1,12 +1,7 @@
 import type { RecipeProgress } from "@/types/recipe";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import styles from "@/styles/components/progressBtn.module.css";
-import { useAddRecipe } from "./AddRecipeContext";
-
-interface Props {
-  location: RecipeProgress;
-  setProgress: React.Dispatch<React.SetStateAction<RecipeProgress>>;
-}
+import { useAddRecipe } from "./context/AddRecipeContext";
 
 const STEPS: RecipeProgress[] = [
   "intro",

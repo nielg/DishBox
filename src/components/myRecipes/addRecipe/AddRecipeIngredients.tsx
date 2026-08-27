@@ -1,7 +1,7 @@
 "use client";
 
 import { DynamicIngredientsList } from "@/components/input/DynamicIngredientsList";
-import { useAddRecipe } from "./AddRecipeContext";
+import { useAddRecipe } from "./context/AddRecipeContext";
 import s from "@/styles/components/addRecipe.module.css";
 
 export default function AddRecipeIngredients() {

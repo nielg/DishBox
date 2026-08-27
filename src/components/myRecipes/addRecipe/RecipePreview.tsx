@@ -1,5 +1,5 @@
 import s from "@/styles/components/addRecipe.module.css";
-import { useAddRecipe } from "./AddRecipeContext";
+import { useAddRecipe } from "./context/AddRecipeContext";
 
 export default function RecipePreview() {
   const { formData } = useAddRecipe();

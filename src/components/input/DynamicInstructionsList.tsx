@@ -5,7 +5,7 @@ import DynamicInputList from "./DynamicInputList";
 import DynamicInputItemSlot from "./DynamicInputItemSlot";
 import styles from "@/styles/components/inputPreview.module.css";
 import type { DynamicInputInstructionsListItem } from "@/types/recipe";
-import { useAddRecipe } from "../myRecipes/addRecipe/AddRecipeContext";
+import { useAddRecipe } from "../myRecipes/addRecipe/context/AddRecipeContext";
 
 export function DynamicInstructionsList() {
   const { updateListItem, formData, addListItem, deleteListItem } =

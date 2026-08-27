@@ -1,22 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
-import { z } from "zod";
-
-export type ListItem = { id: number; value: string };
-
-export type FormDataType = {
-  title: string;
-  description: string;
-  portions: number;
-  ingredients: ListItem[];
-  instructions: ListItem[];
-  public: boolean;
-};
-
-export type RecipeProgress =
-  | "intro"
-  | "ingredients"
-  | "instructions"
-  | "preview";
+import { type FormDataType, type RecipeProgress } from "./addRecipe.types";
+import { createRecipeSchema, type CreateRecipeInput } from "./addRecipe.schema";
 
 const STEPS: RecipeProgress[] = [
   "intro",
@@ -24,15 +8,6 @@ const STEPS: RecipeProgress[] = [
   "instructions",
   "preview",
 ];
-
-export const createRecipeSchema = z.object({
-  title: z.string().trim().min(1),
-  description: z.string().trim().min(1),
-  portions: z.number().min(1),
-  instructions: z.array(z.string().trim().min(1)),
-  ingredients: z.array(z.string().trim().min(1)),
-});
-export type CreateRecipeInput = z.infer<typeof createRecipeSchema>;
 
 interface AddRecipeContextType {
   formData: FormDataType;
@@ -90,20 +65,21 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
     id: number,
     value: string,
   ) => {
-    setFormData((prev) => {
-      const updatedList = [...prev[listName]];
-      updatedList[id] = { ...updatedList[id], value };
-      return {
-        ...prev,
-        [listName]: updatedList,
-      };
-    });
-  };
-
-  const deleteListItem = (list: "ingredients" | "instructions", id: number) => {
     setFormData((prev) => ({
       ...prev,
-      [list]: prev[list].filter((_, i) => i !== id),
+      [listName]: prev[listName].map((item) =>
+        item.id === id ? { ...item, value } : item,
+      ),
+    }));
+  };
+
+  const deleteListItem = (
+    listName: "ingredients" | "instructions",
+    id: number,
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      [listName]: prev[listName].filter((item) => item.id !== id),
     }));
   };
   // Progress

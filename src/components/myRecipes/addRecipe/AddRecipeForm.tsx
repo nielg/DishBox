@@ -6,7 +6,7 @@ import AddRecipeReview from "./AddRecipeReview";
 import AddRecipeProgressBtn from "./AddRecipeProgressBtn";
 import RecipePreview from "./RecipePreview";
 import s from "@/styles/components/addRecipe.module.css";
-import { AddRecipeProvider, useAddRecipe } from "./AddRecipeContext";
+import { AddRecipeProvider, useAddRecipe } from "./context/AddRecipeContext";
 
 function FormContent() {
   const { progress } = useAddRecipe();
@@ -34,4 +34,3 @@ export default function AddRecipeForm() {
     </AddRecipeProvider>
   );
 }
-
