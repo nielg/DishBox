@@ -1,4 +1,4 @@
-import type { RecipeProgress } from "@/types/recipe";
+import type { RecipeProgress } from "@/types/recipe/recipe.types";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import styles from "@/styles/components/progressBtn.module.css";
 import { useAddRecipe } from "./context/AddRecipeContext";

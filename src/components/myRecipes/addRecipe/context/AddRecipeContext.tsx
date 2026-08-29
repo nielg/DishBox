@@ -1,6 +1,12 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
-import { type FormDataType, type RecipeProgress } from "./addRecipe.types";
-import { createRecipeSchema, type CreateRecipeInput } from "./addRecipe.schema";
+import {
+  type FormDataType,
+  type RecipeProgress,
+} from "./addRecipeContex.types";
+import {
+  CreateRecipeSchema,
+  type CreateRecipeBody,
+} from "@/types/recipe/recipe.schemas";
 
 const STEPS: RecipeProgress[] = [
   "intro",
@@ -28,7 +34,7 @@ interface AddRecipeContextType {
   handleNext: () => void;
   handlePrevious: () => void;
   submit: () => void;
-  isValid: () => CreateRecipeInput | null;
+  isValid: () => CreateRecipeBody | null;
 }
 
 const AddRecipeContext = createContext<AddRecipeContextType | undefined>(
@@ -43,6 +49,7 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
     portions: 4,
     ingredients: [],
     instructions: [],
+    vegan: true,
     public: false,
   });
 
@@ -98,7 +105,7 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
   };
 
   // Validation
-  const isValid = (): CreateRecipeInput | null => {
+  const isValid = (): CreateRecipeBody | null => {
     const recipeRequest = {
       title: formData.title,
       description: formData.description,
@@ -109,9 +116,11 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
       instructions: formData.instructions
         .filter((item) => item.value.trim())
         .map((item) => item.value),
+      public: formData.public,
+      vegan: formData.vegan,
     };
-
-    const result = createRecipeSchema.safeParse(recipeRequest);
+    console.log("Validating recipe:", recipeRequest);
+    const result = CreateRecipeSchema.safeParse(recipeRequest);
 
     return result.success ? result.data : null;
   };
@@ -119,7 +128,7 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
   // On submit
   const submit = async () => {
     const body = isValid();
-
+    console.log("Submitting recipe:", body);
     if (!body) {
       return;
     }

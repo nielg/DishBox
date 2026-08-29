@@ -1,25 +1,30 @@
 import sql from "@/lib/db";
 import type {
   RecipeMetaDataResponse,
-  RecipeRequest,
   RecipeResponse,
-} from "@/types/recipe";
+} from "@/types/recipe/recipe.types";
+import type { CreateRecipeInput } from "@/pages/api/recipe/addRecipe";
 
-async function createRecipe(recipe: RecipeRequest): Promise<RecipeResponse> {
+async function createRecipe(
+  recipe: CreateRecipeInput,
+): Promise<RecipeResponse> {
   let insertedRows: RecipeResponse[] | null = null;
+  console.log("Creating recipe:", recipe);
 
   try {
     insertedRows = (await sql`
-      INSERT INTO recipes (title, description, portions, ingredients, instructions, user_id)
+      INSERT INTO recipes (title, description, portions, ingredients, instructions, user_id, public, vegan)
       VALUES (
         ${recipe.title},
         ${recipe.description},
         ${recipe.portions},
         ${sql.json(recipe.ingredients)},
         ${sql.json(recipe.instructions)},
-        ${recipe.user_id}
+        ${recipe.user_id},
+        ${recipe.public},
+        ${recipe.vegan}
       )
-      RETURNING id, title, description, portions, ingredients, instructions
+      RETURNING id, title, description, portions, ingredients, instructions, public, vegan
     `) as RecipeResponse[];
   } catch (error) {
     console.error("DB: Failed to create recipe:", error);
@@ -40,9 +45,9 @@ async function getRecipesMetaDataByUserId(
 
   try {
     resultRows = (await sql`
-      SELECT * FROM recipes
+      SELECT id, title, description, portions, public, vegan FROM recipes
       WHERE ${user_id} = user_id
-      `) as RecipeResponse[];
+      `) as RecipeMetaDataResponse[];
   } catch (error) {
     console.error("DB: Failed to fetch recipeMetaData:", error);
     throw new Error("Database fetch failed");

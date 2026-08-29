@@ -5,7 +5,7 @@ import recipeService from "@/service/recipeService";
 import { handleZodValidationError } from "@/service";
 import authService from "@/service/authService";
 
-const createRecipeSchema = z.object({
+export const createRecipeSchema = z.object({
   title: z.string().min(1, "Title cannot be empty"),
   description: z.string().min(1, "Description cannot be empty"),
   portions: z
@@ -18,6 +18,8 @@ const createRecipeSchema = z.object({
   instructions: z
     .array(z.string().min(1, "Instructions cannot be empty"))
     .min(1, "At least one instruction required"),
+  public: z.boolean(),
+  vegan: z.boolean(),
 });
 
 export type CreateRecipeInput = z.infer<typeof createRecipeSchema> & {
@@ -30,7 +32,6 @@ export const POST: APIRoute = async ({
 }): Promise<Response> => {
   try {
     const auth = await authService.getAuthenticatedUserId(cookies);
-
     if (!auth.success) {
       return auth.response;
     }
