@@ -1,7 +1,10 @@
 import { z } from "zod";
 
 export const CreateRecipeSchema = z.object({
-  title: z.string().min(1, "Title cannot be empty"),
+  title: z
+    .string()
+    .min(1, "Title cannot be empty")
+    .max(100, "Title cannot exceed 100 characters"),
   description: z.string().min(1, "Description cannot be empty"),
   portions: z
     .number()

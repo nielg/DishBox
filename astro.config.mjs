@@ -1,4 +1,3 @@
-// @ts-check
 import { defineConfig, envField } from "astro/config";
 import icon from "astro-icon";
 
