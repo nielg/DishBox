@@ -14,9 +14,21 @@ async function addRecipe(body: CreateRecipeInput): Promise<RecipeResponse> {
   return createdDataRecipe;
 }
 
+async function getPublickRecipesMetaData(): Promise<RecipeMetaDataResponse[]> {
+  return RecipesRepository.getPublickRecipesMetaData();
+}
+
+async function getPublickVeganRecipesMetaData(): Promise<
+  RecipeMetaDataResponse[]
+> {
+  return RecipesRepository.getPublickVeganRecipesMetaData();
+}
+
 const recipeService = {
   addRecipe,
   getRecipesMetaData,
+  getPublickRecipesMetaData,
+  getPublickVeganRecipesMetaData,
 };
 
 export default recipeService;

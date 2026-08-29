@@ -91,11 +91,48 @@ async function deleteRecipeById(id: number): Promise<string> {
 
   return `Succesfully delete recipe ${id}`;
 }
+
+async function getPublickRecipesMetaData(): Promise<RecipeMetaDataResponse[]> {
+  let resultRows: RecipeMetaDataResponse[] | null = null;
+
+  try {
+    resultRows = (await sql`
+      SELECT id, title, description, portions
+      FROM recipes
+      WHERE public = true
+      `) as RecipeMetaDataResponse[];
+  } catch (error) {
+    console.error("DB: Failed to fetch public recipes:", error);
+    throw new Error("Database fetch failed");
+  }
+  return resultRows;
+}
+
+async function getPublickVeganRecipesMetaData(): Promise<
+  RecipeMetaDataResponse[]
+> {
+  let resultRows: RecipeMetaDataResponse[] | null = null;
+
+  try {
+    resultRows = (await sql`
+      SELECT id, title, description, portions
+      FROM recipes
+      WHERE public = true AND vegan = true
+      `) as RecipeMetaDataResponse[];
+  } catch (error) {
+    console.error("DB: Failed to fetch public vegan recipes:", error);
+    throw new Error("Database fetch failed");
+  }
+  return resultRows;
+}
+
 const RecipesService = {
   createRecipe,
   getRecipesMetaDataByUserId,
   getRecipeById,
   deleteRecipeById,
+  getPublickRecipesMetaData,
+  getPublickVeganRecipesMetaData,
 };
 
 export default RecipesService;
