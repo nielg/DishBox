@@ -1,9 +1,9 @@
 import RecipesRepository from "@/repository/recipesRepository";
+import type { CreateRecipeInput } from "@/pages/api/recipe/addRecipe";
 import type {
   RecipeMetaDataResponse,
   RecipeResponse,
-} from "@/types/recipe/recipe.types";
-import type { CreateRecipeInput } from "@/pages/api/recipe/addRecipe";
+} from "@/types/recipe/recipe.schemas";
 
 async function getRecipesMetaData(
   user_id: number,

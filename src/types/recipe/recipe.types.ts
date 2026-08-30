@@ -17,23 +17,3 @@ export type DynamicInputIngredientsListItem = {
   id: number;
   value: string;
 };
-
-export type RecipeResponse = {
-  id: number;
-  title: string;
-  description: string;
-  portions: number;
-  ingredients: string[];
-  instructions: string[];
-  public: boolean;
-  vegan: boolean;
-};
-
-export type RecipeMetaDataResponse = {
-  id: number;
-  title: string;
-  description: string;
-  portions: number;
-  public: boolean;
-  vegan: boolean;
-};

@@ -1,9 +1,12 @@
 import sql from "@/lib/db";
-import type {
-  RecipeMetaDataResponse,
-  RecipeResponse,
-} from "@/types/recipe/recipe.types";
 import type { CreateRecipeInput } from "@/pages/api/recipe/addRecipe";
+import {
+  RecipeMetaDataResponseSchema,
+  type RecipeMetaDataResponse,
+  RecipeResponseSchema,
+  type RecipeResponse,
+} from "@/types/recipe/recipe.schemas";
+import { z } from "astro/zod";
 
 async function createRecipe(
   recipe: CreateRecipeInput,
@@ -41,19 +44,16 @@ async function createRecipe(
 async function getRecipesMetaDataByUserId(
   user_id: number,
 ): Promise<RecipeMetaDataResponse[]> {
-  let resultRows: RecipeMetaDataResponse[] | null = null;
-
   try {
-    resultRows = (await sql`
+    const rows = await sql`
       SELECT id, title, description, portions, public, vegan FROM recipes
       WHERE ${user_id} = user_id
-      `) as RecipeMetaDataResponse[];
+      `;
+    return z.array(RecipeMetaDataResponseSchema).parse(rows);
   } catch (error) {
     console.error("DB: Failed to fetch recipeMetaData:", error);
     throw new Error("Database fetch failed");
   }
-
-  return resultRows;
 }
 
 async function getRecipeById(id: number): Promise<RecipeResponse> {
@@ -74,7 +74,7 @@ async function getRecipeById(id: number): Promise<RecipeResponse> {
     throw new Error(`No recipe found with id: ${id}`);
   }
 
-  return resultRows[0];
+  return RecipeResponseSchema.parse(resultRows[0]);
 }
 
 async function deleteRecipeById(id: number): Promise<string> {
@@ -98,37 +98,33 @@ async function deleteRecipeById(id: number): Promise<string> {
 }
 
 async function getPublickRecipesMetaData(): Promise<RecipeMetaDataResponse[]> {
-  let resultRows: RecipeMetaDataResponse[] | null = null;
-
   try {
-    resultRows = (await sql`
+    const rows = await sql`
       SELECT id, title, description, portions, public, vegan
       FROM recipes
       WHERE public = true
-      `) as RecipeMetaDataResponse[];
+      `;
+    return z.array(RecipeMetaDataResponseSchema).parse(rows);
   } catch (error) {
     console.error("DB: Failed to fetch public recipes:", error);
     throw new Error("Database fetch failed");
   }
-  return resultRows;
 }
 
 async function getPublickVeganRecipesMetaData(): Promise<
   RecipeMetaDataResponse[]
 > {
-  let resultRows: RecipeMetaDataResponse[] | null = null;
-
   try {
-    resultRows = (await sql`
+    const rows = await sql`
       SELECT id, title, description, portions, public, vegan
       FROM recipes
       WHERE public = true AND vegan = true
-      `) as RecipeMetaDataResponse[];
+      `;
+    return z.array(RecipeMetaDataResponseSchema).parse(rows);
   } catch (error) {
     console.error("DB: Failed to fetch public vegan recipes:", error);
     throw new Error("Database fetch failed");
   }
-  return resultRows;
 }
 
 const RecipesService = {
