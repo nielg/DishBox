@@ -102,7 +102,7 @@ async function getPublickRecipesMetaData(): Promise<RecipeMetaDataResponse[]> {
 
   try {
     resultRows = (await sql`
-      SELECT id, title, description, portions
+      SELECT id, title, description, portions, public, vegan
       FROM recipes
       WHERE public = true
       `) as RecipeMetaDataResponse[];
@@ -120,7 +120,7 @@ async function getPublickVeganRecipesMetaData(): Promise<
 
   try {
     resultRows = (await sql`
-      SELECT id, title, description, portions
+      SELECT id, title, description, portions, public, vegan
       FROM recipes
       WHERE public = true AND vegan = true
       `) as RecipeMetaDataResponse[];
