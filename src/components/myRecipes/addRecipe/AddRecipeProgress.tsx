@@ -2,6 +2,7 @@ import type { RecipeProgress } from "@/types/recipe/recipe.types";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import styles from "@/styles/components/addRecipe//progressBtn.module.css";
 import { useAddRecipe } from "./context/AddRecipeContext";
+import { Fragment } from "react";
 
 const STEPS: RecipeProgress[] = [
   "intro",
@@ -35,8 +36,8 @@ export default function AddRecipeProgress() {
       <div className={styles.separator} />
 
       {STEPS.map((step, index) => (
-        <>
-          <div key={step} className={styles.stepContainer}>
+        <Fragment key={step}>
+          <div className={styles.stepContainer}>
             <button
               className={`${styles.btn} ${progress === step ? styles.active : ""}`}
               onClick={() => setProgress(step)}
@@ -58,7 +59,7 @@ export default function AddRecipeProgress() {
           {index < STEPS.length - 1 && (
             <div key={`sep-${step}`} className={styles.separator} />
           )}
-        </>
+        </Fragment>
       ))}
 
       <div className={styles.separator} />
