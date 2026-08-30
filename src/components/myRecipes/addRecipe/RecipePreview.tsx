@@ -1,4 +1,4 @@
-import s from "@/styles/components/addRecipe.module.css";
+import s from "@/styles/components/addRecipe/addRecipe.module.css";
 import { useAddRecipe } from "./context/AddRecipeContext";
 
 export default function RecipePreview() {

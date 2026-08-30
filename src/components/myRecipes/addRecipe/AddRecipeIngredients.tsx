@@ -2,7 +2,7 @@
 
 import { DynamicIngredientsList } from "@/components/input/DynamicIngredientsList";
 import { useAddRecipe } from "./context/AddRecipeContext";
-import s from "@/styles/components/addRecipe.module.css";
+import s from "@/styles/components/addRecipe/addRecipe.module.css";
 
 export default function AddRecipeIngredients() {
   const { formData, updateField } = useAddRecipe();

@@ -1,5 +1,5 @@
 import { DynamicInstructionsList } from "@/components/input/DynamicInstructionsList";
-import s from "@/styles/components/addRecipe.module.css";
+import s from "@/styles/components/addRecipe/addRecipe.module.css";
 
 export default function AddRecipeInstructions() {
   return (

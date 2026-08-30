@@ -3,7 +3,7 @@
 import { useState } from "react";
 import DynamicInputList from "./DynamicInputList";
 import DynamicInputItemSlot from "./DynamicInputItemSlot";
-import styles from "@/styles/components/inputPreview.module.css";
+import styles from "@/styles/components/addRecipe/inputPreview.module.css";
 import type { DynamicInputInstructionsListItem } from "@/types/recipe/recipe.types";
 import { useAddRecipe } from "../myRecipes/addRecipe/context/AddRecipeContext";
 
