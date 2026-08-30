@@ -155,6 +155,11 @@ h3 {
   font-weight: 700;
 }
 
+/* Margin */
+.margin-bottom-1 {
+  margin-bottom: 1rem;
+}
+
 .btn {
   color: white;
   background-color: var(--red-accent);
@@ -188,6 +193,8 @@ h3 {
 .badge {
   display: inline-flex;
   align-items: center;
+  gap: 0.25rem;
+  justify-content: center;
   background-color: var(--primary-50);
   color: var(--primary-700);
   border: 1px solid var(--primary-200);
@@ -197,5 +204,17 @@ h3 {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  margin-bottom: 1rem;
+  height: 1.5rem;
+}
+
+.vegan-badge {
+  background-color: rgba(116, 173, 116, 0.2);
+  color: rgb(65, 187, 65);
+  border: 1px solid rgb(65, 187, 65);
+}
+
+.public-badge {
+  background-color: rgba(120, 116, 173, 0.2);
+  color: rgb(65, 130, 187);
+  border: 1px solid rgb(65, 130, 187);
 }

@@ -1,5 +1,6 @@
 import s from "@/styles/components/addRecipe/addRecipe.module.css";
 import { useAddRecipe } from "./context/AddRecipeContext";
+import { Globe, Vegan } from "lucide-react";
 
 export default function RecipePreview() {
   const { formData } = useAddRecipe();
@@ -7,7 +8,9 @@ export default function RecipePreview() {
   return (
     <section className={s.recipePreview}>
       {/* Preview label */}
-      <div className={`${s.livePreviewBadge} badge`}>Live Preview</div>
+      <div className={`${s.livePreviewBadge} badge margin-bottom-1`}>
+        Live Preview
+      </div>
 
       <div className={s.recipePreviewContainer}>
         {/* Title */}
@@ -37,9 +40,24 @@ export default function RecipePreview() {
         {/* Divider */}
         <div className={s.previewDivider} />
 
-        {/* Portions badge */}
-        <div className={`${s.portionsBadge} badge`}>
-          {formData.portions} {formData.portions === 1 ? "portion" : "portions"}
+        {/* Badges */}
+        <div className={s.badgesContainer}>
+          <div className={`badge`}>
+            {formData.portions}{" "}
+            {formData.portions === 1 ? "portion" : "portions"}
+          </div>
+          {formData.vegan && (
+            <div className={`badge vegan-badge`}>
+              <Vegan className={s.badgeIcon} />
+              Vegan
+            </div>
+          )}
+          {formData.public && (
+            <div className={`badge public-badge`}>
+              <Globe className={s.badgeIcon} />
+              Public
+            </div>
+          )}
         </div>
 
         {/* Ingredients */}

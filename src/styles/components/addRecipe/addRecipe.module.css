@@ -249,5 +249,12 @@
 
 /* Badge */
 .stepBadge {
-  margin-bottom: 0;
+  margin-bottom: 1rem;
+}
+
+.badgesContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
 }
