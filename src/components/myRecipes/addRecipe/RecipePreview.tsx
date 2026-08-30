@@ -47,14 +47,14 @@ export default function RecipePreview() {
             {formData.portions === 1 ? "portion" : "portions"}
           </div>
           {formData.vegan && (
-            <div className={`badge vegan-badge`}>
-              <Vegan className={s.badgeIcon} />
+            <div className={`badge`}>
+              <Vegan className={`badge-icon`} />
               Vegan
             </div>
           )}
           {formData.public && (
-            <div className={`badge public-badge`}>
-              <Globe className={s.badgeIcon} />
+            <div className={`badge`}>
+              <Globe className={`badge-icon`} />
               Public
             </div>
           )}

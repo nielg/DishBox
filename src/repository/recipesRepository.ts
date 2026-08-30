@@ -61,7 +61,7 @@ async function getRecipeById(id: number): Promise<RecipeResponse> {
 
   try {
     resultRows = (await sql`
-      SELECT id, title, description, portions, ingredients, instructions
+      SELECT id, title, description, portions, ingredients, instructions, public, vegan
       FROM recipes
       WHERE id = ${id}
       `) as RecipeResponse[];

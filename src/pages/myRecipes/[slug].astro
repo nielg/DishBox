@@ -1,10 +1,10 @@
 ---
 import BaseLayout from "@/components/layouts/BaseLayout.astro";
-import type { RecipeResponse } from "@/types/recipe/recipe/recipe";
 import RecipesService from "@/repository/recipesRepository";
 import DeleteRecipeBtn from "@/components/buttons/DeleteRecipeBtn.astro";
 import GoBackBtn from "@/components/buttons/GoBackBtn.astro";
 import { Icon } from "astro-icon/components";
+import type { RecipeResponse } from "@/types/recipe/recipe.types";
 
 const { slug } = Astro.params;
 
@@ -47,22 +47,32 @@ if (!recipe) {
             <span>Recipe</span>
           </div>
           <h1 class="recipe-title">{recipe.title}</h1>
-          {recipe.description && (
-            <p class="recipe-description">{recipe.description}</p>
-          )}
+          <p class="recipe-description">{recipe.description}</p>
           <div class="recipe-meta">
-            <span class="meta-badge">
-              <Icon name="lucide:users" class="meta-icon" />
+            <span class="badge">
+              <Icon name="lucide:users" class="badge-icon" />
               {recipe.portions} {recipe.portions === 1 ? "portion" : "portions"}
             </span>
-            <span class="meta-badge">
-              <Icon name="lucide:list" class="meta-icon" />
+            <span class="badge">
+              <Icon name="lucide:list" class="badge-icon" />
               {recipe.ingredients.length} ingredients
             </span>
-            <span class="meta-badge">
-              <Icon name="lucide:clipboard-list" class="meta-icon" />
+            <span class="badge">
+              <Icon name="lucide:clipboard-list" class="badge-icon" />
               {recipe.instructions.length} steps
             </span>
+            {recipe.public && (
+              <span class="badge">
+                <Icon name="lucide:globe" class="badge-icon" />
+                Public
+              </span>
+            )}
+            {recipe.vegan && (
+              <span class="badge">
+                <Icon name="lucide:leaf" class="badge-icon" />
+                Vegan
+              </span>
+            )}
           </div>
         </header>
 
@@ -189,24 +199,6 @@ if (!recipe) {
     flex-wrap: wrap;
     gap: 0.6rem;
     margin-top: 0.25rem;
-  }
-
-  .meta-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.35rem 0.75rem;
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--primary-700);
-    background-color: var(--primary-50);
-    border: 1px solid var(--primary-200);
-    border-radius: 2rem;
-  }
-
-  .meta-icon {
-    width: 0.85rem;
-    height: 0.85rem;
   }
 
   /* ── Divider ────────────────────────────────────────────────── */
