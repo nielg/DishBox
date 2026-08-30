@@ -38,6 +38,17 @@
   box-shadow: var(--shadow-ocean);
 }
 
+.stepContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  transition: color 0.2s;
+  white-space: "nowrap";
+}
+
 .container button:hover:not(:disabled):not(.active) {
   border-color: var(--primary-400);
   background-color: var(--primary-50);

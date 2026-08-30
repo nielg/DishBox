@@ -17,7 +17,7 @@ const STEP_LABELS: Record<RecipeProgress, string> = {
   preview: "Review",
 };
 
-export default function AddRecipeProgressBtn() {
+export default function AddRecipeProgress() {
   const { handleNext, handlePrevious, currentIndex, progress, setProgress } =
     useAddRecipe();
 
@@ -36,15 +36,7 @@ export default function AddRecipeProgressBtn() {
 
       {STEPS.map((step, index) => (
         <>
-          <div
-            key={step}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "0.3rem",
-            }}
-          >
+          <div key={step} className={styles.stepContainer}>
             <button
               className={`${styles.btn} ${progress === step ? styles.active : ""}`}
               onClick={() => setProgress(step)}
@@ -54,14 +46,10 @@ export default function AddRecipeProgressBtn() {
             </button>
             <span
               style={{
-                fontSize: "0.7rem",
-                fontWeight: 600,
                 color:
                   progress === step
                     ? "var(--primary-700)"
                     : "var(--text-muted)",
-                transition: "color 0.2s",
-                whiteSpace: "nowrap",
               }}
             >
               {STEP_LABELS[step]}
