@@ -5,6 +5,11 @@
   align-items: start;
 }
 
+.inputPreviewContainer > * {
+  min-width: 0;
+  overflow: break-word;
+}
+
 @media (max-width: 860px) {
   .inputPreviewContainer {
     grid-template-columns: 1fr;
@@ -19,21 +24,6 @@
   padding: 2rem;
   background-color: var(--bg-surface);
   box-shadow: var(--shadow-sm);
-}
-
-.livePreviewBadge {
-  display: inline-flex;
-  align-items: center;
-  background-color: var(--primary-50);
-  color: var(--primary-700);
-  border: 1px solid var(--primary-200);
-  padding: 0.25rem 0.7rem;
-  border-radius: 2rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-bottom: 1rem;
 }
 
 .previewTitle {
@@ -71,20 +61,6 @@
   height: 1px;
   background-color: var(--border-subtle);
   margin: 0.75rem 0;
-}
-
-.portionsBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  background-color: var(--primary-50);
-  color: var(--primary-700);
-  border: 1px solid var(--primary-200);
-  padding: 0.25rem 0.65rem;
-  border-radius: 2rem;
-  font-size: 0.78rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
 }
 
 .sectionHeading {
@@ -152,7 +128,7 @@
   color: var(--text-secondary);
 }
 
-.stepNumberBadge {
+.instructionsStepNumber {
   width: 1.6rem;
   height: 1.6rem;
   border-radius: 50%;
@@ -181,22 +157,6 @@
 
 .stepHeader {
   margin-bottom: 1.5rem;
-}
-
-.stepBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  background-color: var(--primary-50);
-  color: var(--primary-700);
-  border: 1px solid var(--primary-200);
-  padding: 0.25rem 0.7rem;
-  border-radius: 2rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin-bottom: 0.65rem;
 }
 
 .stepTitle {
@@ -285,4 +245,9 @@
 
 .submitBtn:active {
   transform: translateY(0);
+}
+
+/* Badge */
+.stepBadge {
+  margin-bottom: 0;
 }

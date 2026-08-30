@@ -1,4 +1,3 @@
-"use client";
 import AddRecipeIntro from "./AddRecipeIntro";
 import AddRecipeIngredients from "./AddRecipeIngredients";
 import AddRecipeInstructions from "./AddRecipeInstructions";

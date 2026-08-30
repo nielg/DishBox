@@ -183,3 +183,19 @@ h3 {
   justify-content: center;
   margin: auto;
 }
+
+/* Badge */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  background-color: var(--primary-50);
+  color: var(--primary-700);
+  border: 1px solid var(--primary-200);
+  padding: 0.25rem 0.7rem;
+  border-radius: 2rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 1rem;
+}

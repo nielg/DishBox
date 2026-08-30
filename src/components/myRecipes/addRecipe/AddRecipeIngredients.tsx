@@ -9,7 +9,7 @@ export default function AddRecipeIngredients() {
   return (
     <>
       <div className={s.stepHeader}>
-        <span className={s.stepBadge}>Step 2</span>
+        <span className={`${s.stepBadge} badge`}>Step 2</span>
         <h2 className={s.stepTitle}>Ingredients</h2>
         <p className={s.stepDescription}>
           Add all the ingredients needed for your recipe.

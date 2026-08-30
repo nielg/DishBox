@@ -5,7 +5,7 @@ export default function AddRecipeReview() {
   const { submit, isValid, updateField, formData } = useAddRecipe();
   return (
     <div className={s.reviewContainer}>
-      <span className={s.stepBadge}>Step 4</span>
+      <span className={`${s.stepBadge} badge`}>Step 4</span>
       <h2 className={s.stepTitle}>Review &amp; Submit</h2>
       <p className={s.stepDescription}>
         Check the preview on the right. Once you're happy, submit your recipe!

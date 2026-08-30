@@ -123,7 +123,6 @@
   background-color: transparent;
   box-sizing: border-box;
   display: block;
-  field-sizing: content;
   resize: none;
   outline: none;
 }

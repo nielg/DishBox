@@ -9,7 +9,7 @@ export default function AddRecipeIntro() {
   return (
     <>
       <div className={s.stepHeader}>
-        <span className={s.stepBadge}>Step 1</span>
+        <span className={`${s.stepBadge} badge`}>Step 1</span>
         <h2 className={s.stepTitle}>Introduction</h2>
         <p className={s.stepDescription}>
           Give your recipe a title and a short description.
