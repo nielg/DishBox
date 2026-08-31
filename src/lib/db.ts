@@ -1,10 +1,12 @@
 import postgres from "postgres";
 
 const connectionString =
-  import.meta.env.DATABASE_URL || process.env.DATABASE_URL;
+  import.meta.env.POOLING_DATABASE_URL || process.env.POOLING_DATABASE_URL;
 
 if (!connectionString) {
-  throw new Error("DATABASE_URL is missing from your environment variables!");
+  throw new Error(
+    "POOLING_DATABASE_URL is missing from your environment variables!",
+  );
 }
 
 // 2. Initialize the connection pool
