@@ -1,20 +1,10 @@
-import { z } from "zod";
 import { COOKIE_NAME, COOKIE_SECURE, MAX_AGE } from "astro:env/server";
 import type { APIRoute } from "astro";
 import type { ApiResponse } from "@/types";
 import authService from "@/service/authService";
 import { handleZodValidationError } from "@/service";
-
+import { loginSchema } from "@/types/user/user.schema";
 const cookieName = COOKIE_NAME || "_Security_Login_";
-
-const loginSchema = z.object({
-  username: z.string().min(1, "Username cannot be empty"),
-  password: z
-    .string()
-    .min(8, "Password needs to be at least 8 characters long"),
-});
-
-export type loginInput = z.infer<typeof loginSchema>;
 
 export const POST: APIRoute = async ({
   cookies,
