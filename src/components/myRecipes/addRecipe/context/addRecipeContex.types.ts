@@ -17,4 +17,5 @@ export type FormDataType = {
   instructions: { id: number; value: string }[];
   public: boolean;
   vegan: boolean;
+  imgURLs: { id: number; value: string }[];
 };

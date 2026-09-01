@@ -9,7 +9,6 @@ type Props = {
 };
 
 const { data }: Props = Astro.props;
-console.log("RecipeCard data:", data);
 ---
 
 <a href={`/myRecipes/${data.id}`} class="card-link">

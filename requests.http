@@ -64,7 +64,11 @@ Content-Type: application/json
     "Combine pasta, pancetta, and egg mixture off the heat, tossing quickly."
   ],
   "public": true,
-  "vegan": false
+  "vegan": false,
+  "imgURLs": [
+    "https://example.com/images/spaghetti_carbonara_1.jpg",
+    "https://example.com/images/spaghetti_carbonara_2.jpg"
+  ]
 }
 
 ### 6. Delete a recipe by ID (Requires active login session)

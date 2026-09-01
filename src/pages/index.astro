@@ -6,8 +6,6 @@ import RecipesGrid from "@/components/recipes/RecipesGrid.astro";
 
 const recipes = await RecipeService.getPublickRecipesMetaData();
 const veganRecipes = await RecipeService.getPublickVeganRecipesMetaData();
-console.log(recipes);
-console.log(veganRecipes);
 ---
 
 <BaseLayout>

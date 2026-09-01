@@ -15,19 +15,17 @@ const STEPS: RecipeProgress[] = [
   "preview",
 ];
 
+type listItem = "ingredients" | "instructions" | "imgURLs";
+
 interface AddRecipeContextType {
   formData: FormDataType;
   updateField: <K extends keyof FormDataType>(
     field: K,
     value: FormDataType[K],
   ) => void;
-  addListItem: (list: "ingredients" | "instructions", id: number) => void;
-  updateListItem: (
-    listName: "ingredients" | "instructions",
-    index: number,
-    value: string,
-  ) => void;
-  deleteListItem: (list: "ingredients" | "instructions", id: number) => void;
+  addListItem: (list: listItem, id: number, value?: string) => void;
+  updateListItem: (listName: listItem, index: number, value: string) => void;
+  deleteListItem: (list: listItem, id: number) => void;
   progress: RecipeProgress;
   currentIndex: number;
   setProgress: (step: RecipeProgress) => void;
@@ -51,6 +49,7 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
     instructions: [],
     vegan: true,
     public: false,
+    imgURLs: [],
   });
 
   const updateField = <K extends keyof FormDataType>(
@@ -60,18 +59,14 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const addListItem = (list: "ingredients" | "instructions", id: number) => {
+  const addListItem = (list: listItem, id: number, value?: string) => {
     setFormData((prev) => ({
       ...prev,
-      [list]: [...prev[list], { id, value: "" }],
+      [list]: [...prev[list], { id, value: value ?? "" }],
     }));
   };
 
-  const updateListItem = (
-    listName: "ingredients" | "instructions",
-    id: number,
-    value: string,
-  ) => {
+  const updateListItem = (listName: listItem, id: number, value: string) => {
     setFormData((prev) => ({
       ...prev,
       [listName]: prev[listName].map((item) =>
@@ -80,10 +75,7 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
     }));
   };
 
-  const deleteListItem = (
-    listName: "ingredients" | "instructions",
-    id: number,
-  ) => {
+  const deleteListItem = (listName: listItem, id: number) => {
     setFormData((prev) => ({
       ...prev,
       [listName]: prev[listName].filter((item) => item.id !== id),
@@ -118,8 +110,8 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
         .map((item) => item.value),
       public: formData.public,
       vegan: formData.vegan,
+      imgURLs: formData.imgURLs.map((item) => item.value),
     };
-    console.log("Validating recipe:", recipeRequest);
     const result = CreateRecipeSchema.safeParse(recipeRequest);
 
     return result.success ? result.data : null;
@@ -128,7 +120,6 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
   // On submit
   const submit = async () => {
     const body = isValid();
-    console.log("Submitting recipe:", body);
     if (!body) {
       return;
     }

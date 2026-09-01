@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
+import { useAddRecipe } from "./context/AddRecipeContext";
 
 const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL;
 const BUCKET_NAME = import.meta.env.PUBLIC_SUPABASE_RECIPE_BUCKET_NAME;
 
 export default function AddRecipeImg() {
+  const { formData, addListItem } = useAddRecipe();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [objectURLs, setObjectURLs] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState<boolean>(false);
-  const [uploadedUrls, setUploadedUrls] = useState<string[]>([]);
 
   const onUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -46,7 +47,6 @@ export default function AddRecipeImg() {
           }),
         });
 
-        console.log("Response from /api/supabase/uploadURL:", res);
         if (!res.ok) {
           throw new Error(`Failed to get signed URL for ${file.name}`);
         }
@@ -75,10 +75,9 @@ export default function AddRecipeImg() {
       });
 
       const results = await Promise.all(uploadPromises);
-      publicImageUrls.push(...results);
-
-      setUploadedUrls(publicImageUrls);
-      console.log("All uploaded image public URLs:", publicImageUrls);
+      results.map((url) =>
+        addListItem("imgURLs", formData.imgURLs.length, url),
+      ); // Add each uploaded image URL to the form data
 
       // Reset local previews after successful upload
       setSelectedFiles([]);
@@ -120,14 +119,14 @@ export default function AddRecipeImg() {
         {isUploading ? "Uploading..." : "Save to Bucket"}
       </button>
 
-      {uploadedUrls.length > 0 && (
+      {formData.imgURLs.length > 0 && (
         <div className="uploaded-list">
           <p>Uploaded Image URLs:</p>
           <ul>
-            {uploadedUrls.map((url) => (
-              <li key={url}>
-                <a href={url} target="_blank" rel="noreferrer">
-                  {url}
+            {formData.imgURLs.map((data) => (
+              <li key={data.value}>
+                <a href={data.value} target="_blank" rel="noreferrer">
+                  {data.value}
                 </a>
               </li>
             ))}

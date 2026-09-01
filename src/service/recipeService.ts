@@ -1,6 +1,6 @@
 import RecipesRepository from "@/repository/recipesRepository";
-import type { CreateRecipeInput } from "@/pages/api/recipe/addRecipe";
 import type {
+  CreateRecipeInput,
   RecipeMetaDataResponse,
   RecipeResponse,
 } from "@/types/recipe/recipe.schemas";
@@ -12,7 +12,8 @@ async function getRecipesMetaData(
 }
 
 async function addRecipe(body: CreateRecipeInput): Promise<RecipeResponse> {
-  const createdDataRecipe = await RecipesRepository.createRecipe(body);
+  const createdDataRecipe =
+    await RecipesRepository.createRecipeWithImages(body);
 
   return createdDataRecipe;
 }

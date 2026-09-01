@@ -37,8 +37,6 @@ export const POST: APIRoute = async ({ request, cookies }) => {
     .from(supabaseBucketName)
     .createSignedUploadUrl(fileName);
 
-  console.log("Signed URL response:", { data, error });
-
   if (error || !data) {
     return new Response(
       JSON.stringify({

@@ -18,6 +18,7 @@ export const CreateRecipeSchema = z.object({
     .min(1, "At least one instruction required"),
   public: z.boolean(),
   vegan: z.boolean(),
+  imgURLs: z.array(z.string()).optional(),
 });
 
 export type CreateRecipeInput = z.infer<typeof CreateRecipeSchema> & {

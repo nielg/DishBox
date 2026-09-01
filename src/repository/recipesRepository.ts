@@ -1,18 +1,64 @@
 import sql from "@/lib/db";
-import type { CreateRecipeInput } from "@/pages/api/recipe/addRecipe";
 import {
   RecipeMetaDataResponseSchema,
   type RecipeMetaDataResponse,
   RecipeResponseSchema,
   type RecipeResponse,
+  type CreateRecipeInput,
 } from "@/types/recipe/recipe.schemas";
 import { z } from "astro/zod";
+
+async function createRecipeWithImages(
+  recipe: CreateRecipeInput,
+): Promise<RecipeResponse> {
+  return await sql.begin(async (tx) => {
+    const [createdRecipe] = await tx<RecipeResponse[]>`
+      INSERT INTO recipes (
+        title,
+        description,
+        portions,
+        ingredients,
+        instructions,
+        user_id,
+        public,
+        vegan
+      )
+      VALUES (
+        ${recipe.title},
+        ${recipe.description},
+        ${recipe.portions},
+        ${sql.json(recipe.ingredients)},
+        ${sql.json(recipe.instructions)},
+        ${recipe.user_id},
+        ${recipe.public},
+        ${recipe.vegan}
+      )
+      RETURNING id, title, description, portions, ingredients, instructions, public, vegan
+    `;
+
+    if (!createdRecipe) {
+      throw new Error("Failed to create recipe");
+    }
+
+    if (recipe.imgURLs && recipe.imgURLs.length > 0) {
+      await Promise.all(
+        recipe.imgURLs.map(
+          (imageUrl) => tx`
+            INSERT INTO recipe_images (recipe_id, image_url)
+            VALUES (${createdRecipe.id}, ${imageUrl})
+          `,
+        ),
+      );
+    }
+
+    return createdRecipe;
+  });
+}
 
 async function createRecipe(
   recipe: CreateRecipeInput,
 ): Promise<RecipeResponse> {
   let insertedRows: RecipeResponse[] | null = null;
-  console.log("Creating recipe:", recipe);
 
   try {
     insertedRows = (await sql`
@@ -134,6 +180,7 @@ const RecipesService = {
   deleteRecipeById,
   getPublickRecipesMetaData,
   getPublickVeganRecipesMetaData,
+  createRecipeWithImages,
 };
 
 export default RecipesService;
