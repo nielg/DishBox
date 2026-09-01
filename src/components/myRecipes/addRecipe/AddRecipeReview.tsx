@@ -1,3 +1,4 @@
+import AddRecipeImg from "./AddRecipeImg";
 import { useAddRecipe } from "./context/AddRecipeContext";
 import s from "@/styles/components/addRecipe/addRecipe.module.css";
 
@@ -28,6 +29,7 @@ export default function AddRecipeReview() {
         />
         <label htmlFor="vegan">Vegan</label>
       </div>
+      <AddRecipeImg />
       <button onClick={submit} className={s.submitBtn} disabled={!isValid()}>
         Submit Recipe →
       </button>
