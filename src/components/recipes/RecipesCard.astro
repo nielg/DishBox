@@ -14,13 +14,25 @@ const { data }: Props = Astro.props;
 <a href={`/myRecipes/${data.id}`} class="card-link">
   <article class="card">
     <div class="card-thumbnail">
-      <Image
-        class="card-img"
-        src={defaultImg}
-        width={280}
-        height={160}
-        alt={`${data.title} thumbnail`}
-      />
+      {
+        data.imgURL ? (
+          <Image
+            class="card-img"
+            src={data.imgURL}
+            width={280}
+            height={160}
+            alt={`${data.title} thumbnail`}
+          />
+        ) : (
+          <Image
+            class="card-img"
+            src={defaultImg}
+            width={280}
+            height={160}
+            alt={`${data.title} thumbnail`}
+          />
+        )
+      }
       {
         data.vegan && (
           <span class="badge vegan-badge">

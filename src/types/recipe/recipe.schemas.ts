@@ -30,10 +30,11 @@ export type CreateRecipeBody = z.infer<typeof CreateRecipeSchema>;
 export const RecipeMetaDataResponseSchema = z.object({
   id: z.number(),
   title: z.string(),
-  description: z.string().optional(),
+  description: z.string().nullish(),
   portions: z.number().int().positive(),
   public: z.boolean(),
   vegan: z.boolean(),
+  imgURL: z.string().nullish(),
 });
 
 export type RecipeMetaDataResponse = z.infer<

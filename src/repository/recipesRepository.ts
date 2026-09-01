@@ -92,10 +92,23 @@ async function getRecipesMetaDataByUserId(
 ): Promise<RecipeMetaDataResponse[]> {
   try {
     const rows = await sql`
-      SELECT id, title, description, portions, public, vegan FROM recipes
-      WHERE ${user_id} = user_id
-      `;
-    return z.array(RecipeMetaDataResponseSchema).parse(rows);
+      SELECT DISTINCT ON (recipes.id)
+        recipes.id,
+        recipes.title,
+        recipes.description,
+        recipes.portions,
+        recipes.public,
+        recipes.vegan,
+        recipe_images.image_url AS "imgURL"
+      FROM recipes
+      LEFT JOIN recipe_images ON recipes.id = recipe_images.recipe_id
+      WHERE recipes.user_id = ${user_id}
+      ORDER BY recipes.id, recipe_images.created_at DESC
+    `;
+    console.log("Fetched recipe metadata rows:", rows);
+    const result = z.array(RecipeMetaDataResponseSchema).parse(rows);
+    console.log("Parsed recipe metadata:", result);
+    return result;
   } catch (error) {
     console.error("DB: Failed to fetch recipeMetaData:", error);
     throw new Error("Database fetch failed");
@@ -146,10 +159,19 @@ async function deleteRecipeById(id: number): Promise<string> {
 async function getPublickRecipesMetaData(): Promise<RecipeMetaDataResponse[]> {
   try {
     const rows = await sql`
-      SELECT id, title, description, portions, public, vegan
+      SELECT DISTINCT ON (recipes.id)
+        recipes.id,
+        recipes.title,
+        recipes.description,
+        recipes.portions,
+        recipes.public,
+        recipes.vegan,
+        recipe_images.image_url AS "imgURL"
       FROM recipes
-      WHERE public = true
-      `;
+      LEFT JOIN recipe_images ON recipes.id = recipe_images.recipe_id
+      WHERE recipes.public = true
+      ORDER BY recipes.id, recipe_images.created_at DESC
+    `;
     return z.array(RecipeMetaDataResponseSchema).parse(rows);
   } catch (error) {
     console.error("DB: Failed to fetch public recipes:", error);
@@ -162,10 +184,19 @@ async function getPublickVeganRecipesMetaData(): Promise<
 > {
   try {
     const rows = await sql`
-      SELECT id, title, description, portions, public, vegan
+      SELECT DISTINCT ON (recipes.id)
+        recipes.id,
+        recipes.title,
+        recipes.description,
+        recipes.portions,
+        recipes.public,
+        recipes.vegan,
+        recipe_images.image_url AS "imgURL"
       FROM recipes
-      WHERE public = true AND vegan = true
-      `;
+      LEFT JOIN recipe_images ON recipes.id = recipe_images.recipe_id
+      WHERE vegan = true AND public = true
+      ORDER BY recipes.id, recipe_images.created_at DESC
+    `;
     return z.array(RecipeMetaDataResponseSchema).parse(rows);
   } catch (error) {
     console.error("DB: Failed to fetch public vegan recipes:", error);
