@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAddRecipe } from "./context/AddRecipeContext";
+import s from "@/styles/components/addRecipe/uploadImg.module.css";
+import { ImageUp } from "lucide-react";
 
 const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL;
 const BUCKET_NAME = import.meta.env.PUBLIC_SUPABASE_RECIPE_BUCKET_NAME;
@@ -10,14 +12,29 @@ export default function AddRecipeImg() {
   const [objectURLs, setObjectURLs] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState<boolean>(false);
 
+  const onDeleteImage = (index: number) => {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+    setObjectURLs((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const filesArray = Array.from(event.dataTransfer.files);
+    uploadFiles(filesArray);
+  };
+
   const onUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
     const fileArray = Array.from(files);
-    const newUrls = fileArray.map((file) => URL.createObjectURL(file));
+    uploadFiles(fileArray);
+  };
 
-    setSelectedFiles((prev) => [...prev, ...fileArray]);
+  const uploadFiles = (filesArray: File[]) => {
+    const newUrls = filesArray.map((file) => URL.createObjectURL(file));
+
+    setSelectedFiles((prev) => [...prev, ...filesArray]);
     setObjectURLs((prev) => [...prev, ...newUrls]);
   };
 
@@ -32,7 +49,6 @@ export default function AddRecipeImg() {
     if (selectedFiles.length === 0) return;
 
     setIsUploading(true);
-    const publicImageUrls: string[] = [];
 
     try {
       // Process and upload files in parallel
@@ -90,33 +106,46 @@ export default function AddRecipeImg() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="imageUpload">Upload images:</label>
-      <input
-        type="file"
-        id="imageUpload"
-        onChange={onUpload}
-        multiple
-        accept="image/png, image/jpeg, image/webp"
-      />
-
-      <div className="image-preview">
-        {objectURLs.map((url, index) => (
-          <div key={url} className="image-container">
-            <img
-              src={url}
-              alt={`Preview ${index + 1}`}
-              style={{ width: 100 }}
-            />
-          </div>
-        ))}
+    <form onSubmit={handleSubmit} className={s.uploadForm}>
+      <div
+        className={s.uploadContainer}
+        onDrop={handleDrop}
+        onDragOver={(e) => e.preventDefault()}
+      >
+        <label htmlFor="imageUpload">
+          <h3>Upload images:</h3>
+          <p>click to select or drag and drop files here (PNG, JPEG, WEBP)</p>
+          <ImageUp size={24} color="#5d5050" />
+          <input
+            type="file"
+            id="imageUpload"
+            onChange={onUpload}
+            multiple
+            accept="image/png, image/jpeg, image/webp"
+            hidden
+          />
+        </label>
+        <div className={s.imagePreviewContainer}>
+          {objectURLs.map((url, index) => (
+            <div key={url} className={s.imageWrapper}>
+              <img
+                src={url}
+                alt={`Preview ${index + 1}`}
+                className={s.previewImage}
+                onClick={() => onDeleteImage(index)}
+                title="Click to remove"
+              />
+            </div>
+          ))}
+        </div>
       </div>
 
       <button
         type="submit"
         disabled={isUploading || selectedFiles.length === 0}
+        className={`${s.btn} btn`}
       >
-        {isUploading ? "Uploading..." : "Save to Bucket"}
+        {isUploading ? "Uploading..." : "Save images"}
       </button>
 
       {formData.imgURLs.length > 0 && (
