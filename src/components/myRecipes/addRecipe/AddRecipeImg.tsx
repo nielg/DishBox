@@ -115,7 +115,7 @@ export default function AddRecipeImg() {
         <label htmlFor="imageUpload">
           <h3>Upload images:</h3>
           <p>click to select or drag and drop files here (PNG, JPEG, WEBP)</p>
-          <ImageUp size={24} color="#5d5050" />
+          <ImageUp size={24} />
           <input
             type="file"
             id="imageUpload"
