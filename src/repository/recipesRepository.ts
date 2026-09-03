@@ -8,6 +8,20 @@ import {
 } from "@/types/recipe/recipe.schemas";
 import { z } from "astro/zod";
 
+const recipeMetaDataSelect = sql`
+  SELECT DISTINCT ON (recipes.id)
+    recipes.id,
+    recipes.title,
+    recipes.description,
+    recipes.portions,
+    recipes.public,
+    recipes.vegan,
+    recipe_images.image_url AS imgurl
+  FROM recipes
+  LEFT JOIN recipe_images
+    ON recipes.id = recipe_images.recipe_id
+`;
+
 async function createRecipeWithImages(
   recipe: CreateRecipeInput,
 ): Promise<RecipeResponse> {
@@ -92,16 +106,7 @@ async function getRecipesMetaDataByUserId(
 ): Promise<RecipeMetaDataResponse[]> {
   try {
     const rows = await sql`
-      SELECT DISTINCT ON (recipes.id)
-        recipes.id,
-        recipes.title,
-        recipes.description,
-        recipes.portions,
-        recipes.public,
-        recipes.vegan,
-        recipe_images.image_url AS imgurl
-      FROM recipes
-      LEFT JOIN recipe_images ON recipes.id = recipe_images.recipe_id
+      ${recipeMetaDataSelect}
       WHERE recipes.user_id = ${user_id}
       ORDER BY recipes.id, recipe_images.created_at DESC
     `;
@@ -175,16 +180,7 @@ async function deleteRecipeById(id: number): Promise<string> {
 async function getPublickRecipesMetaData(): Promise<RecipeMetaDataResponse[]> {
   try {
     const rows = await sql`
-      SELECT DISTINCT ON (recipes.id)
-        recipes.id,
-        recipes.title,
-        recipes.description,
-        recipes.portions,
-        recipes.public,
-        recipes.vegan,
-        recipe_images.image_url AS imgurl
-      FROM recipes
-      LEFT JOIN recipe_images ON recipes.id = recipe_images.recipe_id
+      ${recipeMetaDataSelect}
       WHERE recipes.public = true
       ORDER BY recipes.id, recipe_images.created_at DESC
     `;
@@ -195,21 +191,12 @@ async function getPublickRecipesMetaData(): Promise<RecipeMetaDataResponse[]> {
   }
 }
 
-async function getPublickVeganRecipesMetaData(): Promise<
+async function getPublicVeganRecipesMetaData(): Promise<
   RecipeMetaDataResponse[]
 > {
   try {
     const rows = await sql`
-      SELECT DISTINCT ON (recipes.id)
-        recipes.id,
-        recipes.title,
-        recipes.description,
-        recipes.portions,
-        recipes.public,
-        recipes.vegan,
-        recipe_images.image_url AS imgurl
-      FROM recipes
-      LEFT JOIN recipe_images ON recipes.id = recipe_images.recipe_id
+      ${recipeMetaDataSelect}
       WHERE vegan = true AND public = true
       ORDER BY recipes.id, recipe_images.created_at DESC
     `;
@@ -226,7 +213,7 @@ const RecipesService = {
   getRecipeById,
   deleteRecipeById,
   getPublickRecipesMetaData,
-  getPublickVeganRecipesMetaData,
+  getPublicVeganRecipesMetaData,
   createRecipeWithImages,
 };
 

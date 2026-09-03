@@ -25,7 +25,7 @@ async function getPublickRecipesMetaData(): Promise<RecipeMetaDataResponse[]> {
 async function getPublickVeganRecipesMetaData(): Promise<
   RecipeMetaDataResponse[]
 > {
-  return RecipesRepository.getPublickVeganRecipesMetaData();
+  return RecipesRepository.getPublicVeganRecipesMetaData();
 }
 
 const recipeService = {
