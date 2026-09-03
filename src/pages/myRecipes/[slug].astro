@@ -3,6 +3,7 @@ import BaseLayout from "@/components/layouts/BaseLayout.astro";
 import RecipesService from "@/repository/recipesRepository";
 import DeleteRecipeBtn from "@/components/buttons/DeleteRecipeBtn.astro";
 import GoBackBtn from "@/components/buttons/GoBackBtn.astro";
+import Carrousel from "@/components/Carrousel.tsx";
 import { Icon } from "astro-icon/components";
 import type { RecipeResponse } from "@/types/recipe/recipe.schemas";
 
@@ -21,7 +22,7 @@ if (slug) {
     }
   }
 }
-
+console.log("Fetched recipe:", recipe);
 if (!recipe) {
   Astro.response.status = 404;
   Astro.response.statusText = "Not Found";
@@ -42,10 +43,6 @@ if (!recipe) {
 
         {/* Hero header */}
         <header class="recipe-hero">
-          <div class="recipe-hero-badge">
-            <Icon name="lucide:utensils" class="hero-badge-icon" />
-            <span>Recipe</span>
-          </div>
           <h1 class="recipe-title">{recipe.title}</h1>
           <p class="recipe-description">{recipe.description}</p>
           <div class="recipe-meta">
@@ -116,6 +113,7 @@ if (!recipe) {
             </ol>
           </section>
         </div>
+        {recipe.imgurls && <Carrousel client:load items={recipe.imgurls} />}
       </div>
     ) : (
       <div class="not-found">
