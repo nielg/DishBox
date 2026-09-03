@@ -65,7 +65,7 @@ Content-Type: application/json
   ],
   "public": true,
   "vegan": false,
-  "imgURLs": [
+  "imgurls": [
     "https://example.com/images/spaghetti_carbonara_1.jpg",
     "https://example.com/images/spaghetti_carbonara_2.jpg"
   ]

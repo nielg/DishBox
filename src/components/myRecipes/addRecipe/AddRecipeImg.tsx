@@ -92,7 +92,7 @@ export default function AddRecipeImg() {
 
       const results = await Promise.all(uploadPromises);
       results.map((url) =>
-        addListItem("imgURLs", formData.imgURLs.length, url),
+        addListItem("imgurls", formData.imgurls.length, url),
       ); // Add each uploaded image URL to the form data
 
       // Reset local previews after successful upload
@@ -147,21 +147,6 @@ export default function AddRecipeImg() {
       >
         {isUploading ? "Uploading..." : "Save images"}
       </button>
-
-      {formData.imgURLs.length > 0 && (
-        <div className="uploaded-list">
-          <p>Uploaded Image URLs:</p>
-          <ul>
-            {formData.imgURLs.map((data) => (
-              <li key={data.value}>
-                <a href={data.value} target="_blank" rel="noreferrer">
-                  {data.value}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
     </form>
   );
 }

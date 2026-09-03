@@ -4,8 +4,6 @@ export type RecipeProgress =
   | "instructions"
   | "preview";
 
-export type RecipeIntroData = { title: string; description: string };
-
 export type DynamicInputInstructionsListItem = {
   id: number;
   value: string;

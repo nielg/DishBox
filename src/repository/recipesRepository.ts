@@ -40,9 +40,9 @@ async function createRecipeWithImages(
       throw new Error("Failed to create recipe");
     }
 
-    if (recipe.imgURLs && recipe.imgURLs.length > 0) {
+    if (recipe.imgurls && recipe.imgurls.length > 0) {
       await Promise.all(
-        recipe.imgURLs.map(
+        recipe.imgurls.map(
           (imageUrl) => tx`
             INSERT INTO recipe_images (recipe_id, image_url)
             VALUES (${createdRecipe.id}, ${imageUrl})
@@ -99,15 +99,15 @@ async function getRecipesMetaDataByUserId(
         recipes.portions,
         recipes.public,
         recipes.vegan,
-        recipe_images.image_url AS "imgURL"
+        recipe_images.image_url AS imgurl
       FROM recipes
       LEFT JOIN recipe_images ON recipes.id = recipe_images.recipe_id
       WHERE recipes.user_id = ${user_id}
       ORDER BY recipes.id, recipe_images.created_at DESC
     `;
-    console.log("Fetched recipe metadata rows:", rows);
+    console.log("Fetched recipeMetaData rows:", rows);
     const result = z.array(RecipeMetaDataResponseSchema).parse(rows);
-    console.log("Parsed recipe metadata:", result);
+    console.log("Parsed recipeMetaData result:", result);
     return result;
   } catch (error) {
     console.error("DB: Failed to fetch recipeMetaData:", error);
@@ -120,9 +120,23 @@ async function getRecipeById(id: number): Promise<RecipeResponse> {
 
   try {
     resultRows = (await sql`
-      SELECT id, title, description, portions, ingredients, instructions, public, vegan
+      SELECT recipes.id,
+        recipes.title,
+        recipes.description,
+        recipes.portions,
+        recipes.ingredients,
+        recipes.instructions,
+        recipes.public,
+        recipes.vegan,
+        COALESCE(
+          ARRAY_AGG(recipe_images.image_url)
+            FILTER (WHERE recipe_images.image_url IS NOT NULL),
+          '{}'
+        ) AS imgurls
       FROM recipes
-      WHERE id = ${id}
+      LEFT JOIN recipe_images ON recipes.id = recipe_images.recipe_id
+      WHERE recipes.id = ${id}
+      GROUP BY recipes.id
       `) as RecipeResponse[];
   } catch (error) {
     console.error("DB: Failed to fetch recipe:", error);
@@ -132,8 +146,10 @@ async function getRecipeById(id: number): Promise<RecipeResponse> {
   if (!resultRows || resultRows.length === 0) {
     throw new Error(`No recipe found with id: ${id}`);
   }
-
-  return RecipeResponseSchema.parse(resultRows[0]);
+  console.log("Fetched recipe rows:", resultRows);
+  const result = RecipeResponseSchema.parse(resultRows[0]);
+  console.log("Parsed recipe result:", result);
+  return result;
 }
 
 async function deleteRecipeById(id: number): Promise<string> {
@@ -166,7 +182,7 @@ async function getPublickRecipesMetaData(): Promise<RecipeMetaDataResponse[]> {
         recipes.portions,
         recipes.public,
         recipes.vegan,
-        recipe_images.image_url AS "imgURL"
+        recipe_images.image_url AS imgurl
       FROM recipes
       LEFT JOIN recipe_images ON recipes.id = recipe_images.recipe_id
       WHERE recipes.public = true
@@ -191,7 +207,7 @@ async function getPublickVeganRecipesMetaData(): Promise<
         recipes.portions,
         recipes.public,
         recipes.vegan,
-        recipe_images.image_url AS "imgURL"
+        recipe_images.image_url AS imgurl
       FROM recipes
       LEFT JOIN recipe_images ON recipes.id = recipe_images.recipe_id
       WHERE vegan = true AND public = true

@@ -18,7 +18,7 @@ export const CreateRecipeSchema = z.object({
     .min(1, "At least one instruction required"),
   public: z.boolean(),
   vegan: z.boolean(),
-  imgURLs: z.array(z.string()).optional(),
+  imgurls: z.array(z.string()).optional(),
 });
 
 export type CreateRecipeInput = z.infer<typeof CreateRecipeSchema> & {
@@ -34,7 +34,7 @@ export const RecipeMetaDataResponseSchema = z.object({
   portions: z.number().int().positive(),
   public: z.boolean(),
   vegan: z.boolean(),
-  imgURL: z.string().nullish(),
+  imgurl: z.string().nullish(),
 });
 
 export type RecipeMetaDataResponse = z.infer<
@@ -50,6 +50,7 @@ export const RecipeResponseSchema = z.object({
   instructions: z.array(z.string()),
   public: z.boolean(),
   vegan: z.boolean(),
+  imgurls: z.array(z.string()).optional(),
 });
 
 export type RecipeResponse = z.infer<typeof RecipeResponseSchema>;

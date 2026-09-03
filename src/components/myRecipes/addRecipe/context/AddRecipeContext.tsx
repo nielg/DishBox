@@ -15,7 +15,7 @@ const STEPS: RecipeProgress[] = [
   "preview",
 ];
 
-type listItem = "ingredients" | "instructions" | "imgURLs";
+type listItem = "ingredients" | "instructions" | "imgurls";
 
 interface AddRecipeContextType {
   formData: FormDataType;
@@ -49,7 +49,7 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
     instructions: [],
     vegan: true,
     public: false,
-    imgURLs: [],
+    imgurls: [],
   });
 
   const updateField = <K extends keyof FormDataType>(
@@ -110,7 +110,7 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
         .map((item) => item.value),
       public: formData.public,
       vegan: formData.vegan,
-      imgURLs: formData.imgURLs.map((item) => item.value),
+      imgurls: formData.imgurls.map((item) => item.value),
     };
     const result = CreateRecipeSchema.safeParse(recipeRequest);
 
