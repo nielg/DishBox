@@ -6,6 +6,7 @@ import GoBackBtn from "@/components/buttons/GoBackBtn.astro";
 import { Icon } from "astro-icon/components";
 import type { RecipeResponse } from "@/types/recipe/recipe.schemas";
 import Recipe from "@/components/myRecipes/Recipe";
+import EditRecipeBtn from "@/components/buttons/EditRecipeBtn.astro";
 
 const { slug } = Astro.params;
 
@@ -35,7 +36,7 @@ if (!recipe) {
   {  recipe ? (
         <div class="recipe-nav">
           <GoBackBtn href="/myRecipes" />
-          <DeleteRecipeBtn recipeId={recipe.id} />
+          <EditRecipeBtn recipeId={recipe.id} />  
         </div>
         <Recipe recipe={recipe} client:load />
     ) : (

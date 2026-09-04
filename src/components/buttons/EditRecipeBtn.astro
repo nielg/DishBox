@@ -1,0 +1,14 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  recipeId: number;
+}
+
+const { recipeId } = Astro.props;
+---
+
+<a id="edit-recipe-btn" class="btn" href={`/myRecipes/edit/${recipeId}`}>
+  <Icon name="lucide:edit" class="btnIcon" />
+  <span>Edit Recipe</span>
+</a>

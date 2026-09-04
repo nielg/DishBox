@@ -5,6 +5,7 @@ import WelcomeHeader from "@/components/layout/WelcomeHeader.astro";
 import GoBackBtn from "@/components/buttons/GoBackBtn.astro";
 import RecipesService from "@/repository/recipesRepository";
 import type { RecipeResponse } from "@/types/recipe/recipe.schemas";
+import DeleteRecipeBtn from "@/components/buttons/DeleteRecipeBtn.astro";
 
 const { slug } = Astro.params;
 let recipe: RecipeResponse | null = null;
@@ -30,6 +31,7 @@ if (!recipe) {
   <div class="page-wrapper">
     <div class="page-nav">
       <GoBackBtn href="/myRecipes" />
+      <DeleteRecipeBtn recipeId={recipe.id} />
     </div>
     <WelcomeHeader
       title="Edit Recipe"
@@ -49,5 +51,6 @@ if (!recipe) {
   .page-nav {
     display: flex;
     align-items: center;
+    justify-content: space-between;
   }
 </style>
