@@ -1,8 +1,4 @@
 Front-end
-[] Welcome root is not displayed when loggedin on addRecipes page in het header
-[] Remove Profile tab in the header when user not logged in
-[] By createRecipe when change the portions is afflected in the preview
-
-Database
-[] Add flyway for database migrations
-[] Add tags for recips (veggie, vegan, lactose)
+Remove img from bucket if recipe removed
+Make it possible to edit images in existing recipes and new recipes
+Make a tag table voor more tag options
