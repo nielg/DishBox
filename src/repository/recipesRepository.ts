@@ -73,33 +73,36 @@ async function updateRecipe(
   id: number,
   recipe: Partial<CreateRecipeInput>,
 ): Promise<RecipeResponse> {
-  return await sql.begin(async (tx) => {
-    const [updatedRecipe] = await tx<RecipeResponse[]>`
-      UPDATE recipes
-      SET
-        title = COALESCE(${recipe.title ?? null}, title),
-        description = COALESCE(${recipe.description ?? null}, description),
-        portions = COALESCE(${recipe.portions ?? null}, portions),
-        public = COALESCE(${recipe.public ?? null}, public),
-        vegan = COALESCE(${recipe.vegan ?? null}, vegan)
-        ingredients = COALESCE(
-          ${recipe.ingredients !== undefined ? sql.json(recipe.ingredients) : null},
-          recipes.ingredients
-        ),
-        instructions = COALESCE(
-          ${recipe.instructions !== undefined ? sql.json(recipe.instructions) : null},
-          recipes.instructions
-        ),
-      WHERE id = ${id}
-      RETURNING id, title, description, portions, ingredients, instructions, public, vegan
+  try {
+    const updatedRecipe = await sql`
+    UPDATE recipes
+    SET
+    title = COALESCE(${recipe.title ?? null}, title),
+    description = COALESCE(${recipe.description ?? null}, description),
+    portions = COALESCE(${recipe.portions ?? null}, portions),
+    public = COALESCE(${recipe.public ?? null}, public),
+    vegan = COALESCE(${recipe.vegan ?? null}, vegan),
+    ingredients = COALESCE(
+      ${recipe.ingredients !== undefined ? sql.json(recipe.ingredients) : null},
+      recipes.ingredients
+    ),
+    instructions = COALESCE(
+      ${recipe.instructions !== undefined ? sql.json(recipe.instructions) : null},
+      recipes.instructions
+    )
+    WHERE id = ${id}
+    RETURNING id, title, description, portions, ingredients, instructions, public, vegan
     `;
 
     if (!updatedRecipe) {
       throw new Error(`Failed to update recipe with ID ${id}`);
     }
 
-    return updatedRecipe;
-  });
+    return z.array(RecipeResponseSchema).parse(updatedRecipe)[0];
+  } catch (error) {
+    console.error(`DB: Failed to update recipe with ID ${id}:`, error);
+    throw new Error(`Database update failed for recipe with ID ${id}`);
+  }
 }
 
 async function getRecipeById(id: number): Promise<RecipeResponse> {

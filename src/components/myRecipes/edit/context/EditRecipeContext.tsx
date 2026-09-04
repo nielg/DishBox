@@ -3,11 +3,9 @@ import { createContext, useContext, useState, type ReactNode } from "react";
 import {
   CreateRecipeSchema,
   type CreateRecipeBody,
+  type RecipeResponse,
 } from "@/types/recipe/recipe.schemas";
-import type {
-  RecipeProgress,
-  RecipeWithoutId,
-} from "@/types/recipe/recipe.types";
+import type { RecipeProgress } from "@/types/recipe/recipe.types";
 import type { FormDataType } from "./editRecipeContex.types";
 
 const STEPS: RecipeProgress[] = [
@@ -35,7 +33,7 @@ interface EditRecipeContextType {
   handlePrevious: () => void;
   submit: () => void;
   isValid: () => CreateRecipeBody | null;
-  loadFormData: (recipe: RecipeWithoutId) => void;
+  loadFormData: (recipe: RecipeResponse) => void;
   isNew: boolean;
 }
 
@@ -55,9 +53,10 @@ export function EditRecipeProvider({ children }: { children: ReactNode }) {
     vegan: false,
     public: false,
     imgurls: [],
+    id: undefined,
   });
 
-  const loadFormData = (recipe: RecipeWithoutId) => {
+  const loadFormData = (recipe: RecipeResponse) => {
     setFormData({
       title: recipe.title,
       description: recipe.description,
@@ -74,6 +73,7 @@ export function EditRecipeProvider({ children }: { children: ReactNode }) {
       public: recipe.public,
       imgurls:
         recipe.imgurls?.map((url, index) => ({ id: index, value: url })) || [],
+      id: recipe.id,
     });
     setIsNew(false);
   };
@@ -149,25 +149,50 @@ export function EditRecipeProvider({ children }: { children: ReactNode }) {
     if (!body) {
       return;
     }
+    if (isNew) {
+      try {
+        const response = await fetch("/api/recipe/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        });
 
-    try {
-      const response = await fetch("/api/recipe/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-
-      if (response.ok) {
-        window.location.href = `/myRecipes`;
-      } else {
-        const errorData = await response.json();
-        console.error(`Error: ${errorData.error || "Failed to create recipe"}`);
+        if (response.ok) {
+          window.location.href = `/myRecipes`;
+        } else {
+          const errorData = await response.json();
+          console.error(
+            `Error: ${errorData.error || "Failed to create recipe"}`,
+          );
+        }
+      } catch (error) {
+        console.error("Submission error:", error);
+        alert("An error occurred while submitting the recipe.");
       }
-    } catch (error) {
-      console.error("Submission error:", error);
-      alert("An error occurred while submitting the recipe.");
+    } else {
+      try {
+        const response = await fetch(`/api/recipe/update/${formData.id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        });
+
+        if (response.ok) {
+          window.location.href = `/myRecipes/${formData.id}`;
+        } else {
+          const errorData = await response.json();
+          console.error(
+            `Error: ${errorData.error || "Failed to update recipe"}`,
+          );
+        }
+      } catch (error) {
+        console.error("Submission error:", error);
+        alert("An error occurred while submitting the recipe.");
+      }
     }
   };
 
