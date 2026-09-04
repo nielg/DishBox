@@ -3,12 +3,23 @@ import AddRecipeIngredients from "./AddRecipeIngredients";
 import AddRecipeInstructions from "./AddRecipeInstructions";
 import AddRecipeReview from "./AddRecipeReview";
 import AddRecipeProgressBtn from "./AddRecipeProgress";
-import RecipePreview from "./RecipePreview";
 import s from "@/styles/components/addRecipe/addRecipe.module.css";
 import { AddRecipeProvider, useAddRecipe } from "./context/AddRecipeContext";
+import Recipe from "@/components/myRecipes/recipe.tsx";
 
 function FormContent() {
-  const { progress } = useAddRecipe();
+  const { progress, formData } = useAddRecipe();
+
+  const recipe = {
+    title: formData.title,
+    description: formData.description,
+    portions: formData.portions,
+    ingredients: formData.ingredients.map((item) => item.value),
+    instructions: formData.instructions.map((item) => item.value),
+    public: formData.public,
+    vegan: formData.vegan,
+    imgurls: formData.imgurls.map((item) => item.value),
+  };
 
   return (
     <div className="container">
@@ -19,7 +30,7 @@ function FormContent() {
           {progress === "instructions" && <AddRecipeInstructions />}
           {progress === "preview" && <AddRecipeReview />}
         </div>
-        <RecipePreview />
+        <Recipe recipe={recipe} />
       </div>
       <AddRecipeProgressBtn />
     </div>

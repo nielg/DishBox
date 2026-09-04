@@ -100,9 +100,7 @@ async function getRecipeById(id: number): Promise<RecipeResponse> {
   if (!resultRows || resultRows.length === 0) {
     throw new Error(`No recipe found with id: ${id}`);
   }
-  console.log("Fetched recipe rows:", resultRows);
   const result = RecipeResponseSchema.parse(resultRows[0]);
-  console.log("Parsed recipe result:", result);
   return result;
 }
 
