@@ -5,11 +5,11 @@ import { ShoppingBasket, ChefHat } from "lucide-react";
 
 type RecipeWithoutId = Omit<RecipeResponse, "id">;
 
-interface RecipeDetailProps {
+interface RecipeProp {
   recipe: RecipeWithoutId | null;
 }
 
-export default function RecipeDetail({ recipe }: RecipeDetailProps) {
+export default function Recipe({ recipe }: RecipeProp) {
   if (!recipe) {
     return (
       <div className={styles.notFound}>
