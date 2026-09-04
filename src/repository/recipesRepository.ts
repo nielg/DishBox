@@ -69,6 +69,39 @@ async function createRecipeWithImages(
   });
 }
 
+async function updateRecipe(
+  id: number,
+  recipe: Partial<CreateRecipeInput>,
+): Promise<RecipeResponse> {
+  return await sql.begin(async (tx) => {
+    const [updatedRecipe] = await tx<RecipeResponse[]>`
+      UPDATE recipes
+      SET
+        title = COALESCE(${recipe.title ?? null}, title),
+        description = COALESCE(${recipe.description ?? null}, description),
+        portions = COALESCE(${recipe.portions ?? null}, portions),
+        public = COALESCE(${recipe.public ?? null}, public),
+        vegan = COALESCE(${recipe.vegan ?? null}, vegan)
+        ingredients = COALESCE(
+          ${recipe.ingredients !== undefined ? sql.json(recipe.ingredients) : null},
+          recipes.ingredients
+        ),
+        instructions = COALESCE(
+          ${recipe.instructions !== undefined ? sql.json(recipe.instructions) : null},
+          recipes.instructions
+        ),
+      WHERE id = ${id}
+      RETURNING id, title, description, portions, ingredients, instructions, public, vegan
+    `;
+
+    if (!updatedRecipe) {
+      throw new Error(`Failed to update recipe with ID ${id}`);
+    }
+
+    return updatedRecipe;
+  });
+}
+
 async function getRecipeById(id: number): Promise<RecipeResponse> {
   let resultRows: RecipeResponse[] | null = null;
 
@@ -145,6 +178,7 @@ const RecipesService = {
   deleteRecipeById,
   getRecipesMetaDataWithWhere,
   createRecipeWithImages,
+  updateRecipe,
 };
 
 export default RecipesService;

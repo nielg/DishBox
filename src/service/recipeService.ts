@@ -21,6 +21,14 @@ async function createRecipe(body: CreateRecipeInput): Promise<RecipeResponse> {
   return createdDataRecipe;
 }
 
+async function updateRecipe(
+  recipeId: number,
+  body: CreateRecipeInput,
+): Promise<RecipeResponse> {
+  const updatedRecipe = await RecipesRepository.updateRecipe(recipeId, body);
+  return updatedRecipe;
+}
+
 async function getPublickRecipesMetaData(): Promise<RecipeMetaDataResponse[]> {
   return RecipesRepository.getRecipesMetaDataWithWhere(
     sql`WHERE recipes.public = true`,
@@ -40,6 +48,7 @@ const recipeService = {
   getRecipesMetaData: getRecipesMetaDataByUserid,
   getPublickRecipesMetaData,
   getPublickVeganRecipesMetaData,
+  updateRecipe,
 };
 
 export default recipeService;
