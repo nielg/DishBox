@@ -1,11 +1,11 @@
 "use client";
 
 import { DynamicIngredientsList } from "@/components/input/DynamicIngredientsList";
-import { useAddRecipe } from "./context/AddRecipeContext";
-import s from "@/styles/components/addRecipe/addRecipe.module.css";
+import s from "@/styles/components/editRecipe/editRecipe.module.css";
+import { useEditRecipe } from "./context/EditRecipeContext";
 
-export default function AddRecipeIngredients() {
-  const { formData, updateField } = useAddRecipe();
+export default function EditRecipeIngredients() {
+  const { formData, updateField } = useEditRecipe();
   return (
     <>
       <div className={s.stepHeader}>

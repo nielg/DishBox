@@ -1,20 +1,20 @@
-import AddRecipeIntro from "./AddRecipeIntro";
-import AddRecipeIngredients from "./AddRecipeIngredients";
-import AddRecipeInstructions from "./AddRecipeInstructions";
-import AddRecipeReview from "./AddRecipeReview";
-import AddRecipeProgressBtn from "./AddRecipeProgress";
-import s from "@/styles/components/addRecipe/addRecipe.module.css";
-import { AddRecipeProvider, useAddRecipe } from "./context/AddRecipeContext";
+import EditRecipeProgressBtn from "./EditRecipeProgress";
+import s from "@/styles/components/editRecipe/editRecipe.module.css";
 import Recipe from "../Recipe";
 import type { RecipeResponse } from "@/types/recipe/recipe.schemas";
 import { useEffect } from "react";
+import { useEditRecipe, EditRecipeProvider } from "./context/EditRecipeContext";
+import EditRecipeIngredients from "./EditRecipeIngredients";
+import EditRecipeInstructions from "./EditRecipeInstructions";
+import EditRecipeIntro from "./EditRecipeIntro";
+import EditRecipeReview from "./EditRecipeReview";
 
 type Props = {
   inputRecipe: RecipeResponse | null;
 };
 
 function FormContent({ inputRecipe }: Props) {
-  const { progress, formData, loadFormData } = useAddRecipe();
+  const { progress, formData, loadFormData } = useEditRecipe();
 
   useEffect(() => {
     if (inputRecipe) {
@@ -37,22 +37,22 @@ function FormContent({ inputRecipe }: Props) {
     <div className="container">
       <div className={s.inputPreviewContainer}>
         <div className="forum">
-          {progress === "intro" && <AddRecipeIntro />}
-          {progress === "ingredients" && <AddRecipeIngredients />}
-          {progress === "instructions" && <AddRecipeInstructions />}
-          {progress === "preview" && <AddRecipeReview />}
+          {progress === "intro" && <EditRecipeIntro />}
+          {progress === "ingredients" && <EditRecipeIngredients />}
+          {progress === "instructions" && <EditRecipeInstructions />}
+          {progress === "preview" && <EditRecipeReview />}
         </div>
         <Recipe recipe={recipe} />
       </div>
-      <AddRecipeProgressBtn />
+      <EditRecipeProgressBtn />
     </div>
   );
 }
 
-export default function AddRecipeForm({ inputRecipe }: Props) {
+export default function EditRecipeForm({ inputRecipe }: Props) {
   return (
-    <AddRecipeProvider>
+    <EditRecipeProvider>
       <FormContent inputRecipe={inputRecipe} />
-    </AddRecipeProvider>
+    </EditRecipeProvider>
   );
 }

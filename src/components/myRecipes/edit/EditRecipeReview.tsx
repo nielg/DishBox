@@ -1,9 +1,9 @@
+import { useEditRecipe } from "./context/EditRecipeContext";
 import AddRecipeImg from "./AddRecipeImg";
-import { useAddRecipe } from "./context/AddRecipeContext";
-import s from "@/styles/components/addRecipe/addRecipe.module.css";
+import s from "@/styles/components/editRecipe/editRecipe.module.css";
 
-export default function AddRecipeReview() {
-  const { submit, isValid, updateField, formData } = useAddRecipe();
+export default function EditRecipeReview() {
+  const { submit, isValid, updateField, formData } = useEditRecipe();
   return (
     <div className={s.reviewContainer}>
       <span className={`${s.stepBadge} badge`}>Step 4</span>

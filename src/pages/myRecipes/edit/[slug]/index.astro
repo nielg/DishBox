@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "@/components/layouts/BaseLayout.astro";
-import AddRecipeForm from "@/components/myRecipes/addRecipe/AddRecipeForm.tsx";
+import EditRecipeForm from "@/components/myRecipes/edit/EditRecipeForm";
 import WelcomeHeader from "@/components/layout/WelcomeHeader.astro";
 import GoBackBtn from "@/components/buttons/GoBackBtn.astro";
 import RecipesService from "@/repository/recipesRepository";
@@ -33,7 +33,7 @@ if (slug) {
       title="Add a new Recipe"
       subtitle="Fill in the steps below to add your recipe to DishBox"
     />
-    <AddRecipeForm inputRecipe={recipe} client:load />
+    <EditRecipeForm inputRecipe={recipe} client:load />
   </div>
 </BaseLayout>
 

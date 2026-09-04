@@ -1,10 +1,10 @@
 import InputPreview from "@/components/input/InputPreview";
 import "@/styles/global.css";
-import { useAddRecipe } from "./context/AddRecipeContext";
-import s from "@/styles/components/addRecipe/addRecipe.module.css";
+import s from "@/styles/components/editRecipe/editRecipe.module.css";
+import { useEditRecipe } from "./context/EditRecipeContext";
 
-export default function AddRecipeIntro() {
-  const { formData, updateField } = useAddRecipe();
+export default function EditRecipeIntro() {
+  const { formData, updateField } = useEditRecipe();
 
   return (
     <>

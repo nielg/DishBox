@@ -1,7 +1,7 @@
 import { DynamicInstructionsList } from "@/components/input/DynamicInstructionsList";
-import s from "@/styles/components/addRecipe/addRecipe.module.css";
+import s from "@/styles/components/editRecipe/editRecipe.module.css";
 
-export default function AddRecipeInstructions() {
+export default function EditRecipeInstructions() {
   return (
     <>
       <div className={s.stepHeader}>

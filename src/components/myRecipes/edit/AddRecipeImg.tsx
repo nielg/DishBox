@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
-import { useAddRecipe } from "./context/AddRecipeContext";
-import s from "@/styles/components/addRecipe/uploadImg.module.css";
+import s from "@/styles/components/editRecipe/uploadImg.module.css";
 import { ImageUp } from "lucide-react";
+import { useEditRecipe } from "./context/EditRecipeContext";
 
 const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL;
 const BUCKET_NAME = import.meta.env.PUBLIC_SUPABASE_RECIPE_BUCKET_NAME;
 
 export default function AddRecipeImg() {
-  const { formData, addListItem } = useAddRecipe();
+  const { formData, addListItem } = useEditRecipe();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [objectURLs, setObjectURLs] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState<boolean>(false);

@@ -1,13 +1,14 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
-import {
-  type FormDataType,
-  type RecipeProgress,
-} from "./addRecipeContex.types";
+
 import {
   CreateRecipeSchema,
   type CreateRecipeBody,
 } from "@/types/recipe/recipe.schemas";
-import type { RecipeWithoutId } from "@/types/recipe/recipe.types";
+import type {
+  RecipeProgress,
+  RecipeWithoutId,
+} from "@/types/recipe/recipe.types";
+import type { FormDataType } from "./editRecipeContex.types";
 
 const STEPS: RecipeProgress[] = [
   "intro",
@@ -18,7 +19,7 @@ const STEPS: RecipeProgress[] = [
 
 type listItem = "ingredients" | "instructions" | "imgurls";
 
-interface AddRecipeContextType {
+interface EditRecipeContextType {
   formData: FormDataType;
   updateField: <K extends keyof FormDataType>(
     field: K,
@@ -37,11 +38,11 @@ interface AddRecipeContextType {
   loadFormData: (recipe: RecipeWithoutId) => void;
 }
 
-const AddRecipeContext = createContext<AddRecipeContextType | undefined>(
+const EditRecipeContext = createContext<EditRecipeContextType | undefined>(
   undefined,
 );
 
-export function AddRecipeProvider({ children }: { children: ReactNode }) {
+export function EditRecipeProvider({ children }: { children: ReactNode }) {
   const [progress, setProgress] = useState<RecipeProgress>("intro");
   const [formData, setFormData] = useState<FormDataType>({
     title: "",
@@ -147,7 +148,7 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const response = await fetch("/api/recipe/addRecipe", {
+      const response = await fetch("/api/recipe/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -168,7 +169,7 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AddRecipeContext.Provider
+    <EditRecipeContext.Provider
       value={{
         formData,
         updateField,
@@ -186,14 +187,14 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
       }}
     >
       {children}
-    </AddRecipeContext.Provider>
+    </EditRecipeContext.Provider>
   );
 }
 
-export const useAddRecipe = () => {
-  const context = useContext(AddRecipeContext);
+export const useEditRecipe = () => {
+  const context = useContext(EditRecipeContext);
   if (!context) {
-    throw new Error("useAddRecipe must be used within an AddRecipeProvider");
+    throw new Error("useEditRecipe must be used within an EditRecipeProvider");
   }
   return context;
 };
