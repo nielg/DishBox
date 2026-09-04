@@ -35,7 +35,9 @@ function FormContent({ inputRecipe }: Props) {
 
   return (
     <div className="container">
-      <div className={s.inputPreviewContainer}>
+      <div
+        className={`${s.inputPreviewContainer} ${progress === "preview" ? s.previewMode : ""}`}
+      >
         <div className="forum">
           {progress === "intro" && <EditRecipeIntro />}
           {progress === "ingredients" && <EditRecipeIngredients />}

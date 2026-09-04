@@ -5,6 +5,10 @@
   align-items: start;
 }
 
+.inputPreviewContainer.previewMode {
+  grid-template-columns: 1fr;
+}
+
 .inputPreviewContainer > * {
   min-width: 0;
   overflow: break-word;
