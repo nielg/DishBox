@@ -10,7 +10,7 @@ import EditRecipeIntro from "./EditRecipeIntro";
 import EditRecipeReview from "./EditRecipeReview";
 
 type Props = {
-  inputRecipe: RecipeResponse | null;
+  inputRecipe?: RecipeResponse;
 };
 
 function FormContent({ inputRecipe }: Props) {

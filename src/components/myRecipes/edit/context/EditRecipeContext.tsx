@@ -36,6 +36,7 @@ interface EditRecipeContextType {
   submit: () => void;
   isValid: () => CreateRecipeBody | null;
   loadFormData: (recipe: RecipeWithoutId) => void;
+  isNew: boolean;
 }
 
 const EditRecipeContext = createContext<EditRecipeContextType | undefined>(
@@ -43,6 +44,7 @@ const EditRecipeContext = createContext<EditRecipeContextType | undefined>(
 );
 
 export function EditRecipeProvider({ children }: { children: ReactNode }) {
+  const [isNew, setIsNew] = useState(true);
   const [progress, setProgress] = useState<RecipeProgress>("intro");
   const [formData, setFormData] = useState<FormDataType>({
     title: "",
@@ -50,7 +52,7 @@ export function EditRecipeProvider({ children }: { children: ReactNode }) {
     portions: 4,
     ingredients: [],
     instructions: [],
-    vegan: true,
+    vegan: false,
     public: false,
     imgurls: [],
   });
@@ -73,6 +75,7 @@ export function EditRecipeProvider({ children }: { children: ReactNode }) {
       imgurls:
         recipe.imgurls?.map((url, index) => ({ id: index, value: url })) || [],
     });
+    setIsNew(false);
   };
 
   const updateField = <K extends keyof FormDataType>(
@@ -184,6 +187,7 @@ export function EditRecipeProvider({ children }: { children: ReactNode }) {
         submit,
         isValid,
         loadFormData,
+        isNew,
       }}
     >
       {children}
