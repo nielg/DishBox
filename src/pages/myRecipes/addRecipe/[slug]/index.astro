@@ -3,6 +3,25 @@ import BaseLayout from "@/components/layouts/BaseLayout.astro";
 import AddRecipeForm from "@/components/myRecipes/addRecipe/AddRecipeForm.tsx";
 import WelcomeHeader from "@/components/layout/WelcomeHeader.astro";
 import GoBackBtn from "@/components/buttons/GoBackBtn.astro";
+import RecipesService from "@/repository/recipesRepository";
+import type { RecipeResponse } from "@/types/recipe/recipe.schemas";
+
+const { slug } = Astro.params;
+let recipe: RecipeResponse | null = null;
+
+if (slug) {
+  if (slug !== "new") {
+    const id = parseInt(slug, 10);
+
+    if (!isNaN(id)) {
+      try {
+        recipe = await RecipesService.getRecipeById(id);
+      } catch (error) {
+        console.error(`Failed to fetch recipe with ID ${id}:`, error);
+      }
+    }
+  }
+}
 ---
 
 <BaseLayout title="Add Recipe | DishBox">
@@ -14,7 +33,7 @@ import GoBackBtn from "@/components/buttons/GoBackBtn.astro";
       title="Add a new Recipe"
       subtitle="Fill in the steps below to add your recipe to DishBox"
     />
-    <AddRecipeForm client:load />
+    <AddRecipeForm inputRecipe={recipe} client:load />
   </div>
 </BaseLayout>
 

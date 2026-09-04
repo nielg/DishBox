@@ -3,7 +3,6 @@ import BaseLayout from "@/components/layouts/BaseLayout.astro";
 import RecipesService from "@/repository/recipesRepository";
 import DeleteRecipeBtn from "@/components/buttons/DeleteRecipeBtn.astro";
 import GoBackBtn from "@/components/buttons/GoBackBtn.astro";
-import Carrousel from "@/components/Carrousel.tsx";
 import { Icon } from "astro-icon/components";
 import type { RecipeResponse } from "@/types/recipe/recipe.schemas";
 import Recipe from "@/components/myRecipes/Recipe";
@@ -12,7 +11,7 @@ const { slug } = Astro.params;
 
 let recipe: RecipeResponse | null = null;
 
-if (slug && slug !== "iframePreview") {
+if (slug) {
   const id = parseInt(slug, 10);
 
   if (!isNaN(id)) {
@@ -24,7 +23,7 @@ if (slug && slug !== "iframePreview") {
   }
 }
 
-if (!recipe && slug !== "iframePreview") {
+if (!recipe) {
   Astro.response.status = 404;
   Astro.response.statusText = "Not Found";
 }

@@ -5,10 +5,22 @@ import AddRecipeReview from "./AddRecipeReview";
 import AddRecipeProgressBtn from "./AddRecipeProgress";
 import s from "@/styles/components/addRecipe/addRecipe.module.css";
 import { AddRecipeProvider, useAddRecipe } from "./context/AddRecipeContext";
-import Recipe from "@/components/myRecipes/recipe.tsx";
+import Recipe from "../Recipe";
+import type { RecipeResponse } from "@/types/recipe/recipe.schemas";
+import { useEffect } from "react";
 
-function FormContent() {
-  const { progress, formData } = useAddRecipe();
+type Props = {
+  inputRecipe: RecipeResponse | null;
+};
+
+function FormContent({ inputRecipe }: Props) {
+  const { progress, formData, loadFormData } = useAddRecipe();
+
+  useEffect(() => {
+    if (inputRecipe) {
+      loadFormData(inputRecipe);
+    }
+  }, [inputRecipe]);
 
   const recipe = {
     title: formData.title,
@@ -37,10 +49,10 @@ function FormContent() {
   );
 }
 
-export default function AddRecipeForm() {
+export default function AddRecipeForm({ inputRecipe }: Props) {
   return (
     <AddRecipeProvider>
-      <FormContent />
+      <FormContent inputRecipe={inputRecipe} />
     </AddRecipeProvider>
   );
 }

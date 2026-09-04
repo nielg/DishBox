@@ -7,6 +7,7 @@ import {
   CreateRecipeSchema,
   type CreateRecipeBody,
 } from "@/types/recipe/recipe.schemas";
+import type { RecipeWithoutId } from "@/types/recipe/recipe.types";
 
 const STEPS: RecipeProgress[] = [
   "intro",
@@ -33,6 +34,7 @@ interface AddRecipeContextType {
   handlePrevious: () => void;
   submit: () => void;
   isValid: () => CreateRecipeBody | null;
+  loadFormData: (recipe: RecipeWithoutId) => void;
 }
 
 const AddRecipeContext = createContext<AddRecipeContextType | undefined>(
@@ -51,6 +53,26 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
     public: false,
     imgurls: [],
   });
+
+  const loadFormData = (recipe: RecipeWithoutId) => {
+    setFormData({
+      title: recipe.title,
+      description: recipe.description,
+      portions: recipe.portions,
+      ingredients: recipe.ingredients.map((item, index) => ({
+        id: index,
+        value: item,
+      })),
+      instructions: recipe.instructions.map((item, index) => ({
+        id: index,
+        value: item,
+      })),
+      vegan: recipe.vegan,
+      public: recipe.public,
+      imgurls:
+        recipe.imgurls?.map((url, index) => ({ id: index, value: url })) || [],
+    });
+  };
 
   const updateField = <K extends keyof FormDataType>(
     field: K,
@@ -160,6 +182,7 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
         handlePrevious,
         submit,
         isValid,
+        loadFormData,
       }}
     >
       {children}

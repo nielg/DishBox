@@ -1,27 +1,13 @@
-import type { RecipeResponse } from "@/types/recipe/recipe.schemas";
 import Carrousel from "@/components/Carrousel";
 import styles from "@/styles/components/recipe.module.css";
 import { ShoppingBasket, ChefHat } from "lucide-react";
-
-type RecipeWithoutId = Omit<RecipeResponse, "id">;
+import type { RecipeWithoutId } from "@/types/recipe/recipe.types";
 
 interface RecipeProp {
-  recipe: RecipeWithoutId | null;
+  recipe: RecipeWithoutId;
 }
 
 export default function Recipe({ recipe }: RecipeProp) {
-  if (!recipe) {
-    return (
-      <div className={styles.notFound}>
-        <div className={styles.notFoundIconWrap}></div>
-
-        <h1>Recipe Not Found</h1>
-
-        <p>Sorry, we couldn't find the recipe you're looking for.</p>
-      </div>
-    );
-  }
-
   return (
     <div className={styles.recipePage}>
       {/* Hero header */}
