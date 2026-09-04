@@ -1,7 +1,7 @@
 "use client";
 
 import { Pencil, Check, Trash2 } from "lucide-react";
-import styles from "@/styles/components/addRecipe/inputPreview.module.css";
+import styles from "@/styles/components/editRecipe/inputPreview.module.css";
 
 type DynamicInputItemSlotProps = {
   type: "ingredients" | "instructions";

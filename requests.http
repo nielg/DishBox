@@ -43,7 +43,7 @@ Content-Type: application/json
 
 ### 5. Create a new recipe (Requires active login session)
 # @name createRecipe
-POST {{baseUrl}}/api/recipe/addRecipe
+POST {{baseUrl}}/api/recipe/create
 Content-Type: application/json
 
 {

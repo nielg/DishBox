@@ -1,8 +1,8 @@
 import type { RecipeProgress } from "@/types/recipe/recipe.types";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import styles from "@/styles/components/addRecipe//progressBtn.module.css";
-import { useAddRecipe } from "./context/AddRecipeContext";
+import styles from "@/styles/components/editRecipe/progressBtn.module.css";
 import { Fragment } from "react";
+import { useEditRecipe } from "./context/EditRecipeContext";
 
 const STEPS: RecipeProgress[] = [
   "intro",
@@ -18,9 +18,9 @@ const STEP_LABELS: Record<RecipeProgress, string> = {
   preview: "Review",
 };
 
-export default function AddRecipeProgress() {
+export default function EditRecipeProgress() {
   const { handleNext, handlePrevious, currentIndex, progress, setProgress } =
-    useAddRecipe();
+    useEditRecipe();
 
   return (
     <div className={styles.container}>

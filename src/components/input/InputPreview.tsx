@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Pencil, Check } from "lucide-react";
-import styles from "@/styles/components/addRecipe/inputPreview.module.css";
+import styles from "@/styles/components/editRecipe/inputPreview.module.css";
 
 type Props = {
   name?: string;

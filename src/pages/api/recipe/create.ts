@@ -22,7 +22,7 @@ export const POST: APIRoute = async ({
       return handleZodValidationError(data.error);
     }
 
-    const createdDataRecipe = await recipeService.addRecipe({
+    const createdDataRecipe = await recipeService.createRecipe({
       ...data.data,
       user_id: auth.user_id,
     });

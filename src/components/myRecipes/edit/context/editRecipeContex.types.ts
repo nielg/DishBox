@@ -18,4 +18,5 @@ export type FormDataType = {
   public: boolean;
   vegan: boolean;
   imgurls: { id: number; value: string }[];
+  id?: number;
 };

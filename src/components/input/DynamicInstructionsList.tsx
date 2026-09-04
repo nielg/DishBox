@@ -3,13 +3,12 @@
 import { useState } from "react";
 import DynamicInputList from "./DynamicInputList";
 import DynamicInputItemSlot from "./DynamicInputItemSlot";
-import styles from "@/styles/components/addRecipe/inputPreview.module.css";
-import type { DynamicInputInstructionsListItem } from "@/types/recipe/recipe.types";
-import { useAddRecipe } from "../myRecipes/addRecipe/context/AddRecipeContext";
+import styles from "@/styles/components/editRecipe/inputPreview.module.css";
+import { useEditRecipe } from "../myRecipes/edit/context/EditRecipeContext";
 
 export function DynamicInstructionsList() {
   const { updateListItem, formData, addListItem, deleteListItem } =
-    useAddRecipe();
+    useEditRecipe();
   const [editingId, setEditingId] = useState<number | null>(
     formData.ingredients[0]?.id || null,
   );

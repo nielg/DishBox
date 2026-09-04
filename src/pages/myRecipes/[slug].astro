@@ -3,9 +3,10 @@ import BaseLayout from "@/components/layouts/BaseLayout.astro";
 import RecipesService from "@/repository/recipesRepository";
 import DeleteRecipeBtn from "@/components/buttons/DeleteRecipeBtn.astro";
 import GoBackBtn from "@/components/buttons/GoBackBtn.astro";
-import Carrousel from "@/components/Carrousel.tsx";
 import { Icon } from "astro-icon/components";
 import type { RecipeResponse } from "@/types/recipe/recipe.schemas";
+import Recipe from "@/components/myRecipes/Recipe";
+import EditRecipeBtn from "@/components/buttons/EditRecipeBtn.astro";
 
 const { slug } = Astro.params;
 
@@ -22,7 +23,7 @@ if (slug) {
     }
   }
 }
-console.log("Fetched recipe:", recipe);
+
 if (!recipe) {
   Astro.response.status = 404;
   Astro.response.statusText = "Not Found";
@@ -32,89 +33,12 @@ if (!recipe) {
 <BaseLayout
   title={recipe ? `${recipe.title} | DishBox` : "Recipe Not Found | DishBox"}
 >
-  {
-    recipe ? (
-      <div class="recipe-page">
-        {/* Top navigation bar */}
+  {  recipe ? (
         <div class="recipe-nav">
           <GoBackBtn href="/myRecipes" />
-          <DeleteRecipeBtn recipeId={recipe.id} />
+          <EditRecipeBtn recipeId={recipe.id} />  
         </div>
-
-        {/* Hero header */}
-        <header class="recipe-hero">
-          <h1 class="recipe-title">{recipe.title}</h1>
-          <p class="recipe-description">{recipe.description}</p>
-          <div class="recipe-meta">
-            <span class="badge">
-              <Icon name="lucide:users" class="badge-icon" />
-              {recipe.portions} {recipe.portions === 1 ? "portion" : "portions"}
-            </span>
-            <span class="badge">
-              <Icon name="lucide:list" class="badge-icon" />
-              {recipe.ingredients.length} ingredients
-            </span>
-            <span class="badge">
-              <Icon name="lucide:clipboard-list" class="badge-icon" />
-              {recipe.instructions.length} steps
-            </span>
-            {recipe.public && (
-              <span class="badge">
-                <Icon name="lucide:globe" class="badge-icon" />
-                Public
-              </span>
-            )}
-            {recipe.vegan && (
-              <span class="badge">
-                <Icon name="lucide:leaf" class="badge-icon" />
-                Vegan
-              </span>
-            )}
-          </div>
-        </header>
-
-        <div class="section-divider" />
-
-        {/* Two-column content */}
-        <div class="recipe-body">
-          {/* Ingredients column */}
-          <section class="recipe-section ingredients-section">
-            <div class="section-heading">
-              <div class="section-icon-wrap">
-                <Icon name="lucide:shopping-basket" class="section-icon" />
-              </div>
-              <h2>Ingredients</h2>
-            </div>
-            <ul class="ingredients-list">
-              {recipe.ingredients.map((item) => (
-                <li class="ingredient-item">
-                  <span class="ingredient-dot" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </section>
-
-          {/* Instructions column */}
-          <section class="recipe-section instructions-section">
-            <div class="section-heading">
-              <div class="section-icon-wrap">
-                <Icon name="lucide:chef-hat" class="section-icon" />
-              </div>
-              <h2>Instructions</h2>
-            </div>
-            <ol class="instructions-list">
-              {recipe.instructions.map((step, index) => (
-                <li class="instruction-step">
-                  <span class="step-number">{index + 1}</span>
-                  <p class="step-text">{step}</p>
-                </li>
-              ))}
-            </ol>
-          </section>
-        </div>
-        {recipe.imgurls && <Carrousel client:load items={recipe.imgurls} />}
-      </div>
+        <Recipe recipe={recipe} client:load />
     ) : (
       <div class="not-found">
         <div class="not-found-icon-wrap">
@@ -376,3 +300,21 @@ if (!recipe) {
     font-size: 0.95rem;
   }
 </style>
+
+<script>
+  window.addEventListener("message", (event) => {
+    if (event.origin !== "http://localhost:4321") {
+      return;
+    }
+
+    if (event.data?.type !== "RECIPE_DATA") {
+      return;
+    }
+
+    const recipe = event.data.recipe;
+
+    console.log("Received recipe:", recipe);
+
+    // Do something with recipe here
+  });
+</script>

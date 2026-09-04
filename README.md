@@ -97,11 +97,11 @@ Always follow these steps:
 
 Always use the appropriate HTTP status code in API routes:
 
-| Status Code              | Name             | When to use?                                                                    |
-| :----------------------- | :--------------- | :------------------------------------------------------------------------------ |
-| **`200 OK`**             | Success          | Successful read (`GET`), update (`PUT/PATCH`), action (`DELETE`), or login.     |
-| **`201 Created`**        | Resource Created | Successful creation of a resource (`POST /api/recipe/addRecipe`, registration). |
-| **`400 Bad Request`**    | Client Error     | Zod schema validation errors, missing required fields, or invalid parameters.   |
-| **`401 Unauthorized`**   | Auth Error       | Not logged in, missing cookie, or expired/invalid JWT token.                    |
-| **`404 Not Found`**      | Not Found        | Requested entity (e.g. recipe ID or user) does not exist in the database.       |
-| **`500 Internal Error`** | Server Error     | Unexpected database errors, syntax errors, or server crashes.                   |
+| Status Code              | Name             | When to use?                                                                  |
+| :----------------------- | :--------------- | :---------------------------------------------------------------------------- |
+| **`200 OK`**             | Success          | Successful read (`GET`), update (`PUT/PATCH`), action (`DELETE`), or login.   |
+| **`201 Created`**        | Resource Created | Successful creation of a resource (`POST /api/recipe/edit`, registration).    |
+| **`400 Bad Request`**    | Client Error     | Zod schema validation errors, missing required fields, or invalid parameters. |
+| **`401 Unauthorized`**   | Auth Error       | Not logged in, missing cookie, or expired/invalid JWT token.                  |
+| **`404 Not Found`**      | Not Found        | Requested entity (e.g. recipe ID or user) does not exist in the database.     |
+| **`500 Internal Error`** | Server Error     | Unexpected database errors, syntax errors, or server crashes.                 |

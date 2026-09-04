@@ -14,11 +14,19 @@ async function getRecipesMetaDataByUserid(
   );
 }
 
-async function addRecipe(body: CreateRecipeInput): Promise<RecipeResponse> {
+async function createRecipe(body: CreateRecipeInput): Promise<RecipeResponse> {
   const createdDataRecipe =
     await RecipesRepository.createRecipeWithImages(body);
 
   return createdDataRecipe;
+}
+
+async function updateRecipe(
+  recipeId: number,
+  body: CreateRecipeInput,
+): Promise<RecipeResponse> {
+  const updatedRecipe = await RecipesRepository.updateRecipe(recipeId, body);
+  return updatedRecipe;
 }
 
 async function getPublickRecipesMetaData(): Promise<RecipeMetaDataResponse[]> {
@@ -36,10 +44,11 @@ async function getPublickVeganRecipesMetaData(): Promise<
 }
 
 const recipeService = {
-  addRecipe,
+  createRecipe,
   getRecipesMetaData: getRecipesMetaDataByUserid,
   getPublickRecipesMetaData,
   getPublickVeganRecipesMetaData,
+  updateRecipe,
 };
 
 export default recipeService;

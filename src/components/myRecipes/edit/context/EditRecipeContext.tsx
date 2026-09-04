@@ -1,12 +1,12 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
-import {
-  type FormDataType,
-  type RecipeProgress,
-} from "./addRecipeContex.types";
+
 import {
   CreateRecipeSchema,
   type CreateRecipeBody,
+  type RecipeResponse,
 } from "@/types/recipe/recipe.schemas";
+import type { RecipeProgress } from "@/types/recipe/recipe.types";
+import type { FormDataType } from "./editRecipeContex.types";
 
 const STEPS: RecipeProgress[] = [
   "intro",
@@ -17,7 +17,7 @@ const STEPS: RecipeProgress[] = [
 
 type listItem = "ingredients" | "instructions" | "imgurls";
 
-interface AddRecipeContextType {
+interface EditRecipeContextType {
   formData: FormDataType;
   updateField: <K extends keyof FormDataType>(
     field: K,
@@ -33,13 +33,16 @@ interface AddRecipeContextType {
   handlePrevious: () => void;
   submit: () => void;
   isValid: () => CreateRecipeBody | null;
+  loadFormData: (recipe: RecipeResponse) => void;
+  isNew: boolean;
 }
 
-const AddRecipeContext = createContext<AddRecipeContextType | undefined>(
+const EditRecipeContext = createContext<EditRecipeContextType | undefined>(
   undefined,
 );
 
-export function AddRecipeProvider({ children }: { children: ReactNode }) {
+export function EditRecipeProvider({ children }: { children: ReactNode }) {
+  const [isNew, setIsNew] = useState(true);
   const [progress, setProgress] = useState<RecipeProgress>("intro");
   const [formData, setFormData] = useState<FormDataType>({
     title: "",
@@ -47,10 +50,33 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
     portions: 4,
     ingredients: [],
     instructions: [],
-    vegan: true,
+    vegan: false,
     public: false,
     imgurls: [],
+    id: undefined,
   });
+
+  const loadFormData = (recipe: RecipeResponse) => {
+    setFormData({
+      title: recipe.title,
+      description: recipe.description,
+      portions: recipe.portions,
+      ingredients: recipe.ingredients.map((item, index) => ({
+        id: index,
+        value: item,
+      })),
+      instructions: recipe.instructions.map((item, index) => ({
+        id: index,
+        value: item,
+      })),
+      vegan: recipe.vegan,
+      public: recipe.public,
+      imgurls:
+        recipe.imgurls?.map((url, index) => ({ id: index, value: url })) || [],
+      id: recipe.id,
+    });
+    setIsNew(false);
+  };
 
   const updateField = <K extends keyof FormDataType>(
     field: K,
@@ -123,30 +149,55 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
     if (!body) {
       return;
     }
+    if (isNew) {
+      try {
+        const response = await fetch("/api/recipe/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        });
 
-    try {
-      const response = await fetch("/api/recipe/addRecipe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-
-      if (response.ok) {
-        window.location.href = `/myRecipes`;
-      } else {
-        const errorData = await response.json();
-        console.error(`Error: ${errorData.error || "Failed to create recipe"}`);
+        if (response.ok) {
+          window.location.href = `/myRecipes`;
+        } else {
+          const errorData = await response.json();
+          console.error(
+            `Error: ${errorData.error || "Failed to create recipe"}`,
+          );
+        }
+      } catch (error) {
+        console.error("Submission error:", error);
+        alert("An error occurred while submitting the recipe.");
       }
-    } catch (error) {
-      console.error("Submission error:", error);
-      alert("An error occurred while submitting the recipe.");
+    } else {
+      try {
+        const response = await fetch(`/api/recipe/update/${formData.id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(body),
+        });
+
+        if (response.ok) {
+          window.location.href = `/myRecipes/${formData.id}`;
+        } else {
+          const errorData = await response.json();
+          console.error(
+            `Error: ${errorData.error || "Failed to update recipe"}`,
+          );
+        }
+      } catch (error) {
+        console.error("Submission error:", error);
+        alert("An error occurred while submitting the recipe.");
+      }
     }
   };
 
   return (
-    <AddRecipeContext.Provider
+    <EditRecipeContext.Provider
       value={{
         formData,
         updateField,
@@ -160,17 +211,19 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
         handlePrevious,
         submit,
         isValid,
+        loadFormData,
+        isNew,
       }}
     >
       {children}
-    </AddRecipeContext.Provider>
+    </EditRecipeContext.Provider>
   );
 }
 
-export const useAddRecipe = () => {
-  const context = useContext(AddRecipeContext);
+export const useEditRecipe = () => {
+  const context = useContext(EditRecipeContext);
   if (!context) {
-    throw new Error("useAddRecipe must be used within an AddRecipeProvider");
+    throw new Error("useEditRecipe must be used within an EditRecipeProvider");
   }
   return context;
 };
