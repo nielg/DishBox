@@ -1,54 +1,72 @@
 import sql from "@/lib/db";
-import type {
-  RecipeMetaDataResponse,
-  RecipeRequest,
-  RecipeResponse,
-} from "@/types/recipe";
+import {
+  RecipeMetaDataResponseSchema,
+  type RecipeMetaDataResponse,
+  RecipeResponseSchema,
+  type RecipeResponse,
+  type CreateRecipeInput,
+} from "@/types/recipe/recipe.schemas";
+import { z } from "astro/zod";
 
-async function createRecipe(recipe: RecipeRequest): Promise<RecipeResponse> {
-  let insertedRows: RecipeResponse[] | null = null;
+const recipeMetaDataSelect = sql`
+  SELECT DISTINCT ON (recipes.id)
+    recipes.id,
+    recipes.title,
+    recipes.description,
+    recipes.portions,
+    recipes.public,
+    recipes.vegan,
+    recipe_images.image_url AS imgurl
+  FROM recipes
+  LEFT JOIN recipe_images
+    ON recipes.id = recipe_images.recipe_id
+`;
 
-  try {
-    insertedRows = (await sql`
-      INSERT INTO recipes (title, description, portions, ingredients, instructions, user_id)
+async function createRecipeWithImages(
+  recipe: CreateRecipeInput,
+): Promise<RecipeResponse> {
+  return await sql.begin(async (tx) => {
+    const [createdRecipe] = await tx<RecipeResponse[]>`
+      INSERT INTO recipes (
+        title,
+        description,
+        portions,
+        ingredients,
+        instructions,
+        user_id,
+        public,
+        vegan
+      )
       VALUES (
         ${recipe.title},
         ${recipe.description},
         ${recipe.portions},
         ${sql.json(recipe.ingredients)},
         ${sql.json(recipe.instructions)},
-        ${recipe.user_id}
+        ${recipe.user_id},
+        ${recipe.public},
+        ${recipe.vegan}
       )
-      RETURNING id, title, description, portions, ingredients, instructions
-    `) as RecipeResponse[];
-  } catch (error) {
-    console.error("DB: Failed to create recipe:", error);
-    throw new Error("Database insertion failed");
-  }
+      RETURNING id, title, description, portions, ingredients, instructions, public, vegan
+    `;
 
-  if (!insertedRows || insertedRows.length === 0) {
-    throw new Error("No recipe data returned from the database");
-  }
+    if (!createdRecipe) {
+      throw new Error("Failed to create recipe");
+    }
 
-  return insertedRows[0];
-}
+    if (recipe.imgurls && recipe.imgurls.length > 0) {
+      await Promise.all(
+        recipe.imgurls.map(
+          (imageUrl) => tx`
+            INSERT INTO recipe_images (recipe_id, image_url)
+            VALUES (${createdRecipe.id}, ${imageUrl})
+          `,
+        ),
+      );
+    }
 
-async function getRecipesMetaDataByUserId(
-  user_id: number,
-): Promise<RecipeMetaDataResponse[]> {
-  let resultRows: RecipeMetaDataResponse[] | null = null;
-
-  try {
-    resultRows = (await sql`
-      SELECT * FROM recipes
-      WHERE ${user_id} = user_id
-      `) as RecipeResponse[];
-  } catch (error) {
-    console.error("DB: Failed to fetch recipeMetaData:", error);
-    throw new Error("Database fetch failed");
-  }
-
-  return resultRows;
+    return createdRecipe;
+  });
 }
 
 async function getRecipeById(id: number): Promise<RecipeResponse> {
@@ -56,9 +74,23 @@ async function getRecipeById(id: number): Promise<RecipeResponse> {
 
   try {
     resultRows = (await sql`
-      SELECT id, title, description, portions, ingredients, instructions
+      SELECT recipes.id,
+        recipes.title,
+        recipes.description,
+        recipes.portions,
+        recipes.ingredients,
+        recipes.instructions,
+        recipes.public,
+        recipes.vegan,
+        COALESCE(
+          ARRAY_AGG(recipe_images.image_url)
+            FILTER (WHERE recipe_images.image_url IS NOT NULL),
+          '{}'
+        ) AS imgurls
       FROM recipes
-      WHERE id = ${id}
+      LEFT JOIN recipe_images ON recipes.id = recipe_images.recipe_id
+      WHERE recipes.id = ${id}
+      GROUP BY recipes.id
       `) as RecipeResponse[];
   } catch (error) {
     console.error("DB: Failed to fetch recipe:", error);
@@ -68,8 +100,10 @@ async function getRecipeById(id: number): Promise<RecipeResponse> {
   if (!resultRows || resultRows.length === 0) {
     throw new Error(`No recipe found with id: ${id}`);
   }
-
-  return resultRows[0];
+  console.log("Fetched recipe rows:", resultRows);
+  const result = RecipeResponseSchema.parse(resultRows[0]);
+  console.log("Parsed recipe result:", result);
+  return result;
 }
 
 async function deleteRecipeById(id: number): Promise<string> {
@@ -91,11 +125,28 @@ async function deleteRecipeById(id: number): Promise<string> {
 
   return `Succesfully delete recipe ${id}`;
 }
+
+async function getRecipesMetaDataWithWhere(
+  where: ReturnType<typeof sql>,
+): Promise<RecipeMetaDataResponse[]> {
+  try {
+    const rows = await sql`
+      ${recipeMetaDataSelect}
+      ${where}
+      ORDER BY recipes.id, recipe_images.created_at DESC
+    `;
+    return z.array(RecipeMetaDataResponseSchema).parse(rows);
+  } catch (error) {
+    console.error("DB: Failed to fetch recipes with where clause:", error);
+    throw new Error("Database fetch failed");
+  }
+}
+
 const RecipesService = {
-  createRecipe,
-  getRecipesMetaDataByUserId,
   getRecipeById,
   deleteRecipeById,
+  getRecipesMetaDataWithWhere,
+  createRecipeWithImages,
 };
 
 export default RecipesService;

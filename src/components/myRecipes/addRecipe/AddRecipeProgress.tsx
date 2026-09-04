@@ -1,7 +1,8 @@
-import type { RecipeProgress } from "@/types/recipe";
+import type { RecipeProgress } from "@/types/recipe/recipe.types";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import styles from "@/styles/components/progressBtn.module.css";
+import styles from "@/styles/components/addRecipe//progressBtn.module.css";
 import { useAddRecipe } from "./context/AddRecipeContext";
+import { Fragment } from "react";
 
 const STEPS: RecipeProgress[] = [
   "intro",
@@ -17,7 +18,7 @@ const STEP_LABELS: Record<RecipeProgress, string> = {
   preview: "Review",
 };
 
-export default function AddRecipeProgressBtn() {
+export default function AddRecipeProgress() {
   const { handleNext, handlePrevious, currentIndex, progress, setProgress } =
     useAddRecipe();
 
@@ -35,16 +36,8 @@ export default function AddRecipeProgressBtn() {
       <div className={styles.separator} />
 
       {STEPS.map((step, index) => (
-        <>
-          <div
-            key={step}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "0.3rem",
-            }}
-          >
+        <Fragment key={step}>
+          <div className={styles.stepContainer}>
             <button
               className={`${styles.btn} ${progress === step ? styles.active : ""}`}
               onClick={() => setProgress(step)}
@@ -54,14 +47,10 @@ export default function AddRecipeProgressBtn() {
             </button>
             <span
               style={{
-                fontSize: "0.7rem",
-                fontWeight: 600,
                 color:
                   progress === step
                     ? "var(--primary-700)"
                     : "var(--text-muted)",
-                transition: "color 0.2s",
-                whiteSpace: "nowrap",
               }}
             >
               {STEP_LABELS[step]}
@@ -70,7 +59,7 @@ export default function AddRecipeProgressBtn() {
           {index < STEPS.length - 1 && (
             <div key={`sep-${step}`} className={styles.separator} />
           )}
-        </>
+        </Fragment>
       ))}
 
       <div className={styles.separator} />

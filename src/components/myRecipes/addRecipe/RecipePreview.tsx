@@ -1,13 +1,16 @@
-import s from "@/styles/components/addRecipe.module.css";
+import s from "@/styles/components/addRecipe/addRecipe.module.css";
 import { useAddRecipe } from "./context/AddRecipeContext";
+import { Globe, Vegan } from "lucide-react";
 
 export default function RecipePreview() {
   const { formData } = useAddRecipe();
 
   return (
-    <section>
+    <section className={s.recipePreview}>
       {/* Preview label */}
-      <div className={s.livePreviewBadge}>Live Preview</div>
+      <div className={`${s.livePreviewBadge} badge margin-bottom-1`}>
+        Live Preview
+      </div>
 
       <div className={s.recipePreviewContainer}>
         {/* Title */}
@@ -37,9 +40,24 @@ export default function RecipePreview() {
         {/* Divider */}
         <div className={s.previewDivider} />
 
-        {/* Portions badge */}
-        <div className={s.portionsBadge}>
-          {formData.portions} {formData.portions === 1 ? "portion" : "portions"}
+        {/* Badges */}
+        <div className={s.badgesContainer}>
+          <div className={`badge`}>
+            {formData.portions}{" "}
+            {formData.portions === 1 ? "portion" : "portions"}
+          </div>
+          {formData.vegan && (
+            <div className={`badge`}>
+              <Vegan className={`badge-icon`} />
+              Vegan
+            </div>
+          )}
+          {formData.public && (
+            <div className={`badge`}>
+              <Globe className={`badge-icon`} />
+              Public
+            </div>
+          )}
         </div>
 
         {/* Ingredients */}
@@ -73,7 +91,7 @@ export default function RecipePreview() {
           <ol className={s.instructionsList}>
             {formData.instructions.map((item, index) => (
               <li key={`instruction-${index}`} className={s.instructionItem}>
-                <span className={s.stepNumberBadge}>{index + 1}</span>
+                <span className={s.instructionsStepNumber}>{index + 1}</span>
                 <span className={s.stepText}>{item.value}</span>
               </li>
             ))}

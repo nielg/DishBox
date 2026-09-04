@@ -1,8 +1,4 @@
 import type { ApiResponse } from "@/types";
-import jwt from "jsonwebtoken";
-import { COOKIE_SECRET, COOKIE_NAME } from "astro:env/server";
-import type { AuthUser } from "@/types/user";
-import type { AstroCookies } from "astro";
 import type { ZodError } from "astro:schema";
 
 /**

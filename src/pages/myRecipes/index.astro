@@ -1,13 +1,12 @@
 ---
 export const prerender = false;
-import type { RecipeMetaDataResponse } from "@/types/recipe";
 import Button from "@/components/layout/Button.astro";
 import WelcomeHeader from "@/components/layout/WelcomeHeader.astro";
-import MyRecipesCard from "@/components/myRecipes/MyRecipesCard.astro";
-import MyRecipesContainer from "@/components/myRecipes/MyRecipesContainer.astro";
 import BaseLayout from "@/components/layouts/BaseLayout.astro";
 import { Icon } from "astro-icon/components";
 import RecipesService from "@/service/recipeService";
+import RecipesGrid from "@/components/recipes/RecipesGrid.astro";
+import type { RecipeMetaDataResponse } from "@/types/recipe/recipe.schemas";
 
 const { user_id } = Astro.locals;
 if (!user_id) return Astro.redirect("/user/login");
@@ -46,11 +45,7 @@ const recipes: RecipeMetaDataResponse[] =
           />
         </div>
       ) : (
-        <MyRecipesContainer>
-          {recipes.map((recipe) => (
-            <MyRecipesCard data={recipe} />
-          ))}
-        </MyRecipesContainer>
+        <RecipesGrid title="My Recipes" recipes={recipes} />
       )
     }
   </div>

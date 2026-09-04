@@ -113,7 +113,6 @@
 
 /* Form fields */
 .input-preview__field {
-  flex: 1;
   width: 100%;
   padding: 0.75rem;
   font-family: inherit;
@@ -124,7 +123,6 @@
   background-color: transparent;
   box-sizing: border-box;
   display: block;
-  field-sizing: content;
   resize: none;
   outline: none;
 }
@@ -161,7 +159,9 @@
   justify-content: center;
   color: inherit;
   border-radius: 0.35rem;
-  transition: color 0.2s, background-color 0.15s;
+  transition:
+    color 0.2s,
+    background-color 0.15s;
 }
 
 .input-preview__btn:hover {

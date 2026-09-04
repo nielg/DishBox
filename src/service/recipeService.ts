@@ -1,22 +1,45 @@
+import sql from "@/lib/db";
 import RecipesRepository from "@/repository/recipesRepository";
-import type { RecipeMetaDataResponse, RecipeResponse } from "@/types/recipe";
-import type { CreateRecipeInput } from "@/pages/api/recipe/addRecipe";
+import type {
+  CreateRecipeInput,
+  RecipeMetaDataResponse,
+  RecipeResponse,
+} from "@/types/recipe/recipe.schemas";
 
-async function getRecipesMetaData(
+async function getRecipesMetaDataByUserid(
   user_id: number,
 ): Promise<RecipeMetaDataResponse[]> {
-  return RecipesRepository.getRecipesMetaDataByUserId(user_id);
+  return RecipesRepository.getRecipesMetaDataWithWhere(
+    sql`WHERE recipes.user_id = ${user_id}`,
+  );
 }
 
 async function addRecipe(body: CreateRecipeInput): Promise<RecipeResponse> {
-  const createdDataRecipe = await RecipesRepository.createRecipe(body);
+  const createdDataRecipe =
+    await RecipesRepository.createRecipeWithImages(body);
 
   return createdDataRecipe;
 }
 
+async function getPublickRecipesMetaData(): Promise<RecipeMetaDataResponse[]> {
+  return RecipesRepository.getRecipesMetaDataWithWhere(
+    sql`WHERE recipes.public = true`,
+  );
+}
+
+async function getPublickVeganRecipesMetaData(): Promise<
+  RecipeMetaDataResponse[]
+> {
+  return RecipesRepository.getRecipesMetaDataWithWhere(
+    sql`WHERE recipes.public = true AND recipes.vegan = true`,
+  );
+}
+
 const recipeService = {
   addRecipe,
-  getRecipesMetaData,
+  getRecipesMetaData: getRecipesMetaDataByUserid,
+  getPublickRecipesMetaData,
+  getPublickVeganRecipesMetaData,
 };
 
 export default recipeService;

@@ -1,0 +1,34 @@
+---
+import type { RecipeMetaDataResponse } from "@/types/recipe/recipe.schemas";
+import RecipesCard from "./RecipesCard.astro";
+type Props = {
+  title?: string;
+  recipes: RecipeMetaDataResponse[];
+};
+
+const { title, recipes } = Astro.props as Props;
+---
+
+<section class="recipes-grid">
+  {title && <h2>{title}</h2>}
+
+  <div class="recipes-grid__wrapper">
+    <div class="recipes-grid__container">
+      {
+        recipes.map((recipe) => (
+          <div class="recipes-grid__item">
+            <RecipesCard data={recipe} />
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+<style>
+  .recipes-grid__container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: 1.25rem;
+    width: 100%;
+  }
+</style>

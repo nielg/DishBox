@@ -62,6 +62,12 @@ Content-Type: application/json
     "Fry pancetta in a pan until crispy.",
     "Whisk eggs and cheese together in a bowl.",
     "Combine pasta, pancetta, and egg mixture off the heat, tossing quickly."
+  ],
+  "public": true,
+  "vegan": false,
+  "imgurls": [
+    "https://example.com/images/spaghetti_carbonara_1.jpg",
+    "https://example.com/images/spaghetti_carbonara_2.jpg"
   ]
 }
 

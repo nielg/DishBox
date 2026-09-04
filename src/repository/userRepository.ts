@@ -1,20 +1,11 @@
 import bcrypt from "bcryptjs";
 import sql from "@/lib/db";
-import { z } from "zod";
 import type { CreateUserInput } from "@/pages/api/user/register";
-
-export const UserLoginSchema = z.object({
-  id: z.number(),
-  user_name: z.string(),
-  email: z.string().email(),
-});
-
-const UserWithPasswordSchema = UserLoginSchema.extend({
-  password: z.string(),
-});
-
-// Infer TypeScript types directly from Zod
-export type UserLoginResponse = z.infer<typeof UserLoginSchema>;
+import {
+  type UserLoginResponse,
+  UserWithPasswordSchema,
+  UserLoginSchema,
+} from "@/types/user/user.schema";
 
 const dbLogin = async (
   username: string,

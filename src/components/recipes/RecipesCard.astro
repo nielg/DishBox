@@ -1,8 +1,8 @@
 ---
 import { Image } from "astro:assets";
 import defaultImg from "@/assets/recipes-img/default-img.png";
-import type { RecipeMetaDataResponse } from "@/types/recipe";
 import { Icon } from "astro-icon/components";
+import type { RecipeMetaDataResponse } from "@/types/recipe/recipe.schemas";
 
 type Props = {
   data: RecipeMetaDataResponse;
@@ -14,13 +14,33 @@ const { data }: Props = Astro.props;
 <a href={`/myRecipes/${data.id}`} class="card-link">
   <article class="card">
     <div class="card-thumbnail">
-      <Image
-        class="card-img"
-        src={defaultImg}
-        width={280}
-        height={160}
-        alt={`${data.title} thumbnail`}
-      />
+      {
+        data.imgURL ? (
+          <Image
+            class="card-img"
+            src={data.imgURL}
+            width={280}
+            height={160}
+            alt={`${data.title} thumbnail`}
+          />
+        ) : (
+          <Image
+            class="card-img"
+            src={defaultImg}
+            width={280}
+            height={160}
+            alt={`${data.title} thumbnail`}
+          />
+        )
+      }
+      {
+        data.vegan && (
+          <span class="badge vegan-badge">
+            <Icon name="lucide:leaf" class="badge-icon" />
+            Vegan
+          </span>
+        )
+      }
       <div class="card-img-overlay"></div>
     </div>
     <div class="card-body">
@@ -70,6 +90,24 @@ const { data }: Props = Astro.props;
     height: 10rem;
     overflow: hidden;
     background-color: var(--bg-surface-subtle);
+  }
+
+  .vegan-badge {
+    position: absolute;
+    top: 0.65rem;
+    right: 0.65rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--primary-700);
+    background-color: var(--primary-100);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+    width: 3rem;
+    height: 1.5rem;
+    z-index: 1000;
   }
 
   .card-img {

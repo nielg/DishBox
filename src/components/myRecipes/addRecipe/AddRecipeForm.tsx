@@ -1,11 +1,10 @@
-"use client";
 import AddRecipeIntro from "./AddRecipeIntro";
 import AddRecipeIngredients from "./AddRecipeIngredients";
 import AddRecipeInstructions from "./AddRecipeInstructions";
 import AddRecipeReview from "./AddRecipeReview";
-import AddRecipeProgressBtn from "./AddRecipeProgressBtn";
+import AddRecipeProgressBtn from "./AddRecipeProgress";
 import RecipePreview from "./RecipePreview";
-import s from "@/styles/components/addRecipe.module.css";
+import s from "@/styles/components/addRecipe/addRecipe.module.css";
 import { AddRecipeProvider, useAddRecipe } from "./context/AddRecipeContext";
 
 function FormContent() {

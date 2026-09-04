@@ -1,7 +1,7 @@
 import InputPreview from "@/components/input/InputPreview";
 import "@/styles/global.css";
 import { useAddRecipe } from "./context/AddRecipeContext";
-import s from "@/styles/components/addRecipe.module.css";
+import s from "@/styles/components/addRecipe/addRecipe.module.css";
 
 export default function AddRecipeIntro() {
   const { formData, updateField } = useAddRecipe();
@@ -9,7 +9,7 @@ export default function AddRecipeIntro() {
   return (
     <>
       <div className={s.stepHeader}>
-        <span className={s.stepBadge}>Step 1</span>
+        <span className={`${s.stepBadge} badge`}>Step 1</span>
         <h2 className={s.stepTitle}>Introduction</h2>
         <p className={s.stepDescription}>
           Give your recipe a title and a short description.

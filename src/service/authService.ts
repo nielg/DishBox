@@ -6,12 +6,10 @@ import {
   MAX_AGE,
 } from "astro:env/server";
 import jwt from "jsonwebtoken";
-import userRepository, {
-  type UserLoginResponse,
-} from "@/repository/userRepository";
 import bcrypt from "bcryptjs";
 import type { CreateUserInput } from "@/pages/api/user/register";
-import type { loginInput } from "@/pages/api/user/login";
+import userRepository from "@/repository/userRepository";
+import type { loginInput, UserLoginResponse } from "@/types/user/user.schema";
 
 /**
  * Checks user credentials if success create jwt token

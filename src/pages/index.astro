@@ -1,7 +1,15 @@
 ---
 import BaseLayout from "../components/layouts/BaseLayout.astro";
+import RecipeService from "@/service/recipeService";
+import RecipesCarrousel from "@/components/recipes/RecipesCarrousel.astro";
+import RecipesGrid from "@/components/recipes/RecipesGrid.astro";
+
+const recipes = await RecipeService.getPublickRecipesMetaData();
+const veganRecipes = await RecipeService.getPublickVeganRecipesMetaData();
 ---
 
 <BaseLayout>
-  <h1>Astro</h1>
+  <h1>Recipes</h1>
+  <RecipesGrid recipes={recipes} />
+  <RecipesCarrousel title="Vegan Recipes" recipes={veganRecipes} />
 </BaseLayout>

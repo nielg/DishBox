@@ -1,6 +1,12 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
-import { type FormDataType, type RecipeProgress } from "./addRecipe.types";
-import { createRecipeSchema, type CreateRecipeInput } from "./addRecipe.schema";
+import {
+  type FormDataType,
+  type RecipeProgress,
+} from "./addRecipeContex.types";
+import {
+  CreateRecipeSchema,
+  type CreateRecipeBody,
+} from "@/types/recipe/recipe.schemas";
 
 const STEPS: RecipeProgress[] = [
   "intro",
@@ -9,26 +15,24 @@ const STEPS: RecipeProgress[] = [
   "preview",
 ];
 
+type listItem = "ingredients" | "instructions" | "imgurls";
+
 interface AddRecipeContextType {
   formData: FormDataType;
   updateField: <K extends keyof FormDataType>(
     field: K,
     value: FormDataType[K],
   ) => void;
-  addListItem: (list: "ingredients" | "instructions", id: number) => void;
-  updateListItem: (
-    listName: "ingredients" | "instructions",
-    index: number,
-    value: string,
-  ) => void;
-  deleteListItem: (list: "ingredients" | "instructions", id: number) => void;
+  addListItem: (list: listItem, id: number, value?: string) => void;
+  updateListItem: (listName: listItem, index: number, value: string) => void;
+  deleteListItem: (list: listItem, id: number) => void;
   progress: RecipeProgress;
   currentIndex: number;
   setProgress: (step: RecipeProgress) => void;
   handleNext: () => void;
   handlePrevious: () => void;
   submit: () => void;
-  isValid: () => CreateRecipeInput | null;
+  isValid: () => CreateRecipeBody | null;
 }
 
 const AddRecipeContext = createContext<AddRecipeContextType | undefined>(
@@ -43,7 +47,9 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
     portions: 4,
     ingredients: [],
     instructions: [],
+    vegan: true,
     public: false,
+    imgurls: [],
   });
 
   const updateField = <K extends keyof FormDataType>(
@@ -53,18 +59,14 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const addListItem = (list: "ingredients" | "instructions", id: number) => {
+  const addListItem = (list: listItem, id: number, value?: string) => {
     setFormData((prev) => ({
       ...prev,
-      [list]: [...prev[list], { id, value: "" }],
+      [list]: [...prev[list], { id, value: value ?? "" }],
     }));
   };
 
-  const updateListItem = (
-    listName: "ingredients" | "instructions",
-    id: number,
-    value: string,
-  ) => {
+  const updateListItem = (listName: listItem, id: number, value: string) => {
     setFormData((prev) => ({
       ...prev,
       [listName]: prev[listName].map((item) =>
@@ -73,10 +75,7 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
     }));
   };
 
-  const deleteListItem = (
-    listName: "ingredients" | "instructions",
-    id: number,
-  ) => {
+  const deleteListItem = (listName: listItem, id: number) => {
     setFormData((prev) => ({
       ...prev,
       [listName]: prev[listName].filter((item) => item.id !== id),
@@ -98,7 +97,7 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
   };
 
   // Validation
-  const isValid = (): CreateRecipeInput | null => {
+  const isValid = (): CreateRecipeBody | null => {
     const recipeRequest = {
       title: formData.title,
       description: formData.description,
@@ -109,9 +108,11 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
       instructions: formData.instructions
         .filter((item) => item.value.trim())
         .map((item) => item.value),
+      public: formData.public,
+      vegan: formData.vegan,
+      imgurls: formData.imgurls.map((item) => item.value),
     };
-
-    const result = createRecipeSchema.safeParse(recipeRequest);
+    const result = CreateRecipeSchema.safeParse(recipeRequest);
 
     return result.success ? result.data : null;
   };
@@ -119,7 +120,6 @@ export function AddRecipeProvider({ children }: { children: ReactNode }) {
   // On submit
   const submit = async () => {
     const body = isValid();
-
     if (!body) {
       return;
     }
