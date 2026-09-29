@@ -1,5 +1,6 @@
 import type { CreateUserInput } from "@/pages/api/user/register";
 import userRepository from "@/repository/userRepository";
+import type { UserProfileData } from "@/types/user/user.types";
 import bcrypt from "bcryptjs";
 
 export const updateUser = async (
@@ -49,6 +50,20 @@ async function deleteUser(user_id: number): Promise<void> {
   await userRepository.dbDeleteUser(user_id);
 }
 
-const UserService = { updateUser, registerUser, deleteUser };
+/**
+ * Get user data for profile
+ * @param user_id
+ * @returns UserData
+ */
+async function getProfileUserData(user_id: number): Promise<UserProfileData> {
+  return await userRepository.getUserData(user_id);
+}
+
+const UserService = {
+  updateUser,
+  registerUser,
+  deleteUser,
+  getUserData: getProfileUserData,
+};
 
 export default UserService;

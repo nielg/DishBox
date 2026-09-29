@@ -6,6 +6,7 @@ import {
   UserWithPasswordSchema,
   UserLoginSchema,
 } from "@/types/user/user.schema";
+import type { UserProfileData } from "@/types/user/user.types";
 
 const dbLogin = async (
   username: string,
@@ -71,6 +72,30 @@ const updateUser = async (
   }
 };
 
+const getProfileUserData = async (
+  user_id: number,
+): Promise<UserProfileData> => {
+  let result;
+  try {
+    result = (await sql`
+      SELECT
+        user_name as username,
+        first_name as firstname,
+        last_name as lastname,
+        email
+      FROM "user"
+      WHERE id = ${user_id}
+      LIMIT 1
+    `) as UserProfileData[];
+  } catch (error) {
+    console.error(`DB: Failed to fetch user data ${user_id}`, error);
+    throw new Error(`DB: Failed to fetch user data ${user_id}`, {
+      cause: error,
+    });
+  }
+  return result[0];
+};
+
 const dbDeleteUser = async (user_id: number): Promise<void> => {
   let result;
   try {
@@ -91,6 +116,7 @@ const userRepository = {
   createUser,
   dbDeleteUser,
   updateUser,
+  getUserData: getProfileUserData,
 };
 
 export default userRepository;
