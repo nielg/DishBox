@@ -2,3 +2,4 @@ Front-end
 Remove img from bucket if recipe removed
 Make it possible to edit images in existing recipes and new recipes
 Make a tag table voor more tag options
+Make it impossible to remove publick recipes on the home page (only on the myRecipes page)

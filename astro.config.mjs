@@ -36,14 +36,17 @@ export default defineConfig({
       PUBLIC_SUPABASE_URL: envField.string({
         context: "server",
         access: "public",
+        default: "",
       }),
       SUPABASE_SERVICE_ROLE_KEY: envField.string({
         context: "server",
         access: "secret",
+        default: "",
       }),
       PUBLIC_SUPABASE_RECIPE_BUCKET_NAME: envField.string({
         context: "server",
         access: "public",
+        default: "",
       }),
     },
   },

@@ -105,6 +105,17 @@ export default function AddRecipeImg() {
     }
   };
 
+  if (!SUPABASE_URL || !BUCKET_NAME) {
+    return (
+      <div className={s.error}>
+        <p>
+          Supabase configuration is missing. Please check your environment
+          variables.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} className={s.uploadForm}>
       <div
