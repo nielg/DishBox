@@ -52,6 +52,25 @@ const createUser = async (user: CreateUserInput): Promise<void> => {
   }
 };
 
+const updateUser = async (
+  user_id: number,
+  user: Partial<CreateUserInput>,
+): Promise<void> => {
+  try {
+    await sql`
+      UPDATE "user"
+      SET user_name  = COALESCE(${user.username ?? null}, user_name),
+          first_name = COALESCE(${user.firstname ?? null}, first_name),
+          last_name  = COALESCE(${user.lastname ?? null}, last_name),
+          email      = COALESCE(${user.email ?? null}, email)
+      WHERE id = ${user_id}
+  `;
+  } catch (error) {
+    console.error(`DB: Failed to update user ${user_id}`, error);
+    throw new Error(`DB: Failed to update user ${user_id}`, { cause: error });
+  }
+};
+
 const dbDeleteUser = async (user_id: number): Promise<void> => {
   let result;
   try {
@@ -71,6 +90,7 @@ const userRepository = {
   dbLogin,
   createUser,
   dbDeleteUser,
+  updateUser,
 };
 
 export default userRepository;

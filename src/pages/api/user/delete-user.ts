@@ -1,4 +1,5 @@
 import authService from "@/service/authService";
+import UserService from "@/service/userService";
 import type { ApiResponse } from "@/types";
 import type { APIRoute } from "astro";
 
@@ -10,7 +11,7 @@ export const DELETE: APIRoute = async ({ cookies }): Promise<Response> => {
   }
   const user_id = auth.user_id;
   try {
-    await authService.deleteUser(user_id);
+    await UserService.deleteUser(user_id);
 
     // Clear session cookies upon successful deletion
     authService.logout(cookies);
