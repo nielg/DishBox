@@ -7,6 +7,7 @@ import {
   type CreateRecipeInput,
 } from "@/types/recipe/recipe.schemas";
 import { z } from "astro/zod";
+import { IMG_STORAGE_TYPE } from "astro:env/client";
 
 const recipeMetaDataSelect = sql`
   SELECT DISTINCT ON (recipes.id)
@@ -58,8 +59,8 @@ async function createRecipeWithImages(
       await Promise.all(
         recipe.imgurls.map(
           (imageUrl) => tx`
-            INSERT INTO recipe_images (recipe_id, image_url)
-            VALUES (${createdRecipe.id}, ${imageUrl})
+            INSERT INTO recipe_images (recipe_id, image_url, img_storage_type)
+            VALUES (${createdRecipe.id}, ${imageUrl}, ${IMG_STORAGE_TYPE})
           `,
         ),
       );
@@ -102,7 +103,11 @@ async function updateRecipe(
       if (recipe.imgurls && recipe.imgurls.length > 0) {
         await tx`
           INSERT INTO recipe_images ${tx(
-            recipe.imgurls.map((image_url) => ({ recipe_id: id, image_url })),
+            recipe.imgurls.map((image_url) => ({
+              recipe_id: id,
+              image_url,
+              img_storage_type: IMG_STORAGE_TYPE,
+            })),
           )}
           ON CONFLICT (recipe_id, image_url) DO NOTHING 
         `;
@@ -132,12 +137,14 @@ async function getRecipeById(id: number): Promise<RecipeResponse> {
         recipes.public,
         recipes.vegan,
         COALESCE(
-          ARRAY_AGG(recipe_images.image_url)
+          ARRAY_AGG(recipe_images.image_url ORDER BY recipe_images.id)
             FILTER (WHERE recipe_images.image_url IS NOT NULL),
           '{}'
         ) AS imgurls
       FROM recipes
-      LEFT JOIN recipe_images ON recipes.id = recipe_images.recipe_id
+      LEFT JOIN recipe_images
+        ON recipes.id = recipe_images.recipe_id 
+        AND recipe_images.img_storage_type = ${IMG_STORAGE_TYPE}
       WHERE recipes.id = ${id}
       GROUP BY recipes.id
       `) as RecipeResponse[];
