@@ -3,3 +3,10 @@ export interface AuthUser {
   email: string;
   role?: string;
 }
+
+export interface UserProfileData {
+  username: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+}

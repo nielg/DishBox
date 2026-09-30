@@ -3,6 +3,7 @@ import authService from "@/service/authService";
 import type { APIRoute } from "astro";
 import { handleZodValidationError } from "@/service";
 import type { ApiResponse } from "@/types";
+import UserService from "@/service/userService";
 
 export const createUserSchema = z.object({
   username: z.string().trim().min(1, "Username cannot be empty"),
@@ -25,7 +26,7 @@ export const POST: APIRoute = async ({ request }): Promise<Response> => {
   }
 
   try {
-    await authService.registerUser(data.data);
+    await UserService.registerUser(data.data);
     const successPayload: ApiResponse<null> = {
       success: true,
       message: "Registration successful",

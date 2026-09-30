@@ -2,9 +2,19 @@
 import BaseLayout from "@/components/layouts/BaseLayout.astro";
 import WelcomeHeader from "@/components/layout/WelcomeHeader.astro";
 import DeleteUser from "@/components/user/profile/DeleteUser.astro";
+import UpdateUser from "@/components/user/profile/UpdateUser.tsx";
+import UserService from "@/service/userService";
+const { user_id } = Astro.locals;
+
+if (!user_id) {
+  return Astro.redirect("/login");
+}
+
+const initData = await UserService.getUserData(user_id);
 ---
 
 <BaseLayout>
   <WelcomeHeader title="Profile" />
+  <UpdateUser client:load initData={initData} />
   <DeleteUser />
 </BaseLayout>

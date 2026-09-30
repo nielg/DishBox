@@ -36,6 +36,17 @@ GET {{baseUrl}}/api/user/logout
 DELETE {{baseUrl}}/api/user/delete-user
 Content-Type: application/json
 
+### 5. Update user account (Requires active login session)
+# @name updateUser
+PUT {{baseUrl}}/api/user/update-user
+Content-Type: application/json
+
+{
+  "username": "updateduser",
+  "firstname": "Jane",
+  "lastname": "Smith"
+}
+
 
 ###############################################################################
 # RECIPES

@@ -6,6 +6,7 @@ import {
   UserWithPasswordSchema,
   UserLoginSchema,
 } from "@/types/user/user.schema";
+import type { UserProfileData } from "@/types/user/user.types";
 
 const dbLogin = async (
   username: string,
@@ -52,6 +53,49 @@ const createUser = async (user: CreateUserInput): Promise<void> => {
   }
 };
 
+const updateUser = async (
+  user_id: number,
+  user: Partial<CreateUserInput>,
+): Promise<void> => {
+  try {
+    await sql`
+      UPDATE "user"
+      SET user_name  = COALESCE(${user.username ?? null}, user_name),
+          first_name = COALESCE(${user.firstname ?? null}, first_name),
+          last_name  = COALESCE(${user.lastname ?? null}, last_name),
+          email      = COALESCE(${user.email ?? null}, email)
+      WHERE id = ${user_id}
+  `;
+  } catch (error) {
+    console.error(`DB: Failed to update user ${user_id}`, error);
+    throw new Error(`DB: Failed to update user ${user_id}`, { cause: error });
+  }
+};
+
+const getProfileUserData = async (
+  user_id: number,
+): Promise<UserProfileData> => {
+  let result;
+  try {
+    result = (await sql`
+      SELECT
+        user_name as username,
+        first_name as firstname,
+        last_name as lastname,
+        email
+      FROM "user"
+      WHERE id = ${user_id}
+      LIMIT 1
+    `) as UserProfileData[];
+  } catch (error) {
+    console.error(`DB: Failed to fetch user data ${user_id}`, error);
+    throw new Error(`DB: Failed to fetch user data ${user_id}`, {
+      cause: error,
+    });
+  }
+  return result[0];
+};
+
 const dbDeleteUser = async (user_id: number): Promise<void> => {
   let result;
   try {
@@ -71,6 +115,8 @@ const userRepository = {
   dbLogin,
   createUser,
   dbDeleteUser,
+  updateUser,
+  getUserData: getProfileUserData,
 };
 
 export default userRepository;
