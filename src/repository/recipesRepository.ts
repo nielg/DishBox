@@ -74,31 +74,44 @@ async function updateRecipe(
   recipe: Partial<CreateRecipeInput>,
 ): Promise<RecipeResponse> {
   try {
-    const updatedRecipe = await sql`
-    UPDATE recipes
-    SET
-    title = COALESCE(${recipe.title ?? null}, title),
-    description = COALESCE(${recipe.description ?? null}, description),
-    portions = COALESCE(${recipe.portions ?? null}, portions),
-    public = COALESCE(${recipe.public ?? null}, public),
-    vegan = COALESCE(${recipe.vegan ?? null}, vegan),
-    ingredients = COALESCE(
-      ${recipe.ingredients !== undefined ? sql.json(recipe.ingredients) : null},
-      recipes.ingredients
-    ),
-    instructions = COALESCE(
-      ${recipe.instructions !== undefined ? sql.json(recipe.instructions) : null},
-      recipes.instructions
-    )
-    WHERE id = ${id}
-    RETURNING id, title, description, portions, ingredients, instructions, public, vegan
-    `;
+    const updated = await sql.begin(async (tx) => {
+      const [row] = await tx`
+        UPDATE recipes
+        SET
+          title = COALESCE(${recipe.title ?? null}, title),
+          description = COALESCE(${recipe.description ?? null}, description),
+          portions = COALESCE(${recipe.portions ?? null}, portions),
+          public = COALESCE(${recipe.public ?? null}, public),
+          vegan = COALESCE(${recipe.vegan ?? null}, vegan),
+          ingredients = COALESCE(
+            ${recipe.ingredients !== undefined ? tx.json(recipe.ingredients) : null},
+            recipes.ingredients
+          ),
+          instructions = COALESCE(
+            ${recipe.instructions !== undefined ? tx.json(recipe.instructions) : null},
+            recipes.instructions
+          )
+        WHERE id = ${id}
+        RETURNING id, title, description, portions, ingredients, instructions, public, vegan
+      `;
 
-    if (!updatedRecipe) {
-      throw new Error(`Failed to update recipe with ID ${id}`);
-    }
+      if (!row) {
+        throw new Error(`Recipe with ID ${id} not found`);
+      }
 
-    return z.array(RecipeResponseSchema).parse(updatedRecipe)[0];
+      if (recipe.imgurls && recipe.imgurls.length > 0) {
+        await tx`
+          INSERT INTO recipe_images ${tx(
+            recipe.imgurls.map((image_url) => ({ recipe_id: id, image_url })),
+          )}
+          ON CONFLICT (recipe_id, image_url) DO NOTHING 
+        `;
+      }
+
+      return row;
+    });
+
+    return RecipeResponseSchema.parse(updated);
   } catch (error) {
     console.error(`DB: Failed to update recipe with ID ${id}:`, error);
     throw new Error(`Database update failed for recipe with ID ${id}`);

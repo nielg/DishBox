@@ -8,6 +8,7 @@ interface RecipeProp {
 }
 
 export default function Recipe({ recipe }: RecipeProp) {
+  console.log(recipe);
   return (
     <div className={styles.recipePage}>
       {/* Hero header */}

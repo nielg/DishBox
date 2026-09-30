@@ -32,3 +32,5 @@ Thumbs.db
 .eslintcache
 *.tsbuildinfo
 
+# user uploads
+.uploads/
