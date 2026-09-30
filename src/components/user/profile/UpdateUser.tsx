@@ -37,7 +37,7 @@ export default function UpdateUser({ initData }: Props) {
         body: JSON.stringify(inputData),
       });
     } catch (error) {
-      console.log("Error updating user", error);
+      console.error("Error updating user", error);
     }
     setIsSubmitting(false);
   };

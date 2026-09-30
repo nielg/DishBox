@@ -33,6 +33,16 @@ export default defineConfig({
         access: "public",
         default: 604800,
       }),
+      IMG_STORAGE_TYPE: envField.string({
+        context: "client",
+        access: "public",
+        default: "local",
+      }),
+      UPLOAD_DIR: envField.string({
+        context: "server",
+        access: "public",
+        default: "./.uploads",
+      }),
       PUBLIC_SUPABASE_URL: envField.string({
         context: "server",
         access: "public",

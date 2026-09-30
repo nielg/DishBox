@@ -15,7 +15,9 @@ export const up = (pgm) => {
             recipe_id INTEGER NOT NULL REFERENCES public.recipes(id) ON DELETE CASCADE,
             image_url TEXT NOT NULL,
             created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-            updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            CONSTRAINT recipe_images_recipe_id_image_url_key
+                UNIQUE (recipe_id, image_url)
         );
         
         CREATE TRIGGER update_recipe_images_updated_at

@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import s from "@/styles/components/editRecipe/uploadImg.module.css";
 import { ImageUp } from "lucide-react";
 import { useEditRecipe } from "./context/EditRecipeContext";
-
-const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL;
-const BUCKET_NAME = import.meta.env.PUBLIC_SUPABASE_RECIPE_BUCKET_NAME;
+import { uploadImgToSubaBase } from "@/utils/uploadRecipeImg/supabase";
+import { uploadImgToLocal } from "@/utils/uploadRecipeImg/local";
+import { IMG_STORAGE_TYPE } from "astro:env/client";
 
 export default function AddRecipeImg() {
   const { formData, addListItem } = useEditRecipe();
@@ -51,49 +51,20 @@ export default function AddRecipeImg() {
     setIsUploading(true);
 
     try {
-      // Process and upload files in parallel
-      const uploadPromises = selectedFiles.map(async (file) => {
-        // 1. Fetch signed URL and token from your Astro API endpoint
-        const res = await fetch("/api/supabase/uploadURL", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            fileName: file.name,
-            fileType: file.type,
-          }),
-        });
-
-        if (!res.ok) {
-          throw new Error(`Failed to get signed URL for ${file.name}`);
-        }
-
-        const { path, token } = await res.json();
-
-        // 2. Upload file directly to Supabase Storage using standard PUT fetch request
-        // Format: {SUPABASE_URL}/storage/v1/object/upload/sign/{BUCKET_NAME}/{PATH}?token={TOKEN}
-        const uploadUrl = `${SUPABASE_URL}/storage/v1/object/upload/sign/${BUCKET_NAME}/${path}?token=${token}`;
-
-        const uploadRes = await fetch(uploadUrl, {
-          method: "PUT",
-          headers: {
-            "Content-Type": file.type,
-          },
-          body: file,
-        });
-
-        if (!uploadRes.ok) {
-          throw new Error(`Failed to upload ${file.name} to Supabase Storage`);
-        }
-
-        // 3. Construct the public URL for rendering/saving to your database
-        const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${path}`;
-        return publicUrl;
-      });
+      let uploadPromises;
+      if (IMG_STORAGE_TYPE === "supabase") {
+        uploadPromises = await uploadImgToSubaBase(selectedFiles);
+      } else if (IMG_STORAGE_TYPE === "local") {
+        uploadPromises = await uploadImgToLocal(selectedFiles);
+      } else {
+        throw new Error("Missing env variable IMG_STORAGE_TYPE");
+      }
 
       const results = await Promise.all(uploadPromises);
-      results.map((url) =>
-        addListItem("imgurls", formData.imgurls.length, url),
-      ); // Add each uploaded image URL to the form data
+
+      results.map((url) => {
+        addListItem("imgurls", formData.imgurls.length, url);
+      }); // Add each uploaded image URL to the form data
 
       // Reset local previews after successful upload
       setSelectedFiles([]);
@@ -104,17 +75,6 @@ export default function AddRecipeImg() {
       setIsUploading(false);
     }
   };
-
-  if (!SUPABASE_URL || !BUCKET_NAME) {
-    return (
-      <div className={s.error}>
-        <p>
-          Supabase configuration is missing. Please check your environment
-          variables.
-        </p>
-      </div>
-    );
-  }
 
   return (
     <form onSubmit={handleSubmit} className={s.uploadForm}>
