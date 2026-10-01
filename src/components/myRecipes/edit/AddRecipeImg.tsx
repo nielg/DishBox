@@ -1,111 +1,181 @@
-import { useState, useEffect } from "react";
-import s from "@/styles/components/editRecipe/uploadImg.module.css";
+import { useEffect, useState } from "react";
 import { ImageUp } from "lucide-react";
-import { useEditRecipe } from "./context/EditRecipeContext";
+
+import s from "@/styles/components/editRecipe/uploadImg.module.css";
 import { UtilsUploadRecipeImg } from "@/utils/uploadRecipeImg";
+import { useEditRecipe } from "./context/EditRecipeContext";
 import { RecipeImg } from "./RecipeImg";
+
+type NewImage = {
+  file: File;
+  previewUrl: string;
+};
 
 export default function AddRecipeImg() {
   const { formData, addListItem, deleteListItem } = useEditRecipe();
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
+  const [newImages, setNewImages] = useState<NewImage[]>([]);
+  const [existingImageUrls, setExistingImageUrls] = useState<string[]>(
+    formData.imgurls.map(({ value }) => value),
+  );
   const [urlsToRemove, setUrlsToRemove] = useState<string[]>([]);
-  const [objectURLs, setObjectURLs] = useState<string[]>([
-    ...formData.imgurls.map((imgurl) => imgurl.value),
-  ]);
-  const [isUploading, setIsUploading] = useState<boolean>(false);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const onDeleteImage = (index: number) => {
-    const urlToRemove = objectURLs[index];
+  /**
+   * URLs displayed by RecipeImg.
+   *
+   * Existing images come from the server.
+   * New images use local blob URLs.
+   */
+  const objectURLs = [
+    ...existingImageUrls,
+    ...newImages.map(({ previewUrl }) => previewUrl),
+  ];
 
-    if (urlToRemove) {
-      setUrlsToRemove((prev) => [...prev, urlToRemove]);
-    }
+  const uploadFiles = (files: File[]) => {
+    if (files.length === 0) return;
 
-    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
-    setObjectURLs((prev) => prev.filter((_, i) => i !== index));
-    deleteListItem("imgurls", index);
+    const images: NewImage[] = files.map((file) => ({
+      file,
+      previewUrl: URL.createObjectURL(file),
+    }));
+
+    setNewImages((prev) => [...prev, ...images]);
+  };
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files) return;
+
+    uploadFiles(Array.from(event.target.files));
+
+    // Allows selecting the same file again.
+    event.target.value = "";
   };
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
-    const filesArray = Array.from(event.dataTransfer.files);
-    uploadFiles(filesArray);
+
+    uploadFiles(Array.from(event.dataTransfer.files));
   };
 
-  const onUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (!files || files.length === 0) return;
+  const handleDeleteImage = (index: number) => {
+    const existingImageCount = existingImageUrls.length;
 
-    const fileArray = Array.from(files);
-    uploadFiles(fileArray);
+    // ----------------------------------------
+    // Existing server image
+    // ----------------------------------------
+    if (index < existingImageCount) {
+      const url = existingImageUrls[index];
+
+      setUrlsToRemove((prev) => [...prev, url]);
+
+      setExistingImageUrls((prev) =>
+        prev.filter((_, imageIndex) => imageIndex !== index),
+      );
+
+      deleteListItem("imgurls", index);
+
+      return;
+    }
+
+    // ----------------------------------------
+    // Newly selected image
+    // ----------------------------------------
+    const newImageIndex = index - existingImageCount;
+    const image = newImages[newImageIndex];
+
+    if (!image) return;
+
+    URL.revokeObjectURL(image.previewUrl);
+
+    setNewImages((prev) =>
+      prev.filter((_, imageIndex) => imageIndex !== newImageIndex),
+    );
   };
 
-  const uploadFiles = (filesArray: File[]) => {
-    const newUrls = filesArray.map((file) => URL.createObjectURL(file));
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
 
-    setSelectedFiles((prev) => [...prev, ...filesArray]);
-    setObjectURLs((prev) => [...prev, ...newUrls]);
-  };
+    if (newImages.length === 0 && urlsToRemove.length === 0) {
+      return;
+    }
 
-  useEffect(() => {
-    return () => {
-      objectURLs.forEach((url) => URL.revokeObjectURL(url));
-    };
-  }, [objectURLs]);
-
-  const addUploadedUrls = async (uploadPromises: string[]) => {
-    const results = await Promise.all(uploadPromises);
-
-    results.map((url) => {
-      addListItem("imgurls", formData.imgurls.length, url);
-    }); // Add each uploaded image URL to the form data
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
     setIsUploading(true);
 
     try {
-      // Upload img
-      const uploadedUrls = await UtilsUploadRecipeImg.uploadImg(selectedFiles);
-      if (uploadedUrls.length > 0) {
-        addUploadedUrls(uploadedUrls);
+      // ----------------------------------------
+      // Upload newly selected images
+      // ----------------------------------------
+      if (newImages.length > 0) {
+        const files = newImages.map(({ file }) => file);
+
+        const uploadedUrls = await UtilsUploadRecipeImg.uploadImg(files);
+
+        uploadedUrls.forEach((url) => {
+          addListItem("imgurls", formData.imgurls.length, url);
+        });
       }
 
-      // Remove img
-      await UtilsUploadRecipeImg.deleteImg(urlsToRemove);
+      // ----------------------------------------
+      // Delete removed existing images
+      // ----------------------------------------
+      if (urlsToRemove.length > 0) {
+        await UtilsUploadRecipeImg.deleteImg(urlsToRemove);
+      }
 
-      // Reset state
-      setSelectedFiles([]);
+      // ----------------------------------------
+      // Clean up local previews
+      // ----------------------------------------
+      newImages.forEach(({ previewUrl }) => {
+        URL.revokeObjectURL(previewUrl);
+      });
+
+      setNewImages([]);
+      setUrlsToRemove([]);
     } catch (error) {
-      console.error("Upload error:", error);
+      console.error("Failed to save images:", error);
     } finally {
       setIsUploading(false);
     }
   };
+
+  /**
+   * Clean up blob URLs if the component unmounts.
+   */
+  useEffect(() => {
+    return () => {
+      newImages.forEach(({ previewUrl }) => {
+        URL.revokeObjectURL(previewUrl);
+      });
+    };
+  }, []);
 
   return (
     <form onSubmit={handleSubmit} className={s.uploadForm}>
       <div
         className={s.uploadContainer}
         onDrop={handleDrop}
-        onDragOver={(e) => e.preventDefault()}
+        onDragOver={(event) => event.preventDefault()}
       >
         <label htmlFor="imageUpload">
           <h3>Upload images:</h3>
-          <p>click to select or drag and drop files here (PNG, JPEG, WEBP)</p>
+
+          <p>Click to select or drag and drop files here (PNG, JPEG, WEBP)</p>
+
           <ImageUp size={24} />
+
           <input
-            type="file"
             id="imageUpload"
-            onChange={onUpload}
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
             multiple
-            accept="image/png, image/jpeg, image/webp"
             hidden
+            onChange={handleFileSelect}
           />
         </label>
       </div>
-      <RecipeImg objectURLS={objectURLs} onDeleteImage={onDeleteImage} />
+
+      <RecipeImg objectURLS={objectURLs} onDeleteImage={handleDeleteImage} />
 
       <button type="submit" disabled={isUploading} className={`${s.btn} btn`}>
         {isUploading ? "Uploading..." : "Save images"}

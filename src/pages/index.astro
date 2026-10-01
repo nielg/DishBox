@@ -11,5 +11,9 @@ const veganRecipes = await RecipeService.getPublickVeganRecipesMetaData();
 <BaseLayout>
   <h1>Recipes</h1>
   <RecipesGrid recipes={recipes} />
-  <RecipesCarrousel title="Vegan Recipes" recipes={veganRecipes} />
+  {
+    veganRecipes.length > 0 && (
+      <RecipesCarrousel title="Vegan Recipes" recipes={veganRecipes} />
+    )
+  }
 </BaseLayout>
