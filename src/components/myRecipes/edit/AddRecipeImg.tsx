@@ -3,6 +3,7 @@ import s from "@/styles/components/editRecipe/uploadImg.module.css";
 import { ImageUp } from "lucide-react";
 import { useEditRecipe } from "./context/EditRecipeContext";
 import { UtilsUploadRecipeImg } from "@/utils/uploadRecipeImg";
+import { RecipeImg } from "./RecipeImg";
 
 export default function AddRecipeImg() {
   const { formData, addListItem, deleteListItem } = useEditRecipe();
@@ -103,20 +104,8 @@ export default function AddRecipeImg() {
             hidden
           />
         </label>
-        <div className={s.imagePreviewContainer}>
-          {objectURLs.map((url, index) => (
-            <div key={url} className={s.imageWrapper}>
-              <img
-                src={url}
-                alt={`Preview ${index + 1}`}
-                className={s.previewImage}
-                onClick={() => onDeleteImage(index)}
-                title="Click to remove"
-              />
-            </div>
-          ))}
-        </div>
       </div>
+      <RecipeImg objectURLS={objectURLs} onDeleteImage={onDeleteImage} />
 
       <button type="submit" disabled={isUploading} className={`${s.btn} btn`}>
         {isUploading ? "Uploading..." : "Save images"}
