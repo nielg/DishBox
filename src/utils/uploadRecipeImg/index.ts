@@ -2,6 +2,11 @@ import { IMG_STORAGE_TYPE } from "astro:env/client";
 import { uploadImgToSubaBase } from "./supabase";
 import { removeImgFromLocal, uploadImgToLocal } from "./local";
 
+/**
+ * Chooses path based on IMG_STORAGE_TYPE
+ * @param selectedFiles
+ * @returns uploaded img urls
+ */
 const uploadImg = async (selectedFiles: File[]): Promise<string[]> => {
   if (selectedFiles.length === 0) return [];
 
@@ -17,6 +22,11 @@ const uploadImg = async (selectedFiles: File[]): Promise<string[]> => {
   return uploadedUrls;
 };
 
+/**
+ * Chooses path based on IMG_STORAGE_TYPE
+ * @param urlsToRemove
+ * @returns void
+ */
 const deleteImg = async (urlsToRemove: string[]): Promise<void> => {
   console.log("urls to remove", urlsToRemove);
   if (urlsToRemove.length === 0) return;
