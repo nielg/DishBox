@@ -1,7 +1,9 @@
 const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL;
 const BUCKET_NAME = import.meta.env.PUBLIC_SUPABASE_RECIPE_BUCKET_NAME;
 
-export const uploadImgToSubaBase = async (selectedFiles: File[]) => {
+export const uploadImgToSubaBase = async (
+  selectedFiles: File[],
+): Promise<string[]> => {
   if (!SUPABASE_URL || !BUCKET_NAME) {
     throw new Error(
       "Missing or wrong configuration for supabase bucket storage",
@@ -47,5 +49,5 @@ export const uploadImgToSubaBase = async (selectedFiles: File[]) => {
     return publicUrl;
   });
 
-  return uploadPromises;
+  return Promise.all(uploadPromises);
 };

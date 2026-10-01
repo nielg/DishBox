@@ -2,19 +2,27 @@ import { useState, useEffect } from "react";
 import s from "@/styles/components/editRecipe/uploadImg.module.css";
 import { ImageUp } from "lucide-react";
 import { useEditRecipe } from "./context/EditRecipeContext";
-import { uploadImgToSubaBase } from "@/utils/uploadRecipeImg/supabase";
-import { uploadImgToLocal } from "@/utils/uploadRecipeImg/local";
-import { IMG_STORAGE_TYPE } from "astro:env/client";
+import { UtilsUploadRecipeImg } from "@/utils/uploadRecipeImg";
 
 export default function AddRecipeImg() {
-  const { formData, addListItem } = useEditRecipe();
+  const { formData, addListItem, deleteListItem } = useEditRecipe();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [objectURLs, setObjectURLs] = useState<string[]>([]);
+  const [urlsToRemove, setUrlsToRemove] = useState<string[]>([]);
+  const [objectURLs, setObjectURLs] = useState<string[]>([
+    ...formData.imgurls.map((imgurl) => imgurl.value),
+  ]);
   const [isUploading, setIsUploading] = useState<boolean>(false);
 
   const onDeleteImage = (index: number) => {
+    const urlToRemove = objectURLs[index];
+
+    if (urlToRemove) {
+      setUrlsToRemove((prev) => [...prev, urlToRemove]);
+    }
+
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
     setObjectURLs((prev) => prev.filter((_, i) => i !== index));
+    deleteListItem("imgurls", index);
   };
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
@@ -44,31 +52,30 @@ export default function AddRecipeImg() {
     };
   }, [objectURLs]);
 
+  const addUploadedUrls = async (uploadPromises: string[]) => {
+    const results = await Promise.all(uploadPromises);
+
+    results.map((url) => {
+      addListItem("imgurls", formData.imgurls.length, url);
+    }); // Add each uploaded image URL to the form data
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (selectedFiles.length === 0) return;
-
     setIsUploading(true);
 
     try {
-      let uploadPromises;
-      if (IMG_STORAGE_TYPE === "supabase") {
-        uploadPromises = await uploadImgToSubaBase(selectedFiles);
-      } else if (IMG_STORAGE_TYPE === "local") {
-        uploadPromises = await uploadImgToLocal(selectedFiles);
-      } else {
-        throw new Error("Missing env variable IMG_STORAGE_TYPE");
+      // Upload img
+      const uploadedUrls = await UtilsUploadRecipeImg.uploadImg(selectedFiles);
+      if (uploadedUrls.length > 0) {
+        addUploadedUrls(uploadedUrls);
       }
 
-      const results = await Promise.all(uploadPromises);
+      // Remove img
+      await UtilsUploadRecipeImg.deleteImg(urlsToRemove);
 
-      results.map((url) => {
-        addListItem("imgurls", formData.imgurls.length, url);
-      }); // Add each uploaded image URL to the form data
-
-      // Reset local previews after successful upload
+      // Reset state
       setSelectedFiles([]);
-      setObjectURLs([]);
     } catch (error) {
       console.error("Upload error:", error);
     } finally {
@@ -111,11 +118,7 @@ export default function AddRecipeImg() {
         </div>
       </div>
 
-      <button
-        type="submit"
-        disabled={isUploading || selectedFiles.length === 0}
-        className={`${s.btn} btn`}
-      >
+      <button type="submit" disabled={isUploading} className={`${s.btn} btn`}>
         {isUploading ? "Uploading..." : "Save images"}
       </button>
     </form>

@@ -12,8 +12,6 @@ const defaultImg = new URL(
   "/myRecipes/images/public/default-img.png",
   Astro.url.origin,
 ).href;
-
-console.log(defaultImg);
 ---
 
 <a href={`/myRecipes/${data.id}`} class="card-link">
