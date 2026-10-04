@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
-
 import {
   CreateRecipeSchema,
   type CreateRecipeBody,
@@ -56,6 +55,10 @@ export function EditRecipeProvider({ children }: { children: ReactNode }) {
     id: undefined,
   });
 
+  /**
+   * Loads recipe json from back-end into react state
+   * @param recipe
+   */
   const loadFormData = (recipe: RecipeResponse) => {
     setFormData({
       title: recipe.title,
@@ -85,6 +88,12 @@ export function EditRecipeProvider({ children }: { children: ReactNode }) {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  /**
+   * Add a new item to a list from the formdata state
+   * @param list
+   * @param id
+   * @param value
+   */
   const addListItem = (list: listItem, id: number, value?: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -92,6 +101,12 @@ export function EditRecipeProvider({ children }: { children: ReactNode }) {
     }));
   };
 
+  /**
+   * Changes a item of a list from the formdata state
+   * @param listName
+   * @param id
+   * @param value
+   */
   const updateListItem = (listName: listItem, id: number, value: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -101,13 +116,21 @@ export function EditRecipeProvider({ children }: { children: ReactNode }) {
     }));
   };
 
+  /**
+   * Removes a item from the formdata state
+   * @param listName
+   * @param id
+   */
   const deleteListItem = (listName: listItem, id: number) => {
     setFormData((prev) => ({
       ...prev,
       [listName]: prev[listName].filter((item) => item.id !== id),
     }));
   };
-  // Progress
+
+  //
+  // Progress bar logic
+  //
   const currentIndex = STEPS.indexOf(progress);
 
   const handlePrevious = () => {
@@ -122,7 +145,10 @@ export function EditRecipeProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // Validation
+  /**
+   * Validates the formdate using zod
+   * @returns validated object | null
+   */
   const isValid = (): CreateRecipeBody | null => {
     const recipeRequest = {
       title: formData.title,
@@ -143,56 +169,70 @@ export function EditRecipeProvider({ children }: { children: ReactNode }) {
     return result.success ? result.data : null;
   };
 
-  // On submit
+  /**
+   * Chooses path based on if the recipe is edited or new
+   * @returns
+   */
   const submit = async () => {
     const body = isValid();
-    if (!body) {
-      return;
-    }
+    if (!body) return;
+
     if (isNew) {
-      try {
-        const response = await fetch("/api/recipe/create", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        });
-
-        if (response.ok) {
-          window.location.href = `/myRecipes`;
-        } else {
-          const errorData = await response.json();
-          console.error(
-            `Error: ${errorData.error || "Failed to create recipe"}`,
-          );
-        }
-      } catch (error) {
-        console.error("Submission error:", error);
-        alert("An error occurred while submitting the recipe.");
-      }
+      addNewRecipe(body);
     } else {
-      try {
-        const response = await fetch(`/api/recipe/update/${formData.id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(body),
-        });
+      editExistingRecipe(body);
+    }
+  };
 
-        if (response.ok) {
-          window.location.href = `/myRecipes/${formData.id}`;
-        } else {
-          const errorData = await response.json();
-          console.error(
-            `Error: ${errorData.error || "Failed to update recipe"}`,
-          );
-        }
-      } catch (error) {
-        console.error("Submission error:", error);
-        alert("An error occurred while submitting the recipe.");
+  /**
+   * Create new Recipe
+   * @param body
+   */
+  const addNewRecipe = async (body: CreateRecipeBody) => {
+    try {
+      const response = await fetch("/api/recipe/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (response.ok) {
+        window.location.href = `/myRecipes`;
+      } else {
+        const errorData = await response.json();
+        console.error(`Error: ${errorData.error || "Failed to create recipe"}`);
       }
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert("An error occurred while submitting the recipe.");
+    }
+  };
+
+  /**
+   * Update existing recipe
+   * @param body
+   */
+  const editExistingRecipe = async (body: CreateRecipeBody) => {
+    try {
+      const response = await fetch(`/api/recipe/update/${formData.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (response.ok) {
+        window.location.href = `/myRecipes/${formData.id}`;
+      } else {
+        const errorData = await response.json();
+        console.error(`Error: ${errorData.error || "Failed to update recipe"}`);
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert("An error occurred while submitting the recipe.");
     }
   };
 

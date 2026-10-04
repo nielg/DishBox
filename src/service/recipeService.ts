@@ -35,6 +35,10 @@ async function getPublickRecipesMetaData(): Promise<RecipeMetaDataResponse[]> {
   );
 }
 
+async function deleteRecipeImages(user_id: string, recipeImages: string[]) {
+  return RecipesRepository.deleteRecipeImage(user_id, recipeImages);
+}
+
 async function getPublickVeganRecipesMetaData(): Promise<
   RecipeMetaDataResponse[]
 > {
@@ -49,6 +53,7 @@ const recipeService = {
   getPublickRecipesMetaData,
   getPublickVeganRecipesMetaData,
   updateRecipe,
+  deleteRecipeImages,
 };
 
 export default recipeService;

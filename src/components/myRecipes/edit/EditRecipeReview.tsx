@@ -4,7 +4,6 @@ import s from "@/styles/components/editRecipe/editRecipe.module.css";
 
 export default function EditRecipeReview() {
   const { submit, isValid, updateField, formData } = useEditRecipe();
-  console.log(formData);
   return (
     <div className={s.reviewContainer}>
       <span className={`${s.stepBadge} badge`}>Step 4</span>

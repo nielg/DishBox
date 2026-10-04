@@ -14,6 +14,7 @@ export const up = (pgm) => {
             id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
             recipe_id INTEGER NOT NULL REFERENCES public.recipes(id) ON DELETE CASCADE,
             image_url TEXT NOT NULL,
+            img_storage_type VARCHAR(100),
             created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
             updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
             CONSTRAINT recipe_images_recipe_id_image_url_key
