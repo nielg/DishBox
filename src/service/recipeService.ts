@@ -12,6 +12,7 @@ async function getRecipesMetaDataByUserid(
 ): Promise<RecipeMetaDataResponse[]> {
   return RecipesRepository.getRecipesMetaDataWithWhere(
     sql`WHERE recipes.user_id = ${user_id}`,
+    user_id,
   );
 }
 
@@ -70,7 +71,7 @@ async function getUserFavoriteRecipesMetaData(
 
 const recipeService = {
   createRecipe,
-  getRecipesMetaData: getRecipesMetaDataByUserid,
+  getRecipesMetaDataByUserid,
   getPublickRecipesMetaData,
   getPublickVeganRecipesMetaData,
   updateRecipe,

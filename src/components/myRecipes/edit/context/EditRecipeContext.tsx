@@ -216,7 +216,7 @@ export function EditRecipeProvider({ children }: { children: ReactNode }) {
    */
   const editExistingRecipe = async (body: CreateRecipeBody) => {
     try {
-      const response = await fetch(`/api/recipe/update/${formData.id}`, {
+      const response = await fetch(`/api/recipe/${formData.id}/update`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
