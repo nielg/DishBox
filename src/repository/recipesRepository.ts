@@ -9,20 +9,6 @@ import {
 import { z } from "astro/zod";
 import { IMG_STORAGE_TYPE } from "astro:env/client";
 
-const recipeMetaDataSelect = sql`
-  SELECT DISTINCT ON (recipes.id)
-    recipes.id,
-    recipes.title,
-    recipes.description,
-    recipes.portions,
-    recipes.public,
-    recipes.vegan,
-    recipe_images.image_url AS imgurl
-  FROM recipes
-  LEFT JOIN recipe_images
-    ON recipes.id = recipe_images.recipe_id
-`;
-
 async function createRecipeWithImages(
   recipe: CreateRecipeInput,
 ): Promise<RecipeResponse> {
@@ -205,13 +191,32 @@ async function deleteRecipeImage(
 
 async function getRecipesMetaDataWithWhere(
   where: ReturnType<typeof sql>,
+  user_id?: number,
 ): Promise<RecipeMetaDataResponse[]> {
   try {
     const rows = await sql`
-      ${recipeMetaDataSelect}
+      SELECT DISTINCT ON (recipes.id)
+        recipes.id,
+        recipes.title,
+        recipes.description,
+        recipes.portions,
+        recipes.public,
+        recipes.vegan,
+        recipe_images.image_url AS imgurl,
+        CASE
+          WHEN user_recipes_favorite.user_id IS NOT NULL THEN true
+          ELSE false
+        END AS is_favorite
+      FROM recipes
+      LEFT JOIN recipe_images
+        ON recipes.id = recipe_images.recipe_id
+      LEFT JOIN user_recipes_favorite
+        ON recipes.id = user_recipes_favorite.recipe_id
+        AND user_recipes_favorite.user_id = ${user_id ?? null}
       ${where}
       ORDER BY recipes.id, recipe_images.created_at DESC
     `;
+
     return z.array(RecipeMetaDataResponseSchema).parse(rows);
   } catch (error) {
     console.error("DB: Failed to fetch recipes with where clause:", error);

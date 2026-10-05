@@ -3,9 +3,22 @@ import BaseLayout from "../components/layouts/BaseLayout.astro";
 import RecipeService from "@/service/recipeService";
 import RecipesCarrousel from "@/components/recipes/RecipesCarrousel.astro";
 import RecipesGrid from "@/components/recipes/RecipesGrid.astro";
+import type { RecipeMetaDataResponse } from "@/types/recipe/recipe.schemas";
 
-const recipes = await RecipeService.getPublickRecipesMetaData();
-const veganRecipes = await RecipeService.getPublickVeganRecipesMetaData();
+const { user_id } = Astro.locals;
+
+const recipes: RecipeMetaDataResponse[] =
+  await RecipeService.getPublickRecipesMetaData(user_id);
+
+const veganRecipes: RecipeMetaDataResponse[] =
+  await RecipeService.getPublickVeganRecipesMetaData(user_id);
+
+let favoriteRecipes: RecipeMetaDataResponse[] = [];
+if (user_id) {
+  favoriteRecipes = await RecipeService.getUserFavoriteRecipesMetaData(user_id);
+}
+
+console.table(favoriteRecipes[0]);
 ---
 
 <BaseLayout>
@@ -14,6 +27,12 @@ const veganRecipes = await RecipeService.getPublickVeganRecipesMetaData();
   {
     veganRecipes.length > 0 && (
       <RecipesCarrousel title="Vegan Recipes" recipes={veganRecipes} />
+    )
+  }
+
+  {
+    favoriteRecipes.length > 0 && (
+      <RecipesCarrousel title="Favorite Recipes" recipes={favoriteRecipes} />
     )
   }
 </BaseLayout>
