@@ -2,8 +2,9 @@
 import BaseLayout from "../components/layouts/BaseLayout.astro";
 import RecipeService from "@/service/recipeService";
 import RecipesCarrousel from "@/components/recipes/RecipesCarrousel.astro";
-import RecipesGrid from "@/components/recipes/RecipesGrid.astro";
+import RecipesGrid from "@/components/recipes/RecipesGrid.tsx";
 import type { RecipeMetaDataResponse } from "@/types/recipe/recipe.schemas";
+import SearchRecipe from "@/components/recipes/SearchRecipe";
 
 const { user_id } = Astro.locals;
 
@@ -17,13 +18,11 @@ let favoriteRecipes: RecipeMetaDataResponse[] = [];
 if (user_id) {
   favoriteRecipes = await RecipeService.getUserFavoriteRecipesMetaData(user_id);
 }
-
-console.table(favoriteRecipes[0]);
 ---
 
 <BaseLayout>
   <h1>Recipes</h1>
-  <RecipesGrid recipes={recipes} />
+  <SearchRecipe client:load initialRecipes={recipes} />
   {
     veganRecipes.length > 0 && (
       <RecipesCarrousel title="Vegan Recipes" recipes={veganRecipes} />

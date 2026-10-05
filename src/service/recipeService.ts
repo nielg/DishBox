@@ -16,6 +16,20 @@ async function getRecipesMetaDataByUserid(
   );
 }
 
+async function searchRecipesMetaData(query: string, user_id?: number) {
+  if (user_id) {
+    return RecipesRepository.searchRecipesMetaData(
+      query,
+      sql`WHERE recipes.user_id = ${user_id}`,
+      user_id,
+    );
+  }
+  return RecipesRepository.searchRecipesMetaData(
+    query,
+    sql`WHERE recipes.public = true`,
+  );
+}
+
 async function createRecipe(body: CreateRecipeInput): Promise<RecipeResponse> {
   const createdDataRecipe =
     await RecipesRepository.createRecipeWithImages(body);
@@ -77,6 +91,7 @@ const recipeService = {
   updateRecipe,
   deleteRecipeImages,
   getUserFavoriteRecipesMetaData,
+  searchRecipesMetaData,
 };
 
 export default recipeService;

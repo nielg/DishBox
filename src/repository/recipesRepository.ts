@@ -224,6 +224,65 @@ async function getRecipesMetaDataWithWhere(
   }
 }
 
+async function searchRecipesMetaData(
+  query: string,
+  where: ReturnType<typeof sql>,
+  userId?: number,
+) {
+  try {
+    const searchQuery = query.trim();
+
+    const rows = await sql`
+      SELECT DISTINCT ON (recipes.id)
+        recipes.id,
+        recipes.title,
+        recipes.description,
+        recipes.portions,
+        recipes.public,
+        recipes.vegan,
+        recipe_images.image_url AS imgurl,
+        CASE
+          WHEN user_recipes_favorite.user_id IS NOT NULL
+          THEN true
+          ELSE false
+        END AS is_favorite
+      FROM recipes
+
+      LEFT JOIN recipe_images
+        ON recipes.id = recipe_images.recipe_id
+
+      LEFT JOIN user_recipes_favorite
+        ON recipes.id = user_recipes_favorite.recipe_id
+        AND user_recipes_favorite.user_id = ${userId ?? null}
+
+      ${where}
+
+      ${
+        searchQuery
+          ? sql`
+              AND (
+                recipes.title ILIKE ${`%${searchQuery}%`}
+                OR recipes.description ILIKE ${`%${searchQuery}%`}
+              )
+            `
+          : sql``
+      }
+
+      ORDER BY
+        recipes.id,
+        recipe_images.created_at DESC
+
+      LIMIT 20
+    `;
+
+    return z.array(RecipeMetaDataResponseSchema).parse(rows);
+  } catch (error) {
+    console.error("DB: Failed to search recipes:", error);
+
+    throw new Error("Database fetch failed");
+  }
+}
+
 const RecipesService = {
   getRecipeById,
   deleteRecipeById,
@@ -231,6 +290,7 @@ const RecipesService = {
   createRecipeWithImages,
   updateRecipe,
   deleteRecipeImage,
+  searchRecipesMetaData,
 };
 
 export default RecipesService;
