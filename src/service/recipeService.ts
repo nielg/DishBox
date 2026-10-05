@@ -1,5 +1,6 @@
 import sql from "@/lib/db";
 import RecipesRepository from "@/repository/recipesRepository";
+import UserRepository from "@/repository/userRepository";
 import type {
   CreateRecipeInput,
   RecipeMetaDataResponse,
@@ -29,9 +30,12 @@ async function updateRecipe(
   return updatedRecipe;
 }
 
-async function getPublickRecipesMetaData(): Promise<RecipeMetaDataResponse[]> {
+async function getPublickRecipesMetaData(
+  user_id?: number,
+): Promise<RecipeMetaDataResponse[]> {
   return RecipesRepository.getRecipesMetaDataWithWhere(
     sql`WHERE recipes.public = true`,
+    user_id,
   );
 }
 
@@ -39,11 +43,28 @@ async function deleteRecipeImages(user_id: string, recipeImages: string[]) {
   return RecipesRepository.deleteRecipeImage(user_id, recipeImages);
 }
 
-async function getPublickVeganRecipesMetaData(): Promise<
-  RecipeMetaDataResponse[]
-> {
+async function getPublickVeganRecipesMetaData(
+  user_id?: number,
+): Promise<RecipeMetaDataResponse[]> {
   return RecipesRepository.getRecipesMetaDataWithWhere(
     sql`WHERE recipes.public = true AND recipes.vegan = true`,
+    user_id,
+  );
+}
+
+async function getUserFavoriteRecipesMetaData(
+  user_id: number,
+): Promise<RecipeMetaDataResponse[]> {
+  const recipes_ids =
+    await UserRepository.getAllUserFavoriteRecipesIds(user_id);
+
+  if (recipes_ids.length === 0) {
+    return [];
+  }
+
+  return RecipesRepository.getRecipesMetaDataWithWhere(
+    sql`WHERE recipes.id IN ${sql(recipes_ids)}`,
+    user_id,
   );
 }
 
@@ -54,6 +75,7 @@ const recipeService = {
   getPublickVeganRecipesMetaData,
   updateRecipe,
   deleteRecipeImages,
+  getUserFavoriteRecipesMetaData,
 };
 
 export default recipeService;

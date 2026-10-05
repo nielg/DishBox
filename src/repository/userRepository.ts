@@ -111,12 +111,67 @@ const dbDeleteUser = async (user_id: number): Promise<void> => {
   }
 };
 
+const addUserFavoriteRecipe = async (
+  user_id: number,
+  recipe_id: number,
+): Promise<void> => {
+  try {
+    await sql`
+      INSERT INTO user_recipes_favorite (user_id, recipe_id)
+      VALUES (${user_id}, ${recipe_id});
+    `;
+  } catch (error) {
+    throw new Error(
+      `DB: Failed to add favorite recipe id ${recipe_id} to ${user_id}`,
+      { cause: error },
+    );
+  }
+};
+
+const removeUserFavoriteRecipe = async (
+  user_id: number,
+  recipe_id: number,
+): Promise<void> => {
+  try {
+    await sql`
+      DELETE FROM user_recipes_favorite
+      WHERE user_id = ${user_id} AND recipe_id = ${recipe_id};
+    `;
+  } catch (error) {
+    throw new Error(
+      `DB: Failed to remove favorite recipe id ${recipe_id} to ${user_id}`,
+      { cause: error },
+    );
+  }
+};
+
+const getAllUserFavoriteRecipesIds = async (
+  user_id: number,
+): Promise<number[]> => {
+  try {
+    const result = await sql`
+      SELECT recipe_id
+      FROM user_recipes_favorite
+      WHERE user_id = ${user_id}
+      ORDER BY created_at DESC
+    `;
+
+    return result.map((row) => Number(row.recipe_id));
+  } catch (error) {
+    console.error("Failed to get favorite recipes:", error);
+    throw error;
+  }
+};
+
 const userRepository = {
   dbLogin,
   createUser,
   dbDeleteUser,
   updateUser,
   getUserData: getProfileUserData,
+  getAllUserFavoriteRecipesIds,
+  removeUserFavoriteRecipe,
+  addUserFavoriteRecipe,
 };
 
 export default userRepository;

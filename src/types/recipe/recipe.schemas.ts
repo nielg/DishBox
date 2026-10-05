@@ -35,6 +35,7 @@ export const RecipeMetaDataResponseSchema = z.object({
   public: z.boolean(),
   vegan: z.boolean(),
   imgurl: z.string().nullish(),
+  is_favorite: z.boolean(),
 });
 
 export type RecipeMetaDataResponse = z.infer<
