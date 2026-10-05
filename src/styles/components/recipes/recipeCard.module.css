@@ -88,21 +88,32 @@
 
 .cardTitle {
   display: -webkit-box;
-  margin: 0;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
 
+  /* Force exact 2-line height (1rem * 1.35 * 2 = 2.7rem) */
+  height: calc(1rem * 1.35 * 2);
+  min-height: calc(1rem * 1.35 * 2);
+
+  margin: 0;
   overflow: hidden;
 
   font-size: 1rem;
   font-weight: 700;
   line-height: 1.35;
   color: var(--text-primary);
-
-  -webkit-box-orient: vertical;
 }
 
 .cardDesc {
   display: -webkit-box;
-  flex: 1;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+
+  /* Force exact 3-line height (0.82rem * 1.5 * 3 = 3.69rem) */
+  height: calc(0.82rem * 1.5 * 3);
+  min-height: calc(0.82rem * 1.5 * 3);
 
   margin: 0;
   overflow: hidden;
@@ -110,8 +121,6 @@
   font-size: 0.82rem;
   line-height: 1.5;
   color: var(--text-muted);
-
-  -webkit-box-orient: vertical;
 }
 
 .cardFooter {
