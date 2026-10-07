@@ -26,6 +26,13 @@ export const up = (pgm) => {
       img_name TEXT;
       i INT := 0;
     BEGIN
+      -- Insert two seed users to ensure recipes can be assigned
+      INSERT INTO public."user" (user_name, first_name, last_name, email, password)
+      VALUES 
+        ('chef_alice', 'Alice', 'Baker', 'alice@dishbox.com', '$2a$10$dummyhashedpassword12345'),
+        ('chef_bob', 'Bob', 'Cook', 'bob@dishbox.com', '$2a$10$dummyhashedpassword67890')
+      ON CONFLICT DO NOTHING;
+
       -- Fetch existing user IDs into an array
       SELECT ARRAY_AGG(id) INTO u_ids FROM public."user";
 
@@ -321,5 +328,10 @@ export const down = (pgm) => {
       'Roasted Cauliflower Steak',
       'French Onion Soup'
     );
+
+    -- Delete the seeded users
+    DELETE FROM public."user"
+    WHERE email IN ('alice@dishbox.com', 'bob@dishbox.com');
   `);
 };
+
