@@ -1,0 +1,11 @@
+node_modules
+dist
+.astro
+.uploads
+npm-debug.log
+yarn-error.log
+.env
+.git
+.gitignore
+README.md
+

@@ -1,0 +1,46 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4321:4321"
+    env_file:
+      - .env
+    environment:
+      # This overrides DATABASE_URL from .env so it connects to the internal Docker db container
+      - DATABASE_URL=postgresql://dishbox:dishbox_password@db:5432/dishbox
+      - POOLING_DATABASE_URL=postgresql://dishbox:dishbox_password@db:5432/dishbox
+      - NODE_ENV=production
+      - HOST=0.0.0.0
+      - PORT=4321
+    volumes:
+      # Optional: Mount the uploads folder so local images persist container restarts
+      - uploads_data:/app/.uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    # We automatically run the database migrations right before starting up the server
+    command: sh -c "npm run migrate up && node ./dist/server/entry.mjs"
+
+  db:
+    image: postgres:15-alpine
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=dishbox
+      - POSTGRES_PASSWORD=dishbox_password
+      - POSTGRES_DB=dishbox
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dishbox -d dishbox"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:
+  uploads_data:
+
