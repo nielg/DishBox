@@ -1,7 +1,7 @@
 import InputPreview from "@/components/input/InputPreview";
 import "@/styles/global.css";
 import s from "@/styles/components/editRecipe/editRecipe.module.css";
-import { useEditRecipe } from "./context/EditRecipeContext";
+import { useEditRecipe } from "../context/EditRecipeContext";
 
 export default function EditRecipeIntro() {
   const { formData, updateField } = useEditRecipe();

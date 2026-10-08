@@ -4,6 +4,7 @@ export type RecipeProgress =
   | "intro"
   | "ingredients"
   | "instructions"
+  | "images"
   | "preview";
 
 export type DynamicInputInstructionsListItem = {
