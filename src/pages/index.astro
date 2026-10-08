@@ -14,6 +14,7 @@ const recipes: RecipeMetaDataResponse[] =
 const tags: string[] = await TagRepository.getAllTags();
 
 let favoriteRecipes: RecipeMetaDataResponse[] = [];
+console.log(user_id);
 if (user_id) {
   favoriteRecipes = await RecipeService.getUserFavoriteRecipesMetaData(user_id);
 }
@@ -21,7 +22,12 @@ if (user_id) {
 
 <BaseLayout>
   <h1>Recipes</h1>
-  <SearchRecipe client:load initialRecipes={recipes} tags={tags} />
+  <SearchRecipe
+    client:load
+    initialRecipes={recipes}
+    tags={tags}
+    userId={user_id}
+  />
   {
     favoriteRecipes.length > 0 && (
       <RecipesCarrousel title="Favorite Recipes" recipes={favoriteRecipes} />

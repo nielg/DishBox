@@ -4,7 +4,7 @@ import s from "@/styles/components/recipes/recipeCard.module.css";
 
 type Props = {
   data: RecipeMetaDataResponse;
-  userId?: string;
+  userId?: number;
 };
 
 export default function RecipesCard({ data, userId }: Props) {

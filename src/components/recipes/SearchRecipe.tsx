@@ -10,9 +10,10 @@ import TagCarrousel from "../tags/TagCarrousel";
 type Props = {
   initialRecipes: RecipeMetaDataResponse[];
   tags: string[];
+  userId?: number;
 };
 
-export default function SearchRecipe({ initialRecipes, tags }: Props) {
+export default function SearchRecipe({ initialRecipes, tags, userId }: Props) {
   const [query, setQuery] = useState("");
   const [recipes, setRecipes] =
     useState<RecipeMetaDataResponse[]>(initialRecipes);
@@ -87,7 +88,7 @@ export default function SearchRecipe({ initialRecipes, tags }: Props) {
         </div>
       </div>
 
-      <RecipesGrid recipes={recipes} />
+      <RecipesGrid recipes={recipes} userId={userId} />
     </section>
   );
 }
