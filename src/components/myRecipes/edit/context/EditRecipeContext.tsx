@@ -49,6 +49,7 @@ export function EditRecipeProvider({ children }: { children: ReactNode }) {
     portions: 4,
     ingredients: [],
     instructions: [],
+    tags: [],
     public: false,
     imgurls: [],
     id: undefined,
@@ -71,6 +72,7 @@ export function EditRecipeProvider({ children }: { children: ReactNode }) {
         id: index,
         value: item,
       })),
+      tags: recipe.tags,
       public: recipe.public,
       imgurls:
         recipe.imgurls?.map((url, index) => ({ id: index, value: url })) || [],
@@ -158,6 +160,7 @@ export function EditRecipeProvider({ children }: { children: ReactNode }) {
       instructions: formData.instructions
         .filter((item) => item.value.trim())
         .map((item) => item.value),
+      tags: formData.tags,
       public: formData.public,
       imgurls: formData.imgurls.map((item) => item.value),
     };

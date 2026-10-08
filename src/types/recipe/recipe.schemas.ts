@@ -16,6 +16,7 @@ export const CreateRecipeSchema = z.object({
   instructions: z
     .array(z.string().min(1, "Instructions cannot be empty"))
     .min(1, "At least one instruction required"),
+  tags: z.array(z.string()).optional(),
   public: z.boolean(),
   imgurls: z.array(z.string()).optional(),
 });
@@ -32,6 +33,7 @@ export const RecipeMetaDataResponseSchema = z.object({
   description: z.string().nullish(),
   portions: z.number().int().positive(),
   public: z.boolean(),
+  tags: z.array(z.string()),
   imgurl: z.string().nullish(),
   is_favorite: z.boolean(),
 });
@@ -47,6 +49,7 @@ export const RecipeResponseSchema = z.object({
   portions: z.number(),
   ingredients: z.array(z.string()),
   instructions: z.array(z.string()),
+  tags: z.array(z.string()).default([]),
   public: z.boolean(),
   imgurls: z.array(z.string()).optional(),
 });

@@ -8,6 +8,30 @@ import {
 } from "@/types/recipe/recipe.schemas";
 import { z } from "astro/zod";
 import { IMG_STORAGE_TYPE } from "astro:env/client";
+import type postgres from "postgres";
+
+async function replaceRecipeTags(
+  tx: postgres.TransactionSql,
+  recipeId: number,
+  tags: string[],
+): Promise<void> {
+  await tx`DELETE FROM recipe_tags WHERE recipe_id = ${recipeId}`;
+
+  if (tags.length === 0) return;
+
+  const insertedTags = await tx<{ tag_id: number }[]>`
+    INSERT INTO recipe_tags (recipe_id, tag_id)
+    SELECT ${recipeId}, tags.id
+    FROM tags
+    WHERE tags.value = ANY(${tags}::text[])
+    ON CONFLICT (recipe_id, tag_id) DO NOTHING
+    RETURNING tag_id
+  `;
+
+  if (insertedTags.length !== new Set(tags).size) {
+    throw new Error("One or more recipe tags are not recognized");
+  }
+}
 
 async function createRecipeWithImages(
   recipe: CreateRecipeInput,
@@ -39,6 +63,8 @@ async function createRecipeWithImages(
       throw new Error("Failed to create recipe");
     }
 
+    await replaceRecipeTags(tx, createdRecipe.id, recipe.tags ?? []);
+
     if (recipe.imgurls && recipe.imgurls.length > 0) {
       await Promise.all(
         recipe.imgurls.map(
@@ -50,7 +76,10 @@ async function createRecipeWithImages(
       );
     }
 
-    return createdRecipe;
+    return RecipeResponseSchema.parse({
+      ...createdRecipe,
+      tags: recipe.tags ?? [],
+    });
   });
 }
 
@@ -83,6 +112,10 @@ async function updateRecipe(
         throw new Error(`Recipe with ID ${id} not found`);
       }
 
+      if (recipe.tags !== undefined) {
+        await replaceRecipeTags(tx, id, recipe.tags);
+      }
+
       if (recipe.imgurls && recipe.imgurls.length > 0) {
         await tx`
           INSERT INTO recipe_images ${tx(
@@ -96,7 +129,20 @@ async function updateRecipe(
         `;
       }
 
-      return row;
+      const [tagRow] = await tx<{ tags: string[] }[]>`
+        SELECT COALESCE(
+          ARRAY(
+            SELECT tags.value
+            FROM recipe_tags
+            JOIN tags ON tags.id = recipe_tags.tag_id
+            WHERE recipe_tags.recipe_id = ${id}
+            ORDER BY tags.value
+          ),
+          '{}'
+        ) AS tags
+      `;
+
+      return { ...row, tags: tagRow?.tags ?? [] };
     });
 
     return RecipeResponseSchema.parse(updated);
@@ -118,6 +164,16 @@ async function getRecipeById(id: number): Promise<RecipeResponse> {
         recipes.ingredients,
         recipes.instructions,
         recipes.public,
+        COALESCE(
+          ARRAY(
+            SELECT tags.value
+            FROM recipe_tags
+            JOIN tags ON tags.id = recipe_tags.tag_id
+            WHERE recipe_tags.recipe_id = recipes.id
+            ORDER BY tags.value
+          ),
+          '{}'
+        ) AS tags,
         COALESCE(
           ARRAY_AGG(recipe_images.image_url ORDER BY recipe_images.id)
             FILTER (WHERE recipe_images.image_url IS NOT NULL),
@@ -197,6 +253,16 @@ async function getRecipesMetaDataWithWhere(
         recipes.description,
         recipes.portions,
         recipes.public,
+        COALESCE(
+          ARRAY(
+            SELECT tags.value
+            FROM recipe_tags
+            JOIN tags ON tags.id = recipe_tags.tag_id
+            WHERE recipe_tags.recipe_id = recipes.id
+            ORDER BY tags.value
+          ),
+          '{}'
+        ) AS tags,
         recipe_images.image_url AS imgurl,
         CASE
           WHEN user_recipes_favorite.user_id IS NOT NULL THEN true
@@ -234,6 +300,16 @@ async function searchRecipesMetaData(
         recipes.description,
         recipes.portions,
         recipes.public,
+        COALESCE(
+          ARRAY(
+            SELECT tags.value
+            FROM recipe_tags
+            JOIN tags ON tags.id = recipe_tags.tag_id
+            WHERE recipe_tags.recipe_id = recipes.id
+            ORDER BY tags.value
+          ),
+          '{}'
+        ) AS tags,
         recipe_images.image_url AS imgurl,
         CASE
           WHEN user_recipes_favorite.user_id IS NOT NULL
@@ -257,6 +333,13 @@ async function searchRecipesMetaData(
               AND (
                 recipes.title ILIKE ${`%${searchQuery}%`}
                 OR recipes.description ILIKE ${`%${searchQuery}%`}
+                OR EXISTS (
+                  SELECT 1
+                  FROM recipe_tags
+                  JOIN tags ON tags.id = recipe_tags.tag_id
+                  WHERE recipe_tags.recipe_id = recipes.id
+                    AND tags.value ILIKE ${`%${searchQuery}%`}
+                )
               )
             `
           : sql``
