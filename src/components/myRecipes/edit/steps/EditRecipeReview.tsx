@@ -1,6 +1,6 @@
 import { useEditRecipe } from "../context/EditRecipeContext";
-import AddRecipeImg from "../AddRecipeImg";
 import s from "@/styles/components/editRecipe/editRecipe.module.css";
+import EditRecipeTags from "../EditRecipeTags";
 
 type Props = {
   tags: string[];
@@ -25,6 +25,7 @@ export default function EditRecipeReview({ tags }: Props) {
         />
         <label htmlFor="public">Make Public</label>
       </div>
+      <EditRecipeTags tags={tags} />
       <button onClick={submit} className={s.submitBtn} disabled={!isValid()}>
         Submit Recipe →
       </button>
