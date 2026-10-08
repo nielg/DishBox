@@ -74,6 +74,15 @@ async function getUserFavoriteRecipesMetaData(
   );
 }
 
+async function getPublicVeganRecipesMeaData(): Promise<
+  RecipeMetaDataResponse[]
+> {
+  return RecipesRepository.searchRecipesMetaData(
+    "vegan",
+    sql`WHERE recipes.public = true`,
+  );
+}
+
 const recipeService = {
   createRecipe,
   getRecipesMetaDataByUserid,
@@ -82,6 +91,7 @@ const recipeService = {
   deleteRecipeImages,
   getUserFavoriteRecipesMetaData,
   searchRecipesMetaData,
+  getPublicVeganRecipesMeaData,
 };
 
 export default recipeService;

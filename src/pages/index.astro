@@ -12,6 +12,7 @@ const recipes: RecipeMetaDataResponse[] =
   await RecipeService.getPublickRecipesMetaData(user_id);
 
 const tags: string[] = await TagRepository.getAllTags();
+const veganRecipes = await RecipeService.getPublicVeganRecipesMeaData();
 
 let favoriteRecipes: RecipeMetaDataResponse[] = [];
 console.log(user_id);
@@ -31,6 +32,11 @@ if (user_id) {
   {
     favoriteRecipes.length > 0 && (
       <RecipesCarrousel title="Favorite Recipes" recipes={favoriteRecipes} />
+    )
+  }
+  {
+    veganRecipes.length > 0 && (
+      <RecipesCarrousel title="Vegan Recipes" recipes={veganRecipes} />
     )
   }
 </BaseLayout>

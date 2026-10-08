@@ -11,9 +11,10 @@ import EditRecipeReview from "./EditRecipeReview";
 
 type Props = {
   inputRecipe?: RecipeResponse;
+  tags: string[];
 };
 
-function FormContent({ inputRecipe }: Props) {
+function FormContent({ inputRecipe, tags }: Props) {
   const { progress, formData, loadFormData } = useEditRecipe();
 
   useEffect(() => {
@@ -42,7 +43,7 @@ function FormContent({ inputRecipe }: Props) {
           {progress === "intro" && <EditRecipeIntro />}
           {progress === "ingredients" && <EditRecipeIngredients />}
           {progress === "instructions" && <EditRecipeInstructions />}
-          {progress === "preview" && <EditRecipeReview />}
+          {progress === "preview" && <EditRecipeReview tags={tags} />}
         </div>
         <Recipe recipe={recipe} />
       </div>
@@ -51,10 +52,10 @@ function FormContent({ inputRecipe }: Props) {
   );
 }
 
-export default function EditRecipeForm({ inputRecipe }: Props) {
+export default function EditRecipeForm({ inputRecipe, tags }: Props) {
   return (
     <EditRecipeProvider>
-      <FormContent inputRecipe={inputRecipe} />
+      <FormContent inputRecipe={inputRecipe} tags={tags} />
     </EditRecipeProvider>
   );
 }
