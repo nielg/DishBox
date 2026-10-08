@@ -30,8 +30,6 @@ export default function Recipe({ recipe }: RecipeProp) {
           </span>
 
           {recipe.public && <span className={styles.badge}>Public</span>}
-
-          {recipe.vegan && <span className={styles.badge}>Vegan</span>}
         </div>
       </header>
 

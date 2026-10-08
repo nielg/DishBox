@@ -20,14 +20,6 @@ export default function EditRecipeReview() {
           onChange={(e) => updateField("public", e.target.checked)}
         />
         <label htmlFor="public">Make Public</label>
-        <input
-          type="checkbox"
-          id="vegan"
-          name="vegan"
-          checked={formData.vegan}
-          onChange={(e) => updateField("vegan", e.target.checked)}
-        />
-        <label htmlFor="vegan">Vegan</label>
       </div>
       <AddRecipeImg />
       <button onClick={submit} className={s.submitBtn} disabled={!isValid()}>

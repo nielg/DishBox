@@ -11,9 +11,6 @@ const { user_id } = Astro.locals;
 const recipes: RecipeMetaDataResponse[] =
   await RecipeService.getPublickRecipesMetaData(user_id);
 
-const veganRecipes: RecipeMetaDataResponse[] =
-  await RecipeService.getPublickVeganRecipesMetaData(user_id);
-
 let favoriteRecipes: RecipeMetaDataResponse[] = [];
 if (user_id) {
   favoriteRecipes = await RecipeService.getUserFavoriteRecipesMetaData(user_id);
@@ -23,12 +20,6 @@ if (user_id) {
 <BaseLayout>
   <h1>Recipes</h1>
   <SearchRecipe client:load initialRecipes={recipes} />
-  {
-    veganRecipes.length > 0 && (
-      <RecipesCarrousel title="Vegan Recipes" recipes={veganRecipes} />
-    )
-  }
-
   {
     favoriteRecipes.length > 0 && (
       <RecipesCarrousel title="Favorite Recipes" recipes={favoriteRecipes} />

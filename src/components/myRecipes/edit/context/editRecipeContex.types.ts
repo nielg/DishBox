@@ -16,7 +16,6 @@ export type FormDataType = {
   ingredients: { id: number; value: string }[];
   instructions: { id: number; value: string }[];
   public: boolean;
-  vegan: boolean;
   imgurls: { id: number; value: string }[];
   id?: number;
 };

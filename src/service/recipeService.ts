@@ -58,15 +58,6 @@ async function deleteRecipeImages(user_id: string, recipeImages: string[]) {
   return RecipesRepository.deleteRecipeImage(user_id, recipeImages);
 }
 
-async function getPublickVeganRecipesMetaData(
-  user_id?: number,
-): Promise<RecipeMetaDataResponse[]> {
-  return RecipesRepository.getRecipesMetaDataWithWhere(
-    sql`WHERE recipes.public = true AND recipes.vegan = true`,
-    user_id,
-  );
-}
-
 async function getUserFavoriteRecipesMetaData(
   user_id: number,
 ): Promise<RecipeMetaDataResponse[]> {
@@ -87,7 +78,6 @@ const recipeService = {
   createRecipe,
   getRecipesMetaDataByUserid,
   getPublickRecipesMetaData,
-  getPublickVeganRecipesMetaData,
   updateRecipe,
   deleteRecipeImages,
   getUserFavoriteRecipesMetaData,

@@ -26,8 +26,6 @@ export default function RecipesCard({ data, userId }: Props) {
             <FavoriteBtn recipe_id={data.id} is_favorite={data.is_favorite} />
           )}
 
-          {data.vegan && <p className={`${s.badge} ${s.veganBadge}`}>Vegan</p>}
-
           <div className={s.cardImgOverlay} />
         </div>
 

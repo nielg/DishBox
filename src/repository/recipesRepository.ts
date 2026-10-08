@@ -21,8 +21,7 @@ async function createRecipeWithImages(
         ingredients,
         instructions,
         user_id,
-        public,
-        vegan
+        public
       )
       VALUES (
         ${recipe.title},
@@ -31,10 +30,9 @@ async function createRecipeWithImages(
         ${sql.json(recipe.ingredients)},
         ${sql.json(recipe.instructions)},
         ${recipe.user_id},
-        ${recipe.public},
-        ${recipe.vegan}
+        ${recipe.public}
       )
-      RETURNING id, title, description, portions, ingredients, instructions, public, vegan
+      RETURNING id, title, description, portions, ingredients, instructions, public
     `;
 
     if (!createdRecipe) {
@@ -69,7 +67,6 @@ async function updateRecipe(
           description = COALESCE(${recipe.description ?? null}, description),
           portions = COALESCE(${recipe.portions ?? null}, portions),
           public = COALESCE(${recipe.public ?? null}, public),
-          vegan = COALESCE(${recipe.vegan ?? null}, vegan),
           ingredients = COALESCE(
             ${recipe.ingredients !== undefined ? tx.json(recipe.ingredients) : null},
             recipes.ingredients
@@ -79,7 +76,7 @@ async function updateRecipe(
             recipes.instructions
           )
         WHERE id = ${id}
-        RETURNING id, title, description, portions, ingredients, instructions, public, vegan
+        RETURNING id, title, description, portions, ingredients, instructions, public
       `;
 
       if (!row) {
@@ -121,7 +118,6 @@ async function getRecipeById(id: number): Promise<RecipeResponse> {
         recipes.ingredients,
         recipes.instructions,
         recipes.public,
-        recipes.vegan,
         COALESCE(
           ARRAY_AGG(recipe_images.image_url ORDER BY recipe_images.id)
             FILTER (WHERE recipe_images.image_url IS NOT NULL),
@@ -201,7 +197,6 @@ async function getRecipesMetaDataWithWhere(
         recipes.description,
         recipes.portions,
         recipes.public,
-        recipes.vegan,
         recipe_images.image_url AS imgurl,
         CASE
           WHEN user_recipes_favorite.user_id IS NOT NULL THEN true
@@ -239,7 +234,6 @@ async function searchRecipesMetaData(
         recipes.description,
         recipes.portions,
         recipes.public,
-        recipes.vegan,
         recipe_images.image_url AS imgurl,
         CASE
           WHEN user_recipes_favorite.user_id IS NOT NULL

@@ -29,7 +29,6 @@ function FormContent({ inputRecipe }: Props) {
     ingredients: formData.ingredients.map((item) => item.value),
     instructions: formData.instructions.map((item) => item.value),
     public: formData.public,
-    vegan: formData.vegan,
     imgurls: formData.imgurls.map((item) => item.value),
   };
 
