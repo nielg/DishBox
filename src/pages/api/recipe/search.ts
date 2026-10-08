@@ -12,7 +12,6 @@ export const GET: APIRoute = async ({ request, cookies }) => {
     const url = new URL(request.url);
     const query = url.searchParams.get("query")?.trim() ?? "";
     const recipes = await recipeService.searchRecipesMetaData(query, user_id);
-    console.log(recipes);
     const successPayload: ApiResponse<typeof recipes> = {
       success: true,
       message: "Success",

@@ -1,0 +1,44 @@
+.tagContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding: 4px 0;
+
+  /* Smooth scrolling on touch devices and hide scrollbars (optional) */
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin; /* Firefox */
+}
+
+/* Optional: Subtle Chrome/Safari scrollbar styling */
+.tagContainer::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tagContainer::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #333;
+  background-color: #f5f5f5;
+  border: 1px solid #d1d5db;
+  border-radius: 9999px;
+  cursor: pointer;
+  user-select: none;
+  flex-shrink: 0;
+  transition: all 0.2s ease-in-out;
+}
+
+.tag:hover {
+  background-color: #e5e7eb;
+  border-color: #9ca3af;
+}

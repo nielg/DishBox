@@ -21,8 +21,6 @@ export const uploadImgToLocal = async (
 export const removeImgFromLocal = async (urlsToRemove: string[]) => {
   if (urlsToRemove.length === 0) return;
 
-  console.log(urlsToRemove);
-
   const res = await fetch("/api/recipe/recipeImageUpload/local/remove", {
     method: "DELETE",
     headers: { "Content-Type": "application/json" },

@@ -28,7 +28,6 @@ const uploadImg = async (selectedFiles: File[]): Promise<string[]> => {
  * @returns void
  */
 const deleteImg = async (urlsToRemove: string[]): Promise<void> => {
-  console.log("urls to remove", urlsToRemove);
   if (urlsToRemove.length === 0) return;
 
   if (IMG_STORAGE_TYPE === "local" && urlsToRemove.length > 0) {

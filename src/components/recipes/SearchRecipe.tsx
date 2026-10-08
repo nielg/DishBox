@@ -5,12 +5,14 @@ import s from "@/styles/components/recipes/searchRecipe.module.css";
 import type { RecipeMetaDataResponse } from "@/types/recipe/recipe.schemas";
 import RecipesGrid from "./RecipesGrid";
 import { X } from "lucide-react";
+import TagCarrousel from "../tags/TagCarrousel";
 
 type Props = {
   initialRecipes: RecipeMetaDataResponse[];
+  tags: string[];
 };
 
-export default function SearchRecipe({ initialRecipes }: Props) {
+export default function SearchRecipe({ initialRecipes, tags }: Props) {
   const [query, setQuery] = useState("");
   const [recipes, setRecipes] =
     useState<RecipeMetaDataResponse[]>(initialRecipes);
@@ -81,6 +83,7 @@ export default function SearchRecipe({ initialRecipes }: Props) {
           {!loading && query && recipes.length === 0 && (
             <p className={s.status}>No recipes found.</p>
           )}
+          <TagCarrousel tags={tags} />
         </div>
       </div>
 
