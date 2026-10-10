@@ -8,26 +8,16 @@ import type {
 } from "@/types/recipe/recipe.schemas";
 
 async function getRecipesMetaDataByUserid(
-  user_id: number,
+  userId: number,
 ): Promise<RecipeMetaDataResponse[]> {
-  return RecipesRepository.getRecipesMetaDataWithWhere(
-    sql`WHERE recipes.user_id = ${user_id}`,
-    user_id,
-  );
+  return RecipesRepository.getRecipeMetadata({ userId });
 }
 
-async function searchRecipesMetaData(query: string, user_id?: number) {
-  if (user_id) {
-    return RecipesRepository.searchRecipesMetaData(
-      query,
-      sql`WHERE recipes.user_id = ${user_id}`,
-      user_id,
-    );
-  }
-  return RecipesRepository.searchRecipesMetaData(
-    query,
-    sql`WHERE recipes.public = true`,
-  );
+async function searchRecipesMetaData(
+  query: string,
+  userId?: number,
+): Promise<RecipeMetaDataResponse[]> {
+  return RecipesRepository.getRecipeMetadata({ query, userId });
 }
 
 async function createRecipe(body: CreateRecipeInput): Promise<RecipeResponse> {
@@ -45,13 +35,8 @@ async function updateRecipe(
   return updatedRecipe;
 }
 
-async function getPublickRecipesMetaData(
-  user_id?: number,
-): Promise<RecipeMetaDataResponse[]> {
-  return RecipesRepository.getRecipesMetaDataWithWhere(
-    sql`WHERE recipes.public = true`,
-    user_id,
-  );
+async function getPublickRecipesMetaData(): Promise<RecipeMetaDataResponse[]> {
+  return RecipesRepository.getRecipeMetadata({ publicRecipes: true });
 }
 
 async function deleteRecipeImages(user_id: string, recipeImages: string[]) {
@@ -59,28 +44,15 @@ async function deleteRecipeImages(user_id: string, recipeImages: string[]) {
 }
 
 async function getUserFavoriteRecipesMetaData(
-  user_id: number,
+  userId: number,
 ): Promise<RecipeMetaDataResponse[]> {
-  const recipes_ids =
-    await UserRepository.getAllUserFavoriteRecipesIds(user_id);
+  const recipes_ids = await UserRepository.getAllUserFavoriteRecipesIds(userId);
 
   if (recipes_ids.length === 0) {
     return [];
   }
 
-  return RecipesRepository.getRecipesMetaDataWithWhere(
-    sql`WHERE recipes.id IN ${sql(recipes_ids)}`,
-    user_id,
-  );
-}
-
-async function getPublicVeganRecipesMeaData(): Promise<
-  RecipeMetaDataResponse[]
-> {
-  return RecipesRepository.searchRecipesMetaData(
-    "vegan",
-    sql`WHERE recipes.public = true`,
-  );
+  return RecipesRepository.getRecipeMetadata({ userId, recipes_ids });
 }
 
 const recipeService = {
@@ -91,7 +63,6 @@ const recipeService = {
   deleteRecipeImages,
   getUserFavoriteRecipesMetaData,
   searchRecipesMetaData,
-  getPublicVeganRecipesMeaData,
 };
 
 export default recipeService;
