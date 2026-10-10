@@ -35,8 +35,10 @@ async function updateRecipe(
   return updatedRecipe;
 }
 
-async function getPublickRecipesMetaData(): Promise<RecipeMetaDataResponse[]> {
-  return RecipesRepository.getRecipeMetadata({ publicRecipes: true });
+async function getPublickRecipesMetaData(
+  userId?: number,
+): Promise<RecipeMetaDataResponse[]> {
+  return RecipesRepository.getRecipeMetadata({ publicRecipes: true, userId });
 }
 
 async function deleteRecipeImages(user_id: string, recipeImages: string[]) {
@@ -51,8 +53,12 @@ async function getUserFavoriteRecipesMetaData(
   if (recipes_ids.length === 0) {
     return [];
   }
-
-  return RecipesRepository.getRecipeMetadata({ userId, recipes_ids });
+  console.log("recipes_ids", recipes_ids);
+  return RecipesRepository.getRecipeMetadata({
+    userId,
+    recipes_ids,
+    publicRecipes: true,
+  });
 }
 
 const recipeService = {

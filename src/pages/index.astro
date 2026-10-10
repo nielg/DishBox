@@ -9,14 +9,14 @@ import TagRepository from "@/repository/tagRepository";
 const { user_id } = Astro.locals;
 
 const recipes: RecipeMetaDataResponse[] =
-  await RecipeService.getPublickRecipesMetaData();
+  await RecipeService.getPublickRecipesMetaData(user_id);
 
 const tags: string[] = await TagRepository.getAllTags();
 
 const veganRecipes = await RecipeService.searchRecipesMetaData("vegan");
 
 let favoriteRecipes: RecipeMetaDataResponse[] = [];
-console.log(recipes);
+
 if (user_id) {
   favoriteRecipes = await RecipeService.getUserFavoriteRecipesMetaData(user_id);
 }
