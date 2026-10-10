@@ -13,7 +13,7 @@ const recipes: RecipeMetaDataResponse[] =
 
 const tags: string[] = await TagRepository.getAllTags();
 
-const veganRecipes = await RecipeService.searchRecipesMetaData("vegan");
+const veganRecipes = await RecipeService.getVeganRecipesMetaData(user_id);
 
 let favoriteRecipes: RecipeMetaDataResponse[] = [];
 

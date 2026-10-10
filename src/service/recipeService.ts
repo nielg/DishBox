@@ -1,4 +1,3 @@
-import sql from "@/lib/db";
 import RecipesRepository from "@/repository/recipesRepository";
 import UserRepository from "@/repository/userRepository";
 import type {
@@ -53,11 +52,18 @@ async function getUserFavoriteRecipesMetaData(
   if (recipes_ids.length === 0) {
     return [];
   }
-  console.log("recipes_ids", recipes_ids);
   return RecipesRepository.getRecipeMetadata({
     userId,
     recipes_ids,
     publicRecipes: true,
+  });
+}
+
+async function getVeganRecipesMetaData(userId?: number) {
+  return await RecipesRepository.getRecipeMetadata({
+    userId,
+    publicRecipes: true,
+    query: "vegan",
   });
 }
 
@@ -69,6 +75,7 @@ const recipeService = {
   deleteRecipeImages,
   getUserFavoriteRecipesMetaData,
   searchRecipesMetaData,
+  getVeganRecipesMetaData,
 };
 
 export default recipeService;
