@@ -14,9 +14,15 @@ async function getRecipesMetaDataByUserid(
 
 async function searchRecipesMetaData(
   query: string,
+  tags: string[],
   userId?: number,
 ): Promise<RecipeMetaDataResponse[]> {
-  return RecipesRepository.getRecipeMetadata({ query, userId });
+  return RecipesRepository.getRecipeMetadata({
+    query,
+    userId,
+    publicRecipes: true,
+    tags,
+  });
 }
 
 async function createRecipe(body: CreateRecipeInput): Promise<RecipeResponse> {

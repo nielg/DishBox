@@ -14,6 +14,7 @@ interface getRecipeMetadataArgs {
   query?: string;
   publicRecipes?: boolean;
   recipes_ids?: number[];
+  tags?: string[];
 }
 
 async function getRecipeMetadata({
@@ -21,36 +22,49 @@ async function getRecipeMetadata({
   query,
   publicRecipes,
   recipes_ids,
+  tags,
 }: getRecipeMetadataArgs): Promise<RecipeMetaDataResponse[]> {
-  const searchFilter = query
-    ? sql`
-          AND (
-            recipes.title ILIKE ${`%${query}%`}
-            OR recipes.description ILIKE ${`%${query}%`}
-            OR EXISTS (
-              SELECT 1
-              FROM recipe_tags
-              JOIN tags ON tags.id = recipe_tags.tag_id
-              WHERE recipe_tags.recipe_id = recipes.id
-                AND tags.value ILIKE ${`%${query}%`}
-            )
-          )
-        `
-    : sql``;
   const resultLimit = query !== undefined ? sql`LIMIT 20` : sql``;
 
   const whereConditions = [];
 
   if (publicRecipes || !userId) {
+    // Public recipes
     whereConditions.push(sql`recipes.public = true`);
   } else {
+    // Recipes from user_id
     whereConditions.push(sql`recipes.user_id = ${userId}`);
   }
 
+  // Only recipes in recipes_ids
   if (recipes_ids && recipes_ids.length > 0) {
     whereConditions.push(
       sql`recipes.id = ANY(${sql.array(recipes_ids)}::integer[])`,
     );
+  }
+
+  // Search query
+  if (query && query.trim()) {
+    whereConditions.push(sql`
+      (
+        recipes.title ILIKE ${`%${query.trim()}%`}
+        OR recipes.description ILIKE ${`%${query.trim()}%`}
+      )
+    `);
+  }
+
+  // Tag query
+  if (tags && tags.length > 0) {
+    whereConditions.push(sql`
+      recipes.id IN (
+        SELECT recipe_tags.recipe_id
+        FROM recipe_tags
+        JOIN tags ON tags.id = recipe_tags.tag_id
+        WHERE tags.value = ANY(${tags})
+        GROUP BY recipe_tags.recipe_id
+        HAVING COUNT(DISTINCT tags.value) = ${tags.length}
+      )
+    `);
   }
 
   // Combine conditions with AND
@@ -88,7 +102,6 @@ async function getRecipeMetadata({
           ON recipes.id = user_recipes_favorite.recipe_id
           AND user_recipes_favorite.user_id = ${userId ?? null}
         ${whereClause}
-        ${searchFilter}
         ORDER BY recipes.id, recipe_images.created_at DESC
         ${resultLimit}
       `;

@@ -1,4 +1,5 @@
 import s from "@/styles/components/editRecipe/editRecipe.module.css";
+import t from "@/styles/components/tags/tag.module.css";
 import { useEditRecipe } from "./context/EditRecipeContext";
 
 type Props = {
@@ -33,7 +34,7 @@ export default function EditRecipeTags({ tags }: Props) {
             <button
               key={tag}
               type="button"
-              className={`${s.tagOption} ${selected ? s.tagOptionSelected : ""}`}
+              className={`${t.tag} ${selected ? t.active : ""}`}
               aria-pressed={selected}
               onClick={() => toggleTag(tag)}
             >
