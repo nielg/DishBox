@@ -4,16 +4,18 @@ import Recipe from "../Recipe";
 import type { RecipeResponse } from "@/types/recipe/recipe.schemas";
 import { useEffect } from "react";
 import { useEditRecipe, EditRecipeProvider } from "./context/EditRecipeContext";
-import EditRecipeIngredients from "./EditRecipeIngredients";
-import EditRecipeInstructions from "./EditRecipeInstructions";
-import EditRecipeIntro from "./EditRecipeIntro";
-import EditRecipeReview from "./EditRecipeReview";
+import EditRecipeIngredients from "./steps/EditRecipeIngredients";
+import EditRecipeInstructions from "./steps/EditRecipeInstructions";
+import EditRecipeIntro from "./steps/EditRecipeIntro";
+import EditRecipeReview from "./steps/EditRecipeReview";
+import EditRecipeImg from "./steps/EditRecipeImg";
 
 type Props = {
   inputRecipe?: RecipeResponse;
+  tags: string[];
 };
 
-function FormContent({ inputRecipe }: Props) {
+function FormContent({ inputRecipe, tags }: Props) {
   const { progress, formData, loadFormData } = useEditRecipe();
 
   useEffect(() => {
@@ -28,8 +30,8 @@ function FormContent({ inputRecipe }: Props) {
     portions: formData.portions,
     ingredients: formData.ingredients.map((item) => item.value),
     instructions: formData.instructions.map((item) => item.value),
+    tags: formData.tags,
     public: formData.public,
-    vegan: formData.vegan,
     imgurls: formData.imgurls.map((item) => item.value),
   };
 
@@ -42,7 +44,8 @@ function FormContent({ inputRecipe }: Props) {
           {progress === "intro" && <EditRecipeIntro />}
           {progress === "ingredients" && <EditRecipeIngredients />}
           {progress === "instructions" && <EditRecipeInstructions />}
-          {progress === "preview" && <EditRecipeReview />}
+          {progress === "images" && <EditRecipeImg />}
+          {progress === "preview" && <EditRecipeReview tags={tags} />}
         </div>
         <Recipe recipe={recipe} />
       </div>
@@ -51,10 +54,10 @@ function FormContent({ inputRecipe }: Props) {
   );
 }
 
-export default function EditRecipeForm({ inputRecipe }: Props) {
+export default function EditRecipeForm({ inputRecipe, tags }: Props) {
   return (
     <EditRecipeProvider>
-      <FormContent inputRecipe={inputRecipe} />
+      <FormContent inputRecipe={inputRecipe} tags={tags} />
     </EditRecipeProvider>
   );
 }

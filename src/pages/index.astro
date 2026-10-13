@@ -2,19 +2,21 @@
 import BaseLayout from "../components/layouts/BaseLayout.astro";
 import RecipeService from "@/service/recipeService";
 import RecipesCarrousel from "@/components/recipes/RecipesCarrousel.astro";
-import RecipesGrid from "@/components/recipes/RecipesGrid.tsx";
 import type { RecipeMetaDataResponse } from "@/types/recipe/recipe.schemas";
 import SearchRecipe from "@/components/recipes/SearchRecipe";
+import TagRepository from "@/repository/tagRepository";
 
 const { user_id } = Astro.locals;
 
 const recipes: RecipeMetaDataResponse[] =
   await RecipeService.getPublickRecipesMetaData(user_id);
 
-const veganRecipes: RecipeMetaDataResponse[] =
-  await RecipeService.getPublickVeganRecipesMetaData(user_id);
+const tags: string[] = await TagRepository.getAllTags();
+
+const veganRecipes = await RecipeService.getVeganRecipesMetaData(user_id);
 
 let favoriteRecipes: RecipeMetaDataResponse[] = [];
+
 if (user_id) {
   favoriteRecipes = await RecipeService.getUserFavoriteRecipesMetaData(user_id);
 }
@@ -22,16 +24,20 @@ if (user_id) {
 
 <BaseLayout>
   <h1>Recipes</h1>
-  <SearchRecipe client:load initialRecipes={recipes} />
-  {
-    veganRecipes.length > 0 && (
-      <RecipesCarrousel title="Vegan Recipes" recipes={veganRecipes} />
-    )
-  }
-
+  <SearchRecipe
+    client:load
+    initialRecipes={recipes}
+    tags={tags}
+    userId={user_id}
+  />
   {
     favoriteRecipes.length > 0 && (
       <RecipesCarrousel title="Favorite Recipes" recipes={favoriteRecipes} />
+    )
+  }
+  {
+    veganRecipes.length > 0 && (
+      <RecipesCarrousel title="Vegan Recipes" recipes={veganRecipes} />
     )
   }
 </BaseLayout>

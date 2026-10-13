@@ -49,7 +49,7 @@ export function EditRecipeProvider({ children }: { children: ReactNode }) {
     portions: 4,
     ingredients: [],
     instructions: [],
-    vegan: false,
+    tags: [],
     public: false,
     imgurls: [],
     id: undefined,
@@ -72,7 +72,7 @@ export function EditRecipeProvider({ children }: { children: ReactNode }) {
         id: index,
         value: item,
       })),
-      vegan: recipe.vegan,
+      tags: recipe.tags,
       public: recipe.public,
       imgurls:
         recipe.imgurls?.map((url, index) => ({ id: index, value: url })) || [],
@@ -160,8 +160,8 @@ export function EditRecipeProvider({ children }: { children: ReactNode }) {
       instructions: formData.instructions
         .filter((item) => item.value.trim())
         .map((item) => item.value),
+      tags: formData.tags,
       public: formData.public,
-      vegan: formData.vegan,
       imgurls: formData.imgurls.map((item) => item.value),
     };
     const result = CreateRecipeSchema.safeParse(recipeRequest);

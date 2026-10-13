@@ -11,8 +11,15 @@ export const GET: APIRoute = async ({ request, cookies }) => {
   try {
     const url = new URL(request.url);
     const query = url.searchParams.get("query")?.trim() ?? "";
-    const recipes = await recipeService.searchRecipesMetaData(query, user_id);
-    console.log(recipes);
+    const tags: string[] = url.searchParams
+      .getAll("tags")
+      .map((tag) => tag.trim())
+      .filter((tag) => tag.length > 0);
+    const recipes = await recipeService.searchRecipesMetaData(
+      query,
+      tags,
+      user_id,
+    );
     const successPayload: ApiResponse<typeof recipes> = {
       success: true,
       message: "Success",

@@ -46,7 +46,6 @@ export const up = (pgm) => {
       instructions JSONB NOT NULL,
       user_id INTEGER NOT NULL REFERENCES public."user"(id) ON DELETE CASCADE,
       public BOOLEAN DEFAULT false,
-      vegan BOOLEAN DEFAULT false,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );

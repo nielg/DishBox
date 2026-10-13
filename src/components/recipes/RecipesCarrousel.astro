@@ -6,6 +6,8 @@ type Props = {
   recipes: RecipeMetaDataResponse[];
 };
 
+const { user_id } = Astro.locals;
+
 const { title, recipes } = Astro.props as Props;
 ---
 
@@ -21,7 +23,7 @@ const { title, recipes } = Astro.props as Props;
       {
         recipes.map((recipe) => (
           <div class="recipes-carrousel__item">
-            <RecipesCard data={recipe} />
+            <RecipesCard data={recipe} userId={user_id} client:visible />
           </div>
         ))
       }

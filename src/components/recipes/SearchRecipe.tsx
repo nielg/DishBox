@@ -5,20 +5,23 @@ import s from "@/styles/components/recipes/searchRecipe.module.css";
 import type { RecipeMetaDataResponse } from "@/types/recipe/recipe.schemas";
 import RecipesGrid from "./RecipesGrid";
 import { X } from "lucide-react";
+import TagCarrousel from "../tags/TagCarrousel";
 
 type Props = {
   initialRecipes: RecipeMetaDataResponse[];
+  tags: string[];
+  userId?: number;
 };
 
-export default function SearchRecipe({ initialRecipes }: Props) {
+export default function SearchRecipe({ initialRecipes, tags, userId }: Props) {
   const [query, setQuery] = useState("");
+  const [activeTags, setActiveTags] = useState<string[]>([]);
   const [recipes, setRecipes] =
     useState<RecipeMetaDataResponse[]>(initialRecipes);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Don't search when the input is empty
-    if (!query.trim()) {
+    if (!query.trim() && activeTags.length === 0) {
       setRecipes(initialRecipes);
       return;
     }
@@ -28,9 +31,17 @@ export default function SearchRecipe({ initialRecipes }: Props) {
       try {
         setLoading(true);
 
-        const response = await fetch(
-          `/api/recipe/search?query=${encodeURIComponent(query)}`,
-        );
+        const params = new URLSearchParams();
+
+        if (query.trim()) {
+          params.set("query", query.trim());
+        }
+
+        if (activeTags.length > 0) {
+          activeTags.forEach((tag) => params.append("tags", tag));
+        }
+        console.log(`/api/recipe/search?${params.toString()}`);
+        const response = await fetch(`/api/recipe/search?${params.toString()}`);
 
         if (!response.ok) {
           throw new Error("Failed to fetch recipes");
@@ -48,7 +59,12 @@ export default function SearchRecipe({ initialRecipes }: Props) {
 
     // Cancel the previous timeout if the user types again
     return () => clearTimeout(timeout);
-  }, [query]);
+  }, [query, activeTags]);
+
+  const clearSearch = () => {
+    setQuery("");
+    setActiveTags([]);
+  };
 
   return (
     <section className={s.searchRecipe}>
@@ -62,12 +78,11 @@ export default function SearchRecipe({ initialRecipes }: Props) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
-
-          {query && (
+          {(Boolean(query) || activeTags.length > 0) && (
             <button
               type="button"
               className={s.clearIcon}
-              onClick={() => setQuery("")}
+              onClick={clearSearch}
               aria-label="Clear search"
             >
               <X size={20} />
@@ -81,10 +96,15 @@ export default function SearchRecipe({ initialRecipes }: Props) {
           {!loading && query && recipes.length === 0 && (
             <p className={s.status}>No recipes found.</p>
           )}
+          <TagCarrousel
+            tags={tags}
+            activeTags={activeTags}
+            setActiveTags={setActiveTags}
+          />
         </div>
       </div>
 
-      <RecipesGrid recipes={recipes} />
+      <RecipesGrid recipes={recipes} userId={userId} />
     </section>
   );
 }

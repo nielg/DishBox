@@ -30,8 +30,11 @@ export default function Recipe({ recipe }: RecipeProp) {
           </span>
 
           {recipe.public && <span className={styles.badge}>Public</span>}
-
-          {recipe.vegan && <span className={styles.badge}>Vegan</span>}
+          {recipe.tags.map((tag) => (
+            <span className={styles.badge} key={`${tag}-badge`}>
+              {tag}
+            </span>
+          ))}
         </div>
       </header>
 

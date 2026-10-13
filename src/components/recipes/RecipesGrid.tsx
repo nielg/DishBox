@@ -5,9 +5,10 @@ import RecipesCard from "./RecipesCard";
 type Props = {
   title?: string;
   recipes: RecipeMetaDataResponse[];
+  userId?: number;
 };
 
-export default function RecipesGrid({ title, recipes }: Props) {
+export default function RecipesGrid({ title, recipes, userId }: Props) {
   return (
     <section className={s.recipesGrid}>
       {title && <h2>{title}</h2>}
@@ -16,7 +17,7 @@ export default function RecipesGrid({ title, recipes }: Props) {
         <div className={s.container}>
           {recipes.map((recipe) => (
             <div className={s.item} key={recipe.id}>
-              <RecipesCard data={recipe} />
+              <RecipesCard data={recipe} userId={userId} />
             </div>
           ))}
         </div>

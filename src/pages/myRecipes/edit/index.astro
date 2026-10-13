@@ -3,6 +3,9 @@ import BaseLayout from "@/components/layouts/BaseLayout.astro";
 import EditRecipeForm from "@/components/myRecipes/edit/EditRecipeForm";
 import WelcomeHeader from "@/components/layout/WelcomeHeader.astro";
 import GoBackBtn from "@/components/buttons/GoBackBtn.astro";
+import TagRepository from "@/repository/tagRepository";
+
+const tags = await TagRepository.getAllTags();
 ---
 
 <BaseLayout title="Add Recipe | DishBox">
@@ -14,7 +17,7 @@ import GoBackBtn from "@/components/buttons/GoBackBtn.astro";
       title="Add a new Recipe"
       subtitle="Fill in the steps below to add your recipe to DishBox"
     />
-    <EditRecipeForm client:load />
+    <EditRecipeForm tags={tags} client:load />
   </div>
 </BaseLayout>
 

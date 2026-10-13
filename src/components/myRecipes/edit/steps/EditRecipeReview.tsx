@@ -1,8 +1,12 @@
-import { useEditRecipe } from "./context/EditRecipeContext";
-import AddRecipeImg from "./AddRecipeImg";
+import { useEditRecipe } from "../context/EditRecipeContext";
 import s from "@/styles/components/editRecipe/editRecipe.module.css";
+import EditRecipeTags from "../EditRecipeTags";
 
-export default function EditRecipeReview() {
+type Props = {
+  tags: string[];
+};
+
+export default function EditRecipeReview({ tags }: Props) {
   const { submit, isValid, updateField, formData } = useEditRecipe();
   return (
     <div className={s.reviewContainer}>
@@ -20,16 +24,8 @@ export default function EditRecipeReview() {
           onChange={(e) => updateField("public", e.target.checked)}
         />
         <label htmlFor="public">Make Public</label>
-        <input
-          type="checkbox"
-          id="vegan"
-          name="vegan"
-          checked={formData.vegan}
-          onChange={(e) => updateField("vegan", e.target.checked)}
-        />
-        <label htmlFor="vegan">Vegan</label>
       </div>
-      <AddRecipeImg />
+      <EditRecipeTags tags={tags} />
       <button onClick={submit} className={s.submitBtn} disabled={!isValid()}>
         Submit Recipe →
       </button>

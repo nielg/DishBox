@@ -8,6 +8,7 @@ const STEPS: RecipeProgress[] = [
   "intro",
   "ingredients",
   "instructions",
+  "images",
   "preview",
 ];
 
@@ -15,6 +16,7 @@ const STEP_LABELS: Record<RecipeProgress, string> = {
   intro: "Intro",
   ingredients: "Ingredients",
   instructions: "Instructions",
+  images: "Images",
   preview: "Review",
 };
 
