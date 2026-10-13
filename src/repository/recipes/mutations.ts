@@ -53,7 +53,7 @@ async function createRecipeWithImages(
         ${recipe.user_id},
         ${recipe.public}
       )
-      RETURNING id, title, description, portions, ingredients, instructions, public
+      RETURNING id, user_id, title, description, portions, ingredients, instructions, public
     `;
 
     if (!createdRecipe) {
@@ -102,7 +102,7 @@ async function updateRecipe(
             recipes.instructions
           )
         WHERE id = ${id}
-        RETURNING id, title, description, portions, ingredients, instructions, public
+        RETURNING id, user_id, title, description, portions, ingredients, instructions, public
       `;
 
       if (!row) {
