@@ -1,0 +1,113 @@
+---
+import BaseLayout from "@/components/layouts/BaseLayout.astro";
+import { Icon } from "astro-icon/components";
+
+Astro.response.status = 401;
+Astro.response.statusText = "Unauthorized";
+---
+
+<BaseLayout title="Unauthorized | DishBox">
+  <section class="error-page" aria-labelledby="page-title">
+    <div class="error-icon" aria-hidden="true">
+      <Icon name="lucide:lock-keyhole" />
+    </div>
+    <p class="error-code">401</p>
+    <h1 id="page-title">You need permission to be here</h1>
+    <p class="error-description">
+      Sign in to your DishBox account to access this page.
+    </p>
+    <nav class="error-actions" aria-label="Page actions">
+      <a class="action action-primary" href="/user/login">Sign in</a>
+      <a class="action action-secondary" href="/">Back to recipes</a>
+    </nav>
+  </section>
+</BaseLayout>
+
+<style>
+  .error-page {
+    display: flex;
+    min-height: 55vh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    text-align: center;
+  }
+
+  .error-icon {
+    display: grid;
+    width: 4.5rem;
+    height: 4.5rem;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--primary-50);
+    color: var(--primary-700);
+    font-size: 2rem;
+  }
+
+  .error-code {
+    margin: 1.5rem 0 0;
+    color: var(--primary-700);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+
+  h1 {
+    margin: 0.5rem 0;
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+  }
+
+  .error-description {
+    max-width: 34rem;
+    margin: 0;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .error-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .action {
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    padding: 0 1.25rem;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition:
+      background-color 150ms ease,
+      border-color 150ms ease;
+  }
+
+  .action-primary {
+    background: var(--primary-700);
+    color: var(--text-inverse);
+  }
+
+  .action-primary:hover {
+    background: var(--primary-800);
+  }
+
+  .action-secondary {
+    border-color: var(--border-default);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+  }
+
+  .action-secondary:hover {
+    background: var(--bg-surface-subtle);
+  }
+
+  .action:focus-visible {
+    outline: 3px solid var(--secondary-500);
+    outline-offset: 3px;
+  }
+</style>
