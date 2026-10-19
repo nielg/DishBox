@@ -1,4 +1,4 @@
-import s from "@/styles/components/FavoriteBtn.module.css";
+import s from "@/styles/components/recipes/recipeMetaData/FavoriteBtn.module.css";
 import { Star } from "lucide-react";
 import { useState } from "react";
 

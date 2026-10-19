@@ -1,6 +1,6 @@
 import type { RecipeMetaDataResponse } from "@/types/recipe/recipe.schemas";
-import FavoriteBtn from "@/components/recipes/FavoriteBtn";
-import s from "@/styles/components/recipes/recipeCard.module.css";
+import FavoriteBtn from "@/components/recipes/recipesMetaData/FavoriteBtn";
+import s from "@/styles/components/recipes/recipeMetaData/index.module.css";
 
 type Props = {
   data: RecipeMetaDataResponse;
