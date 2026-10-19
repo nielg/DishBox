@@ -1,3 +1,5 @@
+"use client";
+
 import type { RecipeMetaDataResponse } from "@/types/recipe/recipe.schemas";
 import FavoriteBtn from "@/components/recipes/recipesMetaData/FavoriteBtn";
 import s from "@/styles/components/recipes/recipeMetaData/index.module.css";
@@ -9,7 +11,6 @@ type Props = {
 
 export default function RecipesCard({ data, userId }: Props) {
   const defaultImg = "/myRecipes/images/public/default-img.png";
-
   return (
     <a href={`/myRecipes/${data.id}`} className={s.cardLink}>
       <article className={s.card}>

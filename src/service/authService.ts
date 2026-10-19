@@ -66,7 +66,13 @@ async function getAuthenticatedUserId(
       return { success: true, user_id: decoded.id };
     }
   } catch (error) {
-    console.warn("Token verification failed");
+    return {
+      success: false,
+      response: Response.json(
+        { success: false, message: "Authentication failed" },
+        { status: 401 },
+      ),
+    };
   }
 
   await logout(cookies);
