@@ -10,7 +10,8 @@ import DeleteRecipeBtn from "@/components/buttons/DeleteRecipeBtn.astro";
 
 const tags = await TagRepository.getAllTags();
 const { slug } = Astro.params;
-let recipe: RecipeResponse | null = null;
+const { user_id } = Astro.locals;
+let recipe: RecipeResponse | undefined;
 
 if (slug) {
   const id = parseInt(slug, 10);
@@ -24,8 +25,13 @@ if (slug) {
   }
 }
 
-if (!recipe) {
-  throw new Error(`Recipe with ID ${slug} not found.`);
+const isForbidden = recipe?.user_id !== user_id;
+
+if (!recipe || isForbidden) {
+  return new Response(null, {
+    status: 404,
+    statusText: "Not Found",
+  });
 }
 ---
 

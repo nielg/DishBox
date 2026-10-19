@@ -10,7 +10,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "migrate": "node-pg-migrate"
+    "migrate": "node-pg-migrate",
+    "db:initialize": "node dbInitialize.js"
   },
   "dependencies": {
     "@astrojs/node": "^11.1.7",

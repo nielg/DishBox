@@ -79,6 +79,7 @@ async function getRecipeMetadata({
     rows = await sql`
         SELECT DISTINCT ON (recipes.id)
           recipes.id,
+          recipes.user_id,
           recipes.title,
           recipes.description,
           recipes.portions,
@@ -113,11 +114,12 @@ async function getRecipeMetadata({
   return z.array(RecipeMetaDataResponseSchema).parse(rows);
 }
 
-async function getRecipeById(id: number): Promise<RecipeResponse> {
+async function getRecipeById(id: number): Promise<RecipeResponse | undefined> {
   let rows: postgres.Row[];
   try {
     rows = await sql`
         SELECT recipes.id,
+          recipes.user_id,
           recipes.title,
           recipes.description,
           recipes.portions,
@@ -151,9 +153,10 @@ async function getRecipeById(id: number): Promise<RecipeResponse> {
     throw new Error("Database fetch failed", { cause: error });
   }
 
-  const [row] = rows;
+  const [row] = rows ?? [];
+
   if (!row) {
-    throw new Error(`No recipe found with id: ${id}`);
+    return;
   }
 
   return RecipeResponseSchema.parse(row);

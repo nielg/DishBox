@@ -79,6 +79,10 @@ graph LR
 - Uses the `sql` tagged template literal from `postgres.js` (safe against SQL injection).
 - Maps returned database rows to TypeScript types.
 
+### Initialize sample data
+
+After applying the migrations, set `DB_INITIALIZE_PASSWORD` in your environment and run `npm run db:initialize`. The script creates or updates the `chef_alice` and `chef_bob` sample accounts, gives each account 10 recipes, and associates recipe tags and local images from `.uploads/public`. Running it again updates these sample recipes without deleting unrelated data.
+
 ---
 
 ### Layout API Endpoint

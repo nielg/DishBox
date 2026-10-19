@@ -1,16 +1,15 @@
 ---
 import BaseLayout from "@/components/layouts/BaseLayout.astro";
 import RecipesService from "@/repository/recipesRepository";
-import DeleteRecipeBtn from "@/components/buttons/DeleteRecipeBtn.astro";
 import GoBackBtn from "@/components/buttons/GoBackBtn.astro";
-import { Icon } from "astro-icon/components";
 import type { RecipeResponse } from "@/types/recipe/recipe.schemas";
 import Recipe from "@/components/myRecipes/Recipe";
 import EditRecipeBtn from "@/components/buttons/EditRecipeBtn.astro";
 
 const { slug } = Astro.params;
+const { user_id } = Astro.locals;
 
-let recipe: RecipeResponse | null = null;
+let recipe: RecipeResponse | undefined;
 
 if (slug) {
   const id = parseInt(slug, 10);
@@ -24,32 +23,25 @@ if (slug) {
   }
 }
 
-if (!recipe) {
-  Astro.response.status = 404;
-  Astro.response.statusText = "Not Found";
+const isForbidden = !recipe?.public && recipe?.user_id !== user_id;
+
+if (!recipe || isForbidden) {
+  return new Response(null, {
+    status: 404,
+    statusText: "Not Found",
+  });
 }
 ---
 
 <BaseLayout
   title={recipe ? `${recipe.title} | DishBox` : "Recipe Not Found | DishBox"}
 >
-  {  recipe ? (
-        <div class="recipe-nav">
-          <GoBackBtn href="/myRecipes" />
-          <EditRecipeBtn recipeId={recipe.id} />  
-        </div>
-        <Recipe recipe={recipe} client:load />
-    ) : (
-      <div class="not-found">
-        <div class="not-found-icon-wrap">
-          <Icon name="lucide:file-question" class="not-found-icon" />
-        </div>
-        <h1>Recipe Not Found</h1>
-        <p>Sorry, we couldn't find the recipe you're looking for.</p>
-        <GoBackBtn href="/myRecipes" />
-      </div>
-    )
-  }
+  <div class="recipe-nav">
+    <GoBackBtn href="/myRecipes" />
+
+    {recipe?.user_id === user_id && <EditRecipeBtn recipeId={recipe.id} />}
+  </div>
+  <Recipe recipe={recipe} client:load />
 </BaseLayout>
 
 <style>
@@ -312,7 +304,6 @@ if (!recipe) {
     }
 
     const recipe = event.data.recipe;
-
 
     // Do something with recipe here
   });
