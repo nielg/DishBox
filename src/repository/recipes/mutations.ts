@@ -12,14 +12,14 @@ async function replaceRecipeTags(
   recipeId: number,
   tags: string[],
 ): Promise<void> {
-  await tx`DELETE FROM recipe_tags WHERE recipe_id = ${recipeId}`;
+  await tx`DELETE FROM dishBox.recipe_tags WHERE recipe_id = ${recipeId}`;
 
   if (tags.length === 0) return;
 
   const insertedTags = await tx<{ tag_id: number }[]>`
-    INSERT INTO recipe_tags (recipe_id, tag_id)
+    INSERT INTO dishBox.recipe_tags (recipe_id, tag_id)
     SELECT ${recipeId}, tags.id
-    FROM tags
+    FROM dishBox.tags
     WHERE tags.value = ANY(${tags}::text[])
     ON CONFLICT (recipe_id, tag_id) DO NOTHING
     RETURNING tag_id
@@ -35,7 +35,7 @@ async function createRecipeWithImages(
 ): Promise<RecipeResponse> {
   return sql.begin(async (tx) => {
     const [createdRecipe] = await tx<RecipeResponse[]>`
-      INSERT INTO recipes (
+      INSERT INTO dishBox.recipes (
         title,
         description,
         portions,
@@ -66,7 +66,7 @@ async function createRecipeWithImages(
       await Promise.all(
         recipe.imgurls.map(
           (imageUrl) => tx`
-            INSERT INTO recipe_images (recipe_id, image_url, img_storage_type)
+            INSERT INTO dishBox.recipe_images (recipe_id, image_url, img_storage_type)
             VALUES (${createdRecipe.id}, ${imageUrl}, ${IMG_STORAGE_TYPE})
           `,
         ),
@@ -87,7 +87,7 @@ async function updateRecipe(
   try {
     const updated = await sql.begin(async (tx) => {
       const [row] = await tx`
-        UPDATE recipes
+        UPDATE dishBox.recipes
         SET
           title = COALESCE(${recipe.title ?? null}, title),
           description = COALESCE(${recipe.description ?? null}, description),
@@ -115,7 +115,7 @@ async function updateRecipe(
 
       if (recipe.imgurls && recipe.imgurls.length > 0) {
         await tx`
-          INSERT INTO recipe_images ${tx(
+          INSERT INTO dishBox.recipe_images ${tx(
             recipe.imgurls.map((image_url) => ({
               recipe_id: id,
               image_url,
@@ -130,8 +130,8 @@ async function updateRecipe(
         SELECT COALESCE(
           ARRAY(
             SELECT tags.value
-            FROM recipe_tags
-            JOIN tags ON tags.id = recipe_tags.tag_id
+            FROM dishBox.recipe_tags
+            JOIN dishBox.tags ON tags.id = recipe_tags.tag_id
             WHERE recipe_tags.recipe_id = ${id}
             ORDER BY tags.value
           ),
@@ -155,7 +155,7 @@ async function deleteRecipeById(id: number): Promise<string> {
   let deletedCount: number;
   try {
     const result = await sql`
-      DELETE FROM recipes
+      DELETE FROM dishBox.recipes
       WHERE id = ${id}
     `;
     deletedCount = result.count;

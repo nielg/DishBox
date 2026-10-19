@@ -10,12 +10,12 @@ export const shorthands = undefined;
  */
 export const up = (pgm) => {
   pgm.sql`
-    CREATE TABLE tags (
+    CREATE TABLE dishBox.tags (
       id BIGSERIAL PRIMARY KEY,
       value VARCHAR(255) NOT NULL UNIQUE
     );
 
-    INSERT INTO tags (value) VALUES 
+    INSERT INTO dishBox.tags (value) VALUES 
       ('vegan'),
       ('vegetarian'),
       ('gluten-free'),
@@ -28,9 +28,9 @@ export const up = (pgm) => {
       ('dessert'),
       ('breakfast');
 
-    CREATE TABLE recipe_tags (
-      recipe_id BIGINT NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,
-      tag_id BIGINT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
+    CREATE TABLE dishBox.recipe_tags (
+      recipe_id BIGINT NOT NULL REFERENCES dishBox.recipes(id) ON DELETE CASCADE,
+      tag_id BIGINT NOT NULL REFERENCES dishBox.tags(id) ON DELETE CASCADE,
       PRIMARY KEY (recipe_id, tag_id)
     );
   `;
@@ -43,7 +43,7 @@ export const up = (pgm) => {
  */
 export const down = (pgm) => {
   pgm.sql`
-    DROP TABLE IF EXISTS recipe_tags;
-    DROP TABLE IF EXISTS tags;
+    DROP TABLE IF EXISTS dishBox.recipe_tags;
+    DROP TABLE IF EXISTS dishBox.tags;
   `;
 };

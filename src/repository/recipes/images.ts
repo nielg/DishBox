@@ -8,10 +8,10 @@ async function deleteRecipeImage(
 
   try {
     const rows = await sql<{ image_url: string }[]>`
-      DELETE FROM recipe_images
+      DELETE FROM dishBox.recipe_images
       WHERE image_url = ANY(${imgUrls}::text[])
         AND recipe_id IN (
-          SELECT id FROM recipes WHERE user_id = ${user_id}
+          SELECT id FROM dishBox.recipes WHERE user_id = ${user_id}
         )
       RETURNING image_url
     `;

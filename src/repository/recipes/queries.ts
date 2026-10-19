@@ -58,8 +58,8 @@ async function getRecipeMetadata({
     whereConditions.push(sql`
       recipes.id IN (
         SELECT recipe_tags.recipe_id
-        FROM recipe_tags
-        JOIN tags ON tags.id = recipe_tags.tag_id
+        FROM dishBox.recipe_tags
+        JOIN dishBox.tags ON tags.id = recipe_tags.tag_id
         WHERE tags.value = ANY(${tags})
         GROUP BY recipe_tags.recipe_id
         HAVING COUNT(DISTINCT tags.value) = ${tags.length}
@@ -87,8 +87,8 @@ async function getRecipeMetadata({
           COALESCE(
             ARRAY(
               SELECT tags.value
-              FROM recipe_tags
-              JOIN tags ON tags.id = recipe_tags.tag_id
+              FROM dishBox.recipe_tags
+              JOIN dishBox.tags ON tags.id = recipe_tags.tag_id
               WHERE recipe_tags.recipe_id = recipes.id
               ORDER BY tags.value
             ),
@@ -96,10 +96,10 @@ async function getRecipeMetadata({
           ) AS tags,
           recipe_images.image_url AS imgurl,
           user_recipes_favorite.user_id IS NOT NULL AS is_favorite
-        FROM recipes
-        LEFT JOIN recipe_images
+        FROM dishBox.recipes
+        LEFT JOIN dishBox.recipe_images
           ON recipes.id = recipe_images.recipe_id
-        LEFT JOIN user_recipes_favorite
+        LEFT JOIN dishBox.user_recipes_favorite
           ON recipes.id = user_recipes_favorite.recipe_id
           AND user_recipes_favorite.user_id = ${userId ?? null}
         ${whereClause}
@@ -129,8 +129,8 @@ async function getRecipeById(id: number): Promise<RecipeResponse | undefined> {
           COALESCE(
             ARRAY(
               SELECT tags.value
-              FROM recipe_tags
-              JOIN tags ON tags.id = recipe_tags.tag_id
+              FROM dishBox.recipe_tags
+              JOIN dishBox.tags ON tags.id = recipe_tags.tag_id
               WHERE recipe_tags.recipe_id = recipes.id
               ORDER BY tags.value
             ),
@@ -141,8 +141,8 @@ async function getRecipeById(id: number): Promise<RecipeResponse | undefined> {
               FILTER (WHERE recipe_images.image_url IS NOT NULL),
             '{}'
           ) AS imgurls
-        FROM recipes
-        LEFT JOIN recipe_images
+        FROM dishBox.recipes
+        LEFT JOIN dishBox.recipe_images
           ON recipes.id = recipe_images.recipe_id
           AND recipe_images.img_storage_type = ${IMG_STORAGE_TYPE}
         WHERE recipes.id = ${id}

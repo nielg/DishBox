@@ -10,9 +10,9 @@ export const shorthands = undefined;
  */
 export const up = (pgm) => {
   pgm.sql(`
-        CREATE TABLE public.recipe_images (
+        CREATE TABLE dishBox.recipe_images (
             id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-            recipe_id INTEGER NOT NULL REFERENCES public.recipes(id) ON DELETE CASCADE,
+            recipe_id INTEGER NOT NULL REFERENCES dishBox.recipes(id) ON DELETE CASCADE,
             image_url TEXT NOT NULL,
             img_storage_type VARCHAR(100),
             created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -22,7 +22,7 @@ export const up = (pgm) => {
         );
         
         CREATE TRIGGER update_recipe_images_updated_at
-            BEFORE UPDATE ON public.recipe_images
+            BEFORE UPDATE ON dishBox.recipe_images
             FOR EACH ROW
             EXECUTE FUNCTION set_updated_at();
         `);

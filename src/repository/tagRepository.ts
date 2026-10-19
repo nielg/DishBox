@@ -2,7 +2,7 @@ import sql from "@/lib/db";
 
 async function getAllTags(): Promise<string[]> {
   try {
-    const rows = await sql<{ value: string }[]>`SELECT value FROM tags`;
+    const rows = await sql<{ value: string }[]>`SELECT value FROM dishBox.tags`;
 
     return rows.map((row) => row.value);
   } catch (error) {

@@ -10,6 +10,9 @@ export const shorthands = undefined;
  */
 export const up = (pgm) => {
   pgm.sql(`
+    CREATE SCHEMA dishBox;
+    CREATE SCHEMA stockBox;
+
     -- Create reusable trigger function for auto-updating updated_at
     CREATE OR REPLACE FUNCTION set_updated_at()
     RETURNS TRIGGER AS $$
@@ -37,7 +40,7 @@ export const up = (pgm) => {
       EXECUTE FUNCTION set_updated_at();
 
     -- Recipes table
-    CREATE TABLE public.recipes (
+    CREATE TABLE dishBox.recipes (
       id SERIAL PRIMARY KEY,
       title VARCHAR(100) NOT NULL,
       description TEXT NOT NULL,
@@ -51,7 +54,7 @@ export const up = (pgm) => {
     );
 
     CREATE TRIGGER update_recipes_updated_at
-      BEFORE UPDATE ON public.recipes
+      BEFORE UPDATE ON dishBox.recipes
       FOR EACH ROW
       EXECUTE FUNCTION set_updated_at();
   `);
