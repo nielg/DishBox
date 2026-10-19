@@ -37,6 +37,7 @@ export const RecipeMetaDataResponseSchema = z.object({
   tags: z.array(z.string()),
   imgurl: z.string().nullish(),
   is_favorite: z.boolean(),
+  likes_count: z.number(),
 });
 
 export type RecipeMetaDataResponse = z.infer<
@@ -54,6 +55,7 @@ export const RecipeResponseSchema = z.object({
   tags: z.array(z.string()).default([]),
   public: z.boolean(),
   imgurls: z.array(z.string()).optional(),
+  likes_count: z.number(),
 });
 
 export type RecipeResponse = z.infer<typeof RecipeResponseSchema>;

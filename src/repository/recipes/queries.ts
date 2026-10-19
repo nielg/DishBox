@@ -84,6 +84,7 @@ async function getRecipeMetadata({
           recipes.description,
           recipes.portions,
           recipes.public,
+          recipes.likes_count,
           COALESCE(
             ARRAY(
               SELECT tags.value
@@ -126,6 +127,7 @@ async function getRecipeById(id: number): Promise<RecipeResponse | undefined> {
           recipes.ingredients,
           recipes.instructions,
           recipes.public,
+          recipes.likes_count,
           COALESCE(
             ARRAY(
               SELECT tags.value

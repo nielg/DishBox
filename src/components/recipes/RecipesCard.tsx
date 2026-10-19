@@ -22,9 +22,12 @@ export default function RecipesCard({ data, userId }: Props) {
             alt={`${data.title} thumbnail`}
           />
 
-          {userId && (
-            <FavoriteBtn recipe_id={data.id} is_favorite={data.is_favorite} />
-          )}
+          <FavoriteBtn
+            recipe_id={data.id}
+            is_favorite={data.is_favorite}
+            likes_count={data.likes_count}
+            userId={userId}
+          />
 
           <div className={s.cardImgOverlay} />
         </div>
