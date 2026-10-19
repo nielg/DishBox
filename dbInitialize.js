@@ -459,7 +459,7 @@ async function dbInitialize() {
 
   await sql.begin(async (tx) => {
     const existingTags = await tx`
-      SELECT value FROM tags WHERE value = ANY(${seedTags}::text[])
+      SELECT value FROM dishBox.tags WHERE value = ANY(${seedTags}::text[])
     `;
     const existingTagValues = new Set(existingTags.map((tag) => tag.value));
     const missingTags = seedTags.filter((tag) => !existingTagValues.has(tag));
@@ -475,7 +475,7 @@ async function dbInitialize() {
     for (const user of seedUsers) {
       const passwordHash = await bcrypt.hash(seedPassword, 12);
       const [createdUser] = await tx`
-        INSERT INTO "user" (user_name, first_name, last_name, email, password)
+        INSERT INTO public."user" (user_name, first_name, last_name, email, password)
         VALUES (
           ${user.username},
           ${user.firstName},
@@ -496,14 +496,14 @@ async function dbInitialize() {
 
       for (const recipe of user.recipes) {
         const [existingRecipe] = await tx`
-          SELECT id FROM recipes
+          SELECT id FROM dishBox.recipes
           WHERE user_id = ${createdUser.id} AND title = ${recipe.title}
           LIMIT 1
         `;
 
         const [savedRecipe] = existingRecipe
           ? await tx`
-              UPDATE recipes SET
+              UPDATE dishBox.recipes SET
                 description = ${recipe.description},
                 portions = ${recipe.portions},
                 ingredients = ${tx.json(recipe.ingredients)},
@@ -513,7 +513,7 @@ async function dbInitialize() {
               RETURNING id
             `
           : await tx`
-              INSERT INTO recipes (
+              INSERT INTO dishBox.recipes (
                 title, description, portions, ingredients, instructions, user_id, public
               )
               VALUES (
@@ -531,11 +531,11 @@ async function dbInitialize() {
           throw new Error(`Failed to initialize recipe "${recipe.title}".`);
         }
 
-        await tx`DELETE FROM recipe_tags WHERE recipe_id = ${savedRecipe.id}`;
+        await tx`DELETE FROM dishBox.recipe_tags WHERE recipe_id = ${savedRecipe.id}`;
         const insertedTags = await tx`
-          INSERT INTO recipe_tags (recipe_id, tag_id)
+          INSERT INTO dishBox.recipe_tags (recipe_id, tag_id)
           SELECT ${savedRecipe.id}, id
-          FROM tags
+          FROM dishBox.tags
           WHERE value = ANY(${recipe.tags}::text[])
           RETURNING tag_id
         `;
@@ -550,9 +550,9 @@ async function dbInitialize() {
         const imageUrl = `/myRecipes/images/public/${imageName}`;
         imageIndex += 1;
 
-        await tx`DELETE FROM recipe_images WHERE recipe_id = ${savedRecipe.id}`;
+        await tx`DELETE FROM dishBox.recipe_images WHERE recipe_id = ${savedRecipe.id}`;
         await tx`
-          INSERT INTO recipe_images (recipe_id, image_url, img_storage_type)
+          INSERT INTO dishBox.recipe_images (recipe_id, image_url, img_storage_type)
           VALUES (${savedRecipe.id}, ${imageUrl}, 'local')
         `;
       }
