@@ -117,7 +117,7 @@ const addUserFavoriteRecipe = async (
 ): Promise<void> => {
   try {
     await sql`
-      INSERT INTO user_recipes_favorite (user_id, recipe_id)
+      INSERT INTO dishBox.user_recipes_favorite (user_id, recipe_id)
       VALUES (${user_id}, ${recipe_id});
     `;
   } catch (error) {
@@ -134,7 +134,7 @@ const removeUserFavoriteRecipe = async (
 ): Promise<void> => {
   try {
     await sql`
-      DELETE FROM user_recipes_favorite
+      DELETE FROM dishBox.user_recipes_favorite
       WHERE user_id = ${user_id} AND recipe_id = ${recipe_id};
     `;
   } catch (error) {
@@ -151,7 +151,7 @@ const getAllUserFavoriteRecipesIds = async (
   try {
     const result = await sql`
       SELECT recipe_id
-      FROM user_recipes_favorite
+      FROM dishBox.user_recipes_favorite
       WHERE user_id = ${user_id}
       ORDER BY created_at DESC
     `;
