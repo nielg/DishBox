@@ -1,6 +1,6 @@
 import type { RecipeMetaDataResponse } from "@/types/recipe/recipe.schemas";
-import FavoriteBtn from "@/components/recipes/FavoriteBtn";
-import s from "@/styles/components/recipes/recipeCard.module.css";
+import FavoriteBtn from "@/components/recipes/recipesMetaData/FavoriteBtn";
+import s from "@/styles/components/recipes/recipeMetaData/index.module.css";
 
 type Props = {
   data: RecipeMetaDataResponse;
@@ -22,9 +22,12 @@ export default function RecipesCard({ data, userId }: Props) {
             alt={`${data.title} thumbnail`}
           />
 
-          {userId && (
-            <FavoriteBtn recipe_id={data.id} is_favorite={data.is_favorite} />
-          )}
+          <FavoriteBtn
+            recipe_id={data.id}
+            is_favorite={data.is_favorite}
+            likes_count={data.likes_count}
+            userId={userId}
+          />
 
           <div className={s.cardImgOverlay} />
         </div>

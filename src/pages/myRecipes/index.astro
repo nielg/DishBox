@@ -45,7 +45,7 @@ const recipes: RecipeMetaDataResponse[] =
           />
         </div>
       ) : (
-        <RecipesGrid title="My Recipes" recipes={recipes} />
+        <RecipesGrid title="My Recipes" recipes={recipes} userId={user_id} />
       )
     }
   </div>

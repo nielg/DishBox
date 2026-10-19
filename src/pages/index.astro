@@ -20,6 +20,7 @@ let favoriteRecipes: RecipeMetaDataResponse[] = [];
 if (user_id) {
   favoriteRecipes = await RecipeService.getUserFavoriteRecipesMetaData(user_id);
 }
+console.log(recipes);
 ---
 
 <BaseLayout>
