@@ -9,6 +9,8 @@ type Props = {
 
 export default function UpdateUser({ initData }: Props) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const [inputData, setInputData] = useState<UserProfileData>({
     username: initData.username,
     firstname: initData.firstname,
@@ -24,71 +26,117 @@ export default function UpdateUser({ initData }: Props) {
     }));
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setMessage("");
+    setErrorMessage("");
     setIsSubmitting(true);
 
     try {
-      const request = fetch("/api/user/update-user", {
+      const response = await fetch("/api/user/update-user", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(inputData),
       });
+
+      const result: { message?: string } = await response.json();
+      if (!response.ok) {
+        if (response.status === 401) {
+          window.location.assign("/user/login");
+          return;
+        }
+
+        throw new Error(result.message ?? "Failed to update profile.");
+      }
+
+      setMessage(result.message ?? "Profile updated successfully.");
     } catch (error) {
-      console.error("Error updating user", error);
+      setErrorMessage(
+        error instanceof Error ? error.message : "Failed to update profile.",
+      );
+    } finally {
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   };
 
   return (
-    <section>
-      <h2>Update profile</h2>
+    <section className={s.profileCard} aria-labelledby="profile-form-heading">
+      <div className={s.cardHeading}>
+        <span className={s.eyebrow}>Personal information</span>
+        <h2 id="profile-form-heading">Update your details</h2>
+        <p>These details are used to identify your account.</p>
+      </div>
       <form onSubmit={handleSubmit}>
-        <div className={s.inputBox}>
-          <label htmlFor="username">Username:</label>
-          <input
-            type="text"
-            name="username"
-            id="username"
-            value={inputData.username}
-            onChange={handleChange}
-          />
-        </div>
-        <div className={s.inputBox}>
-          <label htmlFor="firstname">Firstname:</label>
-          <input
-            type="text"
-            name="firstname"
-            id="firstname"
-            value={inputData.firstname}
-            onChange={handleChange}
-          />
-        </div>
-        <div className={s.inputBox}>
-          <label htmlFor="lastname">Lastname:</label>
-          <input
-            type="text"
-            name="lastname"
-            id="lastname"
-            value={inputData.lastname}
-            onChange={handleChange}
-          />
-        </div>
-        <div className={s.inputBox}>
-          <label htmlFor="email">Email:</label>
-          <input
-            type="email"
-            name="email"
-            id="email"
-            value={inputData.email}
-            onChange={handleChange}
-          />
+        <div className={s.formGrid}>
+          <div className={s.inputBox}>
+            <label htmlFor="username">Username</label>
+            <input
+              type="text"
+              name="username"
+              id="username"
+              autoComplete="username"
+              required
+              value={inputData.username}
+              onChange={handleChange}
+            />
+          </div>
+          <div className={s.inputBox}>
+            <label htmlFor="email">Email address</label>
+            <input
+              type="email"
+              name="email"
+              id="email"
+              autoComplete="email"
+              required
+              value={inputData.email}
+              onChange={handleChange}
+            />
+          </div>
+          <div className={s.inputBox}>
+            <label htmlFor="firstname">First name</label>
+            <input
+              type="text"
+              name="firstname"
+              id="firstname"
+              autoComplete="given-name"
+              required
+              value={inputData.firstname}
+              onChange={handleChange}
+            />
+          </div>
+          <div className={s.inputBox}>
+            <label htmlFor="lastname">Last name</label>
+            <input
+              type="text"
+              name="lastname"
+              id="lastname"
+              autoComplete="family-name"
+              required
+              value={inputData.lastname}
+              onChange={handleChange}
+            />
+          </div>
         </div>
 
-        <button type="submit" disabled={isSubmitting} className="btn">
-          {isSubmitting ? "Saving..." : "Save Changes"}
+        {message && (
+          <p className={s.successMessage} role="status">
+            {message}
+          </p>
+        )}
+        {errorMessage && (
+          <p className={s.errorMessage} role="alert">
+            {errorMessage}
+          </p>
+        )}
+
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className={s.submitButton}
+        >
+          {isSubmitting ? "Saving changes..." : "Save changes"}
         </button>
       </form>
     </section>
