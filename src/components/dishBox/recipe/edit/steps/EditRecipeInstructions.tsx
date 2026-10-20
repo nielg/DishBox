@@ -1,4 +1,4 @@
-import { DynamicInstructionsList } from "@/components/input/DynamicInstructionsList";
+import { DynamicInstructionsList } from "@/components/dishBox/recipe/edit/inputEditRecipes/DynamicInstructionsList";
 import s from "@/styles/components/editRecipe/editRecipe.module.css";
 
 export default function EditRecipeInstructions() {

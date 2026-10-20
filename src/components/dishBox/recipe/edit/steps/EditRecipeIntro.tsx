@@ -1,4 +1,4 @@
-import InputPreview from "@/components/input/InputPreview";
+import InputPreview from "@/components/dishBox/recipe/edit/inputEditRecipes/InputPreview";
 import "@/styles/global.css";
 import s from "@/styles/components/editRecipe/editRecipe.module.css";
 import { useEditRecipe } from "../context/EditRecipeContext";

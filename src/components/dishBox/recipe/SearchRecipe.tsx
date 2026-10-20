@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import s from "@/styles/components/recipes/searchRecipe.module.css";
 import type { RecipeMetaDataResponse } from "@/types/recipe/recipe.schemas";
-import RecipesGrid from "./RecipesGrid";
+import RecipesGrid from "./recipeContainers/RecipesGrid";
 import { X } from "lucide-react";
 import TagCarrousel from "../tags/TagCarrousel";
 

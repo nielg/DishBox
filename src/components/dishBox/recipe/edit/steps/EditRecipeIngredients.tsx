@@ -1,6 +1,6 @@
 "use client";
 
-import { DynamicIngredientsList } from "@/components/input/DynamicIngredientsList";
+import { DynamicIngredientsList } from "@/components/dishBox/recipe/edit/inputEditRecipes/DynamicIngredientsList";
 import s from "@/styles/components/editRecipe/editRecipe.module.css";
 import { useEditRecipe } from "../context/EditRecipeContext";
 

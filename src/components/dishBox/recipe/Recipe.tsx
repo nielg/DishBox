@@ -1,4 +1,4 @@
-import Carrousel from "@/components/Carrousel";
+import Carrousel from "@/components/dishBox/Carrousel";
 import styles from "@/styles/components/recipe.module.css";
 import { ShoppingBasket, ChefHat } from "lucide-react";
 import type { RecipeWithoutId } from "@/types/recipe/recipe.types";
