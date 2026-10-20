@@ -9,7 +9,7 @@ import {
 } from "@/repository/dishBox/recipes/mutations";
 import { deleteRecipeImage } from "@/repository/dishBox/recipes/images";
 
-const RecipesService = {
+const RecipesRepository = {
   getRecipeById,
   deleteRecipeById,
   createRecipeWithImages,
@@ -18,4 +18,4 @@ const RecipesService = {
   getRecipeMetadata,
 };
 
-export default RecipesService;
+export default RecipesRepository;

@@ -12,28 +12,29 @@ export const up = (pgm) => {
   pgm.sql(`
     -- 1. CREATE STOCK_ITEMS TABLE
     CREATE TABLE stockbox.stock_items (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    name VARCHAR(255) NOT NULL,
-    metric VARCHAR(50) NOT NULL,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+      name VARCHAR(255) NOT NULL,
+      metric VARCHAR(50) NOT NULL,
+      public BOOLEAN DEFAULT false,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
 
     -- 2. CREATE STOCK_BATCHES TABLE
-    CREATE TABLE stockbock.stock_batches (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    stock_item_id INTEGER NOT NULL REFERENCES stock_items(id) ON DELETE CASCADE,
-    quantity NUMERIC(10, 2) NOT NULL,
-    expire_date TIMESTAMPTZ,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+    CREATE TABLE stockbox.stock_batches (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
+      stock_item_id INTEGER NOT NULL REFERENCES stockbox.stock_items(id) ON DELETE CASCADE,
+      quantity NUMERIC(10, 2) NOT NULL,
+      expire_date TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
 
-    -- 4. ATTACH EXISTING TRIGGER FOR UPDATED_AT
+    -- 3. ATTACH EXISTING TRIGGER FOR UPDATED_AT
     CREATE TRIGGER update_stock_items_updated_at
-    BEFORE UPDATE ON stock.stock_items
+    BEFORE UPDATE ON stockbox.stock_items
     FOR EACH ROW
     EXECUTE FUNCTION set_updated_at();
 
@@ -41,8 +42,7 @@ export const up = (pgm) => {
     BEFORE UPDATE ON stockbox.stock_batches
     FOR EACH ROW
     EXECUTE FUNCTION set_updated_at();    
-        
-    `);
+  `);
 };
 
 /**
@@ -52,7 +52,7 @@ export const up = (pgm) => {
  */
 export const down = (pgm) => {
   pgm.sql(`
-    DROP TABLE IF EXISTS stock_baches;
-    DROP TABLE IF EXISTS stock_items;    
-    `);
+    DROP TABLE IF EXISTS stockbox.stock_batches CASCADE;
+    DROP TABLE IF EXISTS stockbox.stock_items CASCADE;    
+  `);
 };

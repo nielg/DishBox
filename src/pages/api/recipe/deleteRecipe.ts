@@ -1,4 +1,4 @@
-import RecipesService from "@/repository/dishBox/recipesRepository";
+import RecipesRepository from "@/repository/dishBox/recipesRepository";
 import type { ApiResponse } from "@/types";
 import type { APIRoute } from "astro";
 
@@ -15,7 +15,7 @@ export const DELETE: APIRoute = async ({ request }): Promise<Response> => {
       return Response.json(errorPayload, { status: 400 });
     }
 
-    const deletedRecipe = await RecipesService.deleteRecipeById(recipeId);
+    const deletedRecipe = await RecipesRepository.deleteRecipeById(recipeId);
 
     const successPayload: ApiResponse = {
       success: true,
