@@ -1,4 +1,4 @@
-import RecipesRepository from "@/repository/recipesRepository";
+import RecipesRepository from "@/repository/dishBox/recipesRepository";
 import UserRepository from "@/repository/userRepository";
 import type {
   CreateRecipeInput,

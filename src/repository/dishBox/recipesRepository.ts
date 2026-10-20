@@ -1,10 +1,13 @@
-import { getRecipeById, getRecipeMetadata } from "@/repository/recipes/queries";
+import {
+  getRecipeById,
+  getRecipeMetadata,
+} from "@/repository/dishBox/recipes/queries";
 import {
   createRecipeWithImages,
   deleteRecipeById,
   updateRecipe,
-} from "@/repository/recipes/mutations";
-import { deleteRecipeImage } from "@/repository/recipes/images";
+} from "@/repository/dishBox/recipes/mutations";
+import { deleteRecipeImage } from "@/repository/dishBox/recipes/images";
 
 const RecipesService = {
   getRecipeById,
