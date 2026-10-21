@@ -5,6 +5,10 @@ import s from "@/styles/components/stockBox/inventoryTable.module.css";
 import { type StockInventoryResponse } from "@/types/stock/stock.schema";
 import { useState } from "react";
 import { Plus, Minus, Send } from "lucide-react";
+import {
+  getInventoryQuantityForDate,
+  useInventory,
+} from "@/components/stockBox/inventory/InventoryContext";
 
 type Props = {
   action: "add" | "remove" | "request";
@@ -18,6 +22,7 @@ const actionText = {
 };
 
 export default function EditItemQuantity({ action, item }: Props) {
+  const { updateItemQuantity } = useInventory();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -26,7 +31,7 @@ export default function EditItemQuantity({ action, item }: Props) {
   // Store date as ISO string (YYYY-MM-DD) for HTML inputs
   const todayStr = new Date().toISOString().split("T")[0];
   const [expireDate, setExpireDate] = useState<string>(todayStr);
-  const maxRemoveQuantity = getQuantityForDate();
+  const maxRemoveQuantity = getInventoryQuantityForDate(item, expireDate);
 
   const handleOpen = () => {
     setIsOpen(true);
@@ -85,6 +90,10 @@ export default function EditItemQuantity({ action, item }: Props) {
         throw new Error(`Server returned status ${response.status}`);
       }
 
+      if (action !== "request") {
+        updateItemQuantity(item.item_id, action, quantity, expireDate);
+      }
+
       handleClose();
     } catch (error) {
       if (error instanceof Error) {
@@ -97,18 +106,6 @@ export default function EditItemQuantity({ action, item }: Props) {
       setIsSubmitting(false);
     }
   };
-
-  function getQuantityForDate(): number {
-    // Normalize both dates to YYYY-MM-DD format for an accurate match
-    const match = item.expireDates.find((batch) => {
-      const batchDateStr = new Date(batch.expireDate)
-        .toISOString()
-        .split("T")[0];
-      return batchDateStr === expireDate;
-    });
-
-    return match ? match.quantity : 0;
-  }
 
   return (
     <>
