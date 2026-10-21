@@ -33,6 +33,8 @@ function FormContent({ inputRecipe, tags }: Props) {
     tags: formData.tags,
     public: formData.public,
     imgurls: formData.imgurls.map((item) => item.value),
+    user_id: 0,
+    likes_count: 0,
   };
 
   return (

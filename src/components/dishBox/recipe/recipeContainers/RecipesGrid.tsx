@@ -1,6 +1,6 @@
 import type { RecipeMetaDataResponse } from "@/types/recipe/recipe.schemas";
 import s from "@/styles/components/recipes/recipeGrid.module.css";
-import RecipesCard from "@/components/dishBox/recipes/recipesMetaData/RecipesMetaDataCard";
+import RecipesCard from "../recipesMetaData/RecipesMetaDataCard";
 
 type Props = {
   title?: string;

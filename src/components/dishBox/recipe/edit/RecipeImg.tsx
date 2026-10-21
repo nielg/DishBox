@@ -7,7 +7,6 @@ type Props = {
 };
 
 export function RecipeImg({ objectURLS, onDeleteImage }: Props) {
-  const { formData, addListItem, deleteListItem } = useEditRecipe();
   return (
     <div className={s.imgContainer}>
       {objectURLS.map((url, index) => (
