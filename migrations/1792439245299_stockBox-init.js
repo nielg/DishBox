@@ -32,6 +32,11 @@ export const up = (pgm) => {
       updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
 
+    -- 3. Add unique contraint
+    ALTER TABLE stockbox.stock_batches
+    ADD CONSTRAINT unique_user_item_expire_date 
+    UNIQUE (user_id, stock_item_id, expire_date);
+
     -- 3. ATTACH EXISTING TRIGGER FOR UPDATED_AT
     CREATE TRIGGER update_stock_items_updated_at
     BEFORE UPDATE ON stockbox.stock_items

@@ -31,44 +31,6 @@ export async function createStockItem(
   return createdItem;
 }
 
-export async function addBatchItem(
-  user_id: number,
-  batch: StockBatchRequest,
-): Promise<number> {
-  let rows: unknown;
-  try {
-    rows = await sql`
-      INSERT INTO stockbox.stock_batches (
-        user_id,
-        stock_item_id,
-        quantity,
-        expire_date
-      )
-      SELECT
-        ${user_id},
-        item.id,
-        ${batch.quantity},
-        ${batch.expireDate}
-      FROM stockbox.stock_items item
-      WHERE item.id = ${batch.stock_id}
-        AND (item.public = true OR item.user_id = ${user_id})
-      RETURNING id
-    `;
-  } catch (error) {
-    console.error("DB: Failed to add stock batch", error);
-    throw new Error("Database insert failed", { cause: error });
-  }
-
-  const [createdBatch] = z.array(z.object({ id: z.number() })).parse(rows);
-  if (!createdBatch) {
-    throw new Error(
-      `Stock item with ID ${batch.stock_id} not found or not accessible`,
-    );
-  }
-
-  return createdBatch.id;
-}
-
 export async function addItemQuantity(
   user_id: number,
   item_id: number,
@@ -77,6 +39,7 @@ export async function addItemQuantity(
 ): Promise<boolean> {
   try {
     return await sql.begin(async (transaction) => {
+      // 1. Verify item exists and user has access
       const [item] = await transaction`
         SELECT id
         FROM stockbox.stock_items
@@ -89,6 +52,7 @@ export async function addItemQuantity(
         return false;
       }
 
+      // 2. Insert new batch or update quantity if batch already exists for same user, item & date
       await transaction`
         INSERT INTO stockbox.stock_batches (
           user_id,
@@ -96,7 +60,16 @@ export async function addItemQuantity(
           quantity,
           expire_date
         )
-        VALUES (${user_id}, ${item_id}, ${quantity}, ${expireDate}::date)
+        VALUES (
+          ${user_id},
+          ${item_id},
+          ${quantity},
+          ${expireDate}::timestamptz
+        )
+        ON CONFLICT (user_id, stock_item_id, expire_date)
+        DO UPDATE SET
+          quantity = stockbox.stock_batches.quantity + EXCLUDED.quantity,
+          updated_at = CURRENT_TIMESTAMP
       `;
 
       return true;

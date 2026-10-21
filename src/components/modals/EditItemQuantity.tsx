@@ -26,6 +26,7 @@ export default function EditItemQuantity({ action, item }: Props) {
   // Store date as ISO string (YYYY-MM-DD) for HTML inputs
   const todayStr = new Date().toISOString().split("T")[0];
   const [expireDate, setExpireDate] = useState<string>(todayStr);
+  const maxRemoveQuantity = getQuantityForDate();
 
   const handleOpen = () => {
     setIsOpen(true);
@@ -97,6 +98,18 @@ export default function EditItemQuantity({ action, item }: Props) {
     }
   };
 
+  function getQuantityForDate(): number {
+    // Normalize both dates to YYYY-MM-DD format for an accurate match
+    const match = item.expireDates.find((batch) => {
+      const batchDateStr = new Date(batch.expireDate)
+        .toISOString()
+        .split("T")[0];
+      return batchDateStr === expireDate;
+    });
+
+    return match ? match.quantity : 0;
+  }
+
   return (
     <>
       {/* Trigger Button */}
@@ -143,11 +156,23 @@ export default function EditItemQuantity({ action, item }: Props) {
                   type="number"
                   name="quantity"
                   min="0.01"
+                  max={action === "remove" ? maxRemoveQuantity : undefined}
                   step="0.01"
                   placeholder="e.g. 10"
                   className={styles.input}
                   value={quantity || ""}
-                  onChange={(e) => setQuantity(Number(e.target.value))}
+                  onChange={(e) => {
+                    const val = Number(e.target.value);
+                    if (
+                      action === "remove" &&
+                      maxRemoveQuantity > 0 &&
+                      val > maxRemoveQuantity
+                    ) {
+                      setQuantity(maxRemoveQuantity);
+                    } else {
+                      setQuantity(val);
+                    }
+                  }}
                   required
                 />
               </div>
