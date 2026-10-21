@@ -8,10 +8,11 @@ export const StockItemResponseSchema = z.object({
 
 export type StockItemResponse = z.infer<typeof StockItemResponseSchema>;
 
-const StockItemRequestSchema = z.object({
+export const StockItemRequestSchema = z.object({
   name: z.string(),
   metric: z.string(),
 });
+export type StockItemRequest = z.infer<typeof StockItemRequestSchema>;
 
 export const StockBatchRequestSchema = z.object({
   id: z.number(),
@@ -31,7 +32,5 @@ export const StockInventoryResponseSchema = z.object({
 export type StockInventoryResponse = z.infer<
   typeof StockInventoryResponseSchema
 >;
-
-export type StockItemRequest = z.infer<typeof StockItemRequestSchema>;
 
 export type StockBatchRequest = z.infer<typeof StockBatchRequestSchema>;
