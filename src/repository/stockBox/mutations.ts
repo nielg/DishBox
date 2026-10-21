@@ -47,7 +47,7 @@ export async function addBatchItem(
       SELECT
         ${user_id},
         item.id,
-        ${batch.quantiy},
+        ${batch.quantity},
         ${batch.expireDate}
       FROM stockbox.stock_items item
       WHERE item.id = ${batch.stock_id}
@@ -73,6 +73,7 @@ export async function addItemQuantity(
   user_id: number,
   item_id: number,
   quantity: number,
+  expireDate: string,
 ): Promise<boolean> {
   try {
     return await sql.begin(async (transaction) => {
@@ -92,9 +93,10 @@ export async function addItemQuantity(
         INSERT INTO stockbox.stock_batches (
           user_id,
           stock_item_id,
-          quantity
+          quantity,
+          expire_date
         )
-        VALUES (${user_id}, ${item_id}, ${quantity})
+        VALUES (${user_id}, ${item_id}, ${quantity}, ${expireDate}::date)
       `;
 
       return true;
@@ -109,6 +111,7 @@ export async function removeItemQuantity(
   user_id: number,
   item_id: number,
   quantity: number,
+  expireDate: string,
 ): Promise<boolean> {
   try {
     return await sql.begin(async (transaction) => {
@@ -129,6 +132,7 @@ export async function removeItemQuantity(
         FROM stockbox.stock_batches
         WHERE stock_item_id = ${item_id}
           AND user_id = ${user_id}
+          AND expire_date::date = ${expireDate}::date
         ORDER BY created_at, id
         FOR UPDATE
       `;
@@ -160,7 +164,9 @@ export async function removeItemQuantity(
       }
 
       if (remaining > 0.000001) {
-        throw new RangeError("Insufficient quantity in inventory");
+        throw new RangeError(
+          "Insufficient quantity for the selected expiration date",
+        );
       }
 
       return true;

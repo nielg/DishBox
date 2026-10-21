@@ -36,7 +36,16 @@ export async function getStockInventory(
         item.id AS item_id,
         item.name,
         item.metric,
-        COALESCE(SUM(batch.quantity), 0)::double precision AS quantity
+        COALESCE(SUM(batch.quantity), 0)::double precision AS quantity,
+        COALESCE(
+          json_agg(
+            json_build_object(
+              'expireDate', batch.expire_date,
+              'quantity', batch.quantity::double precision
+            )
+          ) FILTER (WHERE batch.id IS NOT NULL),
+          '[]'::json
+        ) AS "expireDates"
       FROM stockbox.stock_items item
       LEFT JOIN stockbox.stock_batches batch
         ON batch.stock_item_id = item.id

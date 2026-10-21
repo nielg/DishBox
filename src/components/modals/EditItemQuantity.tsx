@@ -23,10 +23,28 @@ export default function EditItemQuantity({ action, item }: Props) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [quantity, setQuantity] = useState<number>(0);
 
+  // Store date as ISO string (YYYY-MM-DD) for HTML inputs
+  const todayStr = new Date().toISOString().split("T")[0];
+  const [expireDate, setExpireDate] = useState<string>(todayStr);
+
+  const handleOpen = () => {
+    setIsOpen(true);
+    // If removing, default the select dropdown to the first available expiration date
+    if (action === "remove" && item.expireDates.length > 0) {
+      const firstDate = new Date(item.expireDates[0].expireDate)
+        .toISOString()
+        .split("T")[0];
+      setExpireDate(firstDate);
+    } else {
+      setExpireDate(todayStr);
+    }
+  };
+
   const handleClose = () => {
     setIsOpen(false);
     setErrorMsg(null);
     setQuantity(0);
+    setExpireDate(todayStr);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -38,15 +56,27 @@ export default function EditItemQuantity({ action, item }: Props) {
       return;
     }
 
+    if (action !== "request" && !expireDate) {
+      setErrorMsg("Please select or enter an expiration date.");
+      return;
+    }
+
     setErrorMsg(null);
 
     try {
       setIsSubmitting(true);
 
       const response = await fetch(
-        `/api/stockBox/item/${item.item_id}/quantity/${quantity}/${action}`,
+        `/api/stockBox/item/${item.item_id}/quantity/${action}`,
         {
           method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            expireDate: action !== "request" ? expireDate : null,
+            quantity,
+          }),
         },
       );
 
@@ -73,9 +103,9 @@ export default function EditItemQuantity({ action, item }: Props) {
       <button
         className={`${s.actionButton} ${s[action]}`}
         type="button"
-        aria-label={`${actionText} item`}
-        title={`${actionText} item`}
-        onClick={() => setIsOpen(true)}
+        aria-label={`${actionText[action]} item`}
+        title={`${actionText[action]} item`}
+        onClick={handleOpen}
       >
         {action === "add" && <Plus size={16} />}
         {action === "remove" && <Minus size={16} />}
@@ -121,6 +151,52 @@ export default function EditItemQuantity({ action, item }: Props) {
                   required
                 />
               </div>
+
+              {action !== "request" && (
+                <div className={styles.fieldGroup}>
+                  <label htmlFor="expireDate" className={styles.label}>
+                    Expiration Date
+                  </label>
+
+                  {action === "add" ? (
+                    <input
+                      id="expireDate"
+                      type="date"
+                      name="expireDate"
+                      className={styles.input}
+                      value={expireDate}
+                      onChange={(e) => setExpireDate(e.target.value)}
+                      required
+                    />
+                  ) : (
+                    <select
+                      id="expireDate"
+                      name="expireDate"
+                      className={styles.input}
+                      value={expireDate}
+                      onChange={(e) => setExpireDate(e.target.value)}
+                      required
+                    >
+                      {item.expireDates.length === 0 ? (
+                        <option value="" disabled>
+                          No expiration dates available
+                        </option>
+                      ) : (
+                        item.expireDates.map((exp, idx) => {
+                          const dateString = new Date(exp.expireDate)
+                            .toISOString()
+                            .split("T")[0];
+                          return (
+                            <option key={idx} value={dateString}>
+                              {dateString}
+                            </option>
+                          );
+                        })
+                      )}
+                    </select>
+                  )}
+                </div>
+              )}
 
               <div className={styles.actions}>
                 <button
